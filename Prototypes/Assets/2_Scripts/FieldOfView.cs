@@ -104,7 +104,12 @@
 	
 		public Transform FOVRotation;
 
+		[HideInInspector]
 		public  bool canSearch = false;
+
+		public float rotationAngle = 45.0f;
+
+		public float rotateSpeed = 1.0f;
 		//
 		// Methods
 		//
@@ -112,9 +117,10 @@
 		{
 			if(canSearch)
 			{
-				Quaternion headRotation = FOVRotation.rotation;
-				headRotation.x = headRotation.z = 0;
-				transform.rotation = headRotation;
+				RotateFOV();
+//				Quaternion headRotation = FOVRotation.rotation;
+//				headRotation.x = headRotation.z = 0;
+//				transform.rotation = headRotation;
 			}
 
 			this.angle_lookat = 0f;
@@ -224,6 +230,12 @@
 				this.mesh.Optimize ();
 				this.meshFilter.sharedMesh = mesh;
 			}
+		}
+		private void RotateFOV()
+		{
+			float requiredRotation = transform.parent.transform.rotation.eulerAngles.y + (rotationAngle * Mathf.Sin(Time.time* rotateSpeed));
+//			transform.eulerAngles = new Vector3(0, rotationAngle * Mathf.Sin(Time.time* rotateSpeed), 0);
+			transform.rotation = Quaternion.Euler(0.0f, requiredRotation, 0.0f);
 		}
 		
 		public List<Transform> GetDetectedObjects ()

@@ -113,7 +113,7 @@ public class AIConeDetection : MonoBehaviour {
 
             float newX = CurrentVector.x * Mathf.Cos( m_fCurrentRadians ) - CurrentVector.z * Mathf.Sin( m_fCurrentRadians );
             float newZ = CurrentVector.x * Mathf.Sin( m_fCurrentRadians ) + CurrentVector.z * Mathf.Cos( m_fCurrentRadians );
-            float newY = CurrentVector.y * Mathf.Sin( m_fCurrentRadians ) + CurrentVector.z * Mathf.Cos( m_fCurrentRadians );
+//            float newY = CurrentVector.y * Mathf.Sin( m_fCurrentRadians ) + CurrentVector.z * Mathf.Cos( m_fCurrentRadians );**********************************************************************************************************************************************************
 
             DrawVectorCurrent.x = newX;
             DrawVectorCurrent.y = 0.0f;
@@ -192,7 +192,6 @@ public class AIConeDetection : MonoBehaviour {
         }
         else {
             m_mConeMesh.Clear();
-        }
-        
+        }        
     }
 }

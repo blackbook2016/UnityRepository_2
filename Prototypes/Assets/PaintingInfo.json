@@ -1,0 +1,23 @@
+[
+  {
+    "Title": "Rage, Flower Thrower",
+    "Artist": "Banksy",
+    "Info": "It is a painting of a man wearing a kerchief and baseball cap throwing a bouquet of flowers. The man and the flower wrapping are done in black and white; the flowers and the stems protruding from the wrapper are in color.\nThe image is reminiscent of images from the 1960s campus and street riots. There is anger and frustration in the posture of the man, bombing the establishment with flowers. The flowers themselves, done in color, show a hope for peaceful resolution of our conflicts. Simply put, wage peace. A very interesting canvas art print to say the least.",
+    "Sprite": "banksy_Sprite",
+    "Texture": "banksy"
+  },
+  {
+    "Title": "SpaceInvader",
+    "Artist": "spaceinvader",
+    "Info": "Space Invaders is an arcade video game developed by Tomohiro Nishikado and released in 1978. It was originally manufactured and sold by Taito in Japan, and was later licensed for production in the United States by the Midway division of Bally. Space Invaders is one of the earliest shooting games and the aim is to defeat waves of aliens with a laser cannon to earn as many points as possible. In designing the game, Nishikado drew inspiration from popular media: Breakout, The War of the Worlds, and Star Wars. To complete it, he had to design custom hardware and development tools.\nIt was one of the forerunners of modern video gaming and helped expand the video game industry from a novelty to a global industry (see golden age of video arcade games). When first released, Space Invaders was very successful.\nThe game has been the inspiration for other video games, re-released on numerous platforms, and led to several sequels. The 1980 Atari 2600 version quadrupled the system's sales and became the first \"killer app\" for video game consoles. Space Invaders has been referenced and parodied in multiple television shows, and been a part of several video game and cultural exhibitions. The pixelated enemy alien has become a pop culture icon, often used as a synecdoche representing video games as a whole.",
+    "Sprite": "spaceinvader_Sprite",
+    "Texture": "spaceinvader"
+  },
+  {
+    "Title": "Miss Van",
+    "Artist": "Miss Van",
+    "Info": "Miss Van, Vanessa Alice Bensimon (also known as Vanessa Castex), born in 1973 in Toulouse, France, is considered one of the best known painters of the graffiti scene. She started wall painting in the streets of Toulouse at the age of 18. Her drawings are of sloe-eyed women, covering a varied array of female forms and expressing many different emotions. Her work has provoked a negative reaction from some feminists due to the portrayal of women in her graffiti.[1] Although she receives this backlash her reasoning for her painting is more personal. \"Painting on walls was a way to show that I was boycotting the conventional art world\".\nIn France, a very original form of graffiti was born in 1993 with Miss Van and Mademoiselle Kat. Miss Van is just one facet of the thriving graffiti scene in Toulouse, but she has probably gained the most worldwide acclaim for her work. She has gone on to exhibit canvases in galleries across France, Europe and the United States.\nRecently, she has moved to Barcelona, Spain and designed prints for the new Fornarina collection. Working on her first book and future art shows in Europe.\nMiss Van was also referenced by punk rock comic artist Mitch Clem in his semi-autobiographical comic San Antonio Rock City.",
+    "Sprite": "missvan_Sprite",
+    "Texture": "missvan"
+  }
+]

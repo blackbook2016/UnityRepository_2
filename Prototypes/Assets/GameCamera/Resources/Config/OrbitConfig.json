@@ -1,0 +1,16 @@
+{
+  "Default":  {
+    "FOV":                  ["Range", 60, 20, 100],
+    "ZoomSpeed":            ["Range", 2, 0, 10],
+    "RotationSpeedX":       ["Range", 5, 0, 10],
+    "RotationSpeedY":       ["Range", 5, 0, 10],
+    "PanSpeed":             ["Range", 1, 0, 10],
+    "RotationYMax":         ["Range", 50, 0, 90],
+    "RotationYMin":         ["Range", -50, -90, 0],
+    "DisablePan":           ["Bool", false],
+    "DisableZoom":          ["Bool", false],
+    "DisableRotation":      ["Bool", false],
+    "TargetInterpolation":  ["Range", 0.5, 0, 1],
+    "Orthographic":         ["Bool", false]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "Default":  {
+    "FOV":                 ["Range", 60, 20, 100],
+    "Distance":            ["Range", 15, 0, 100],
+    "DistanceMin":         ["Range", 10, 0, 100],
+    "DistanceMax":         ["Range", 20, 0, 500],
+    "ZoomSpeed":           ["Range", 5, 0, 10],
+    "EnableZoom":          ["Bool", true],
+    "EnableRotation":      ["Bool", true],
+    "DefaultAngleX":       ["Range", 0, -180, 180],
+    "RotationSpeed":       ["Range", 5, 0, 10],
+    "GroundOffset":        ["Range", 0, -100, 100],
+    "AngleY":              ["Range", 60, 10, 85],
+    "AngleZoomMin":        ["Range", 50, 0, 90],
+    "FollowTargetY":       ["Bool", true],
+    "DraggingMove":        ["Bool", true],
+    "ScreenBorderMove":    ["Bool", false],
+    "ScreenBorderOffset":  ["Range", 10, 1, 500],
+    "ScreenBorderSpeed":   ["Range", 4, 0, 10],
+    "KeyMove":             ["Bool", true],
+    "MoveSpeed":           ["Range", 1, 0, 10],
+    "MapCenter":           ["Vector2", 0, 0],
+    "MapSize":             ["Vector2", 100, 100],
+    "SoftBorder":          ["Range", 5, 0, 20],
+    "DisableHorizontal":   ["Bool", false],
+    "DisableVertical":     ["Bool", false],
+    "DragMomentum":        ["Range", 1, 0, 3],
+    "Orthographic":        ["Bool", false],
+    "OrthoMin":            ["Range", 1, 0, 100],
+    "OrthoMax":            ["Range", 10, 0, 100]
+  }
+}

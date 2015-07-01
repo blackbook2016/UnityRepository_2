@@ -1,0 +1,68 @@
+{
+  "Default":      {
+    "FOV":               ["Range", 60, 20, 100],
+    "Distance":          ["Range", 3, 0, 10],
+    "RotationSpeedX":    ["Range", 5, 0, 10],
+    "RotationSpeedY":    ["Range", 5, 0, 10],
+    "RotationYMax":      ["Range", 70, 0, 80],
+    "RotationYMin":      ["Range", -50, -80, 0],
+    "TargetOffset":      ["Vector3", 0, 1.60000002384186, 0],
+    "FollowCoef":        ["Range", 1, 0, 10],
+    "Spring":            ["Range", 0.100000001490116, 0, 1],
+    "DefaultYRotation":  ["Range", 20, -80, 80],
+    "AutoYRotation":     ["Range", 0.100000001490116, 0, 1],
+    "DeadZone":          ["Vector2", 0.100000001490116, 0.100000001490116],
+    "Orthographic":      ["Bool", false]
+  },
+  "Crouch":       {
+    "FOV":               ["Range", 60, 20, 100],
+    "Distance":          ["Range", 2, 0, 10],
+    "RotationSpeedX":    ["Range", 5, 0, 10],
+    "RotationSpeedY":    ["Range", 5, 0, 10],
+    "RotationYMax":      ["Range", 70, 0, 80],
+    "RotationYMin":      ["Range", -50, -80, 0],
+    "TargetOffset":      ["Vector3", 0, 1, 0],
+    "FollowCoef":        ["Range", 1, 0, 10],
+    "Spring":            ["Range", 0.100000001490116, 0, 1],
+    "DefaultYRotation":  ["Range", 20, -80, 80],
+    "AutoYRotation":     ["Range", 0.100000001490116, 0, 1],
+    "DeadZone":          ["Vector2", 0.100000001490116, 0.100000001490116],
+    "Orthographic":      ["Bool", false]
+  },
+  "Aim":          {
+    "FOV":               ["Range", 50, 20, 100],
+    "Distance":          ["Range", 2, 0, 10],
+    "RotationSpeedX":    ["Range", 5, 0, 10],
+    "RotationSpeedY":    ["Range", 5, 0, 10],
+    "RotationYMax":      ["Range", 70, 0, 80],
+    "RotationYMin":      ["Range", -50, -80, 0],
+    "TargetOffset":      ["Vector3", 1, 1.60000002384186, 0],
+    "FollowCoef":        ["Range", 0, 0, 10],
+    "Spring":            ["Range", 0, 0, 1],
+    "DefaultYRotation":  ["Range", 0, -80, 80],
+    "AutoYRotation":     ["Range", 0, 0, 1],
+    "DeadZone":          ["Vector2", 0, 0],
+    "Orthographic":      ["Bool", false]
+  },
+  "Sprint":       {
+    "FOV":               ["Range", 80, 20, 100],
+    "Distance":          ["Range", 2, 0, 10],
+    "RotationSpeedX":    ["Range", 8, 0, 10],
+    "RotationSpeedY":    ["Range", 5, 0, 10],
+    "RotationYMax":      ["Range", 50, 0, 80],
+    "RotationYMin":      ["Range", -50, -80, 0],
+    "TargetOffset":      ["Vector3", 0, 1, 0],
+    "FollowCoef":        ["Range", 1, 0, 10],
+    "Spring":            ["Range", 0, 0, 1],
+    "DefaultYRotation":  ["Range", 10, -80, 80],
+    "AutoYRotation":     ["Range", 0.200000002980232, 0, 1],
+    "DeadZone":          ["Vector2", 0, 0],
+    "Orthographic":      ["Bool", false]
+  },
+  "Transitions":  {
+    "Default":  0.5,
+    "Crouch":   0.5,
+    "Aim":      0.150000005960464,
+    "Sprint":   0.25
+  }
+}

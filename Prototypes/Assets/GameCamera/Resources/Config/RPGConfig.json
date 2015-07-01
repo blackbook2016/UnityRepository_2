@@ -1,0 +1,44 @@
+{
+  "Default":      {
+    "FOV":             ["Range", 60, 20, 100],
+    "Distance":        ["Range", 10, 0, 100],
+    "DistanceMin":     ["Range", 5, 0, 100],
+    "DistanceMax":     ["Range", 15, 0, 100],
+    "ZoomSpeed":       ["Range", 5, 0, 10],
+    "EnableZoom":      ["Bool", true],
+    "DefaultAngleX":   ["Range", 180, -180, 180],
+    "EnableRotation":  ["Bool", true],
+    "RotationSpeed":   ["Range", 5, 0, 10],
+    "AngleY":          ["Range", 45, 0, 85],
+    "AngleZoomMin":    ["Range", 35, 0, 85],
+    "TargetOffset":    ["Vector3", 0, 1, 0],
+    "Spring":          ["Range", 0.100000001490116, 0, 1],
+    "DeadZone":        ["Vector2", 0, 0],
+    "Orthographic":    ["Bool", false],
+    "OrthoMin":        ["Range", 1, 0, 100],
+    "OrthoMax":        ["Range", 50, 0, 100]
+  },
+  "Interior":     {
+    "FOV":             ["Range", 60, 20, 100],
+    "Distance":        ["Range", 8, 0, 100],
+    "DistanceMin":     ["Range", 2, 0, 100],
+    "DistanceMax":     ["Range", 10, 0, 100],
+    "ZoomSpeed":       ["Range", 5, 0, 10],
+    "EnableZoom":      ["Bool", true],
+    "DefaultAngleX":   ["Range", 180, -180, 180],
+    "EnableRotation":  ["Bool", true],
+    "RotationSpeed":   ["Range", 5, 0, 10],
+    "AngleY":          ["Range", 67.8199996948242, 0, 85],
+    "AngleZoomMin":    ["Range", 65.6999969482422, 0, 85],
+    "TargetOffset":    ["Vector3", 0, 1, 0],
+    "Spring":          ["Range", 0.100000001490116, 0, 1],
+    "DeadZone":        ["Vector2", 0, 0],
+    "Orthographic":    ["Bool", false],
+    "OrthoMin":        ["Range", 1, 0, 100],
+    "OrthoMax":        ["Range", 50, 0, 100]
+  },
+  "Transitions":  {
+    "Default":   1,
+    "Interior":  1
+  }
+}

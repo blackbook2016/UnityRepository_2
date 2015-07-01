@@ -1,0 +1,7 @@
+{
+  "Default":  {
+    "FOV":                ["Range", 60, 20, 100],
+    "InterpolateTarget":  ["Bool", true],
+    "Orthographic":       ["Bool", false]
+  }
+}

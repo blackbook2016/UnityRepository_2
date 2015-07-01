@@ -1,0 +1,20 @@
+{
+  "Default":  {
+    "MinDistance":              ["Range", 0, 0, 10],
+    "ReturnSpeed":              ["Range", 0.00999999977648258, 0, 1],
+    "ClipSpeed":                ["Range", 0.100000001490116, 0, 1],
+    "IgnoreCollisionTag":       ["String", "IgnoreCameraCollision"],
+    "TransparentCollisionTag":  ["String", "CameraTransparent"],
+    "TargetSphereRadius":       ["Range", 0.5, 0, 1],
+    "RaycastTolerance":         ["Range", 0.5, 0, 1],
+    "TargetClipSpeed":          ["Range", 0.100000001490116, 0, 1],
+    "ReturnTargetSpeed":        ["Range", 0.400000005960464, 0, 1],
+    "SphereCastRadius":         ["Range", 0.5, 0, 1],
+    "SphereCastTolerance":      ["Range", 0.100000001490116, 0, 1],
+    "CollisionAlgorithm":       ["Selection", 2, "Simple", "Spherical", "Volumetric"],
+    "ConeRadius":               ["Vector2", 0.5, 1],
+    "ConeSegments":             ["Range", 10, 3, 10],
+    "HeadOffset":               ["Range", 1.79999995231628, 0, 10],
+    "NearClipPlane":            ["Range", 0.00999999977648258, 0, 1]
+  }
+}

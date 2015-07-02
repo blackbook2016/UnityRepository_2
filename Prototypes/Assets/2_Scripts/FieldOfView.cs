@@ -101,8 +101,6 @@
 		private float previousUpdateRate = 0.01f;
 		
 		private float maxUpdateRate = float.PositiveInfinity;
-	
-		public Transform FOVRotation;
 
 		[HideInInspector]
 		public  bool canSearch = false;
@@ -110,6 +108,8 @@
 		public float rotationAngle = 45.0f;
 
 		public float rotateSpeed = 1.0f;
+
+		private Transform player = null;
 		//
 		// Methods
 		//
@@ -118,10 +118,9 @@
 			if(canSearch)
 			{
 				RotateFOV();
-//				Quaternion headRotation = FOVRotation.rotation;
-//				headRotation.x = headRotation.z = 0;
-//				transform.rotation = headRotation;
 			}
+			else if(transform.rotation.y != 0)
+				transform.rotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
 
 			this.angle_lookat = 0f;
 			this.angle_start = this.angle_lookat - this.fovRange;
@@ -138,6 +137,7 @@
 			this.rayActualAngle = -this.fovRange;
 			this.origin = transform.position;
 			this.origin.y = this.origin.y + this.heightDetectionOffset;
+			CheckPlayerInFoV();
 			if (this.detectedObjects != null)
 			{
 				this.detectedObjects.Clear ();
@@ -231,10 +231,18 @@
 				this.meshFilter.sharedMesh = mesh;
 			}
 		}
+		private void CheckPlayerInFoV()
+		{
+
+//			transform.LookAt(player.position);
+//			print( player.position + "  /  " +Vector3.Angle(transform.forward, player.position - transform.position));
+//			float angle = (transform.position - player.position).y;
+//			print(angle + "/" + angle_start + "/" + angle_end);
+		}
+
 		private void RotateFOV()
 		{
 			float requiredRotation = transform.parent.transform.rotation.eulerAngles.y + (rotationAngle * Mathf.Sin(Time.time* rotateSpeed));
-//			transform.eulerAngles = new Vector3(0, rotationAngle * Mathf.Sin(Time.time* rotateSpeed), 0);
 			transform.rotation = Quaternion.Euler(0.0f, requiredRotation, 0.0f);
 		}
 		
@@ -304,13 +312,19 @@
 				Gizmos.DrawLine (position, vector);
 				Gizmos.DrawLine (position, transform.position);
 			}
+//			Gizmos.DrawWireSphere(transform.position, fovDepth);
 		}
 		
 		public void SetIsSecondFoV (bool isSecond)
 		{
 			this.isSecondFoV = isSecond;
 		}
-		
+
+		void Awake()
+		{
+			player = GameObject.FindGameObjectWithTag("Player").transform;
+		}
+
 		public virtual void Start ()
 		{
 			this.meshFilter = GetComponent<MeshFilter> ();
@@ -337,5 +351,6 @@
 				InvokeRepeating ("DrawFoV", 0f, this.updateRate);
 			}
 		}
+
 	}
 }

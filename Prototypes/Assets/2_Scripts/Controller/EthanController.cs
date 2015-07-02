@@ -14,6 +14,8 @@
 		State state = State.Idle;
 		[SerializeField]
 		PlayerState plState = PlayerState.Free;
+		[SerializeField]
+		PointerProjector rtsProjector = null;
 		
 		private float lastClickTimeL = 0F;
 		private float lastClickTimeR = 0F;
@@ -44,8 +46,6 @@
 		{
 			if(plState == PlayerState.Free)
 			{
-				if(transform.position.x >= 20 || transform.position.x <= -20)
-					isCaught();
 
 				if(state != State.Idle && agent.remainingDistance == 0 && state != State.Climb)
 					state = State.Idle;
@@ -133,7 +133,11 @@
 			
 			if (Physics.Raycast(mouseRay, out hit,Mathf.Infinity,1 << 8))
 			{
-				PointerProjector.Instance.Project(hit.point,Color.white);
+				if(rtsProjector)
+					rtsProjector.Project(hit.point,Color.white);
+				else
+					print ("Pointer Projector not defined");
+
 				return hit.point;
 			}
 			return transform.position;

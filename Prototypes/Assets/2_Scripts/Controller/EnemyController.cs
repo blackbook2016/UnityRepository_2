@@ -18,7 +18,11 @@
 		[SerializeField]
 		AreaMask layer = AreaMask.All;
 		[SerializeField]
-		float WaitInSec = 1.0f;
+		float WaitInSec = 1.0f;		
+		[SerializeField]
+		float searchingWaitingTime = 3.0f;		
+		[SerializeField]
+		PointerProjector enemyProjector = null;
 
 		public WaypointManager waypointManager = null;
 
@@ -29,12 +33,12 @@
 
 		private float defaultAlpha;
 		
-		private Vector3 initPos;		
+		private TargetDestination init;		
 		private Vector3 targetPos;		
 
 		private bool returnedToInitialPos = true;
+		private bool isSearchWaitting = false;
 		private bool isSettingDestination = false;
-
 
 		#endregion
 
@@ -74,6 +78,8 @@
 
 		#region Private
 		void UpdateFoV () {
+			Vector3 enemyPosOnNavMesh = transform.position;
+			enemyPosOnNavMesh.y = navAgent.destination.y;
 
 			if(enemyType != enemy.Type)
 				SetEnemy();
@@ -82,42 +88,104 @@
 
 			UpdateFoVColor();
 
-			if(enemy.PlayerDetected) 
+			if(enemy._Behaviour != EnemyBeHaviour.Idle) 
 			{				
-				StopAllCoroutines();
-				isSettingDestination = false;
-
-				enemy.MoveState = State.Run;
-				targetPos = player.position;
-				navAgent.SetDestination(targetPos);
-
-				if((targetPos - transform.position).magnitude <= stopDistance)
+				switch(enemy._Behaviour)
 				{
+				case EnemyBeHaviour.Curious:
+				{
+					if(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) <= 0.1F)
+					{
+						if(!isSearchWaitting)
+						{
+							if(enemyProjector)
+							{
+								enemyProjector.gameObject.SetActive(false);
+							}
+							
+							enemy.MoveState = State.Idle;
+
+							StopCoroutine("SearchingWait");
+							StartCoroutine("SearchingWait",searchingWaitingTime);
+						}
+					}
+					else
+					{
+						enemy.MoveState = State.Walk;
+						enemy.Fov.canSearch = false;
+					}
+					break;
+				}
+				case EnemyBeHaviour.Alert:
+				{
+					enemy.MoveState = State.Run;
+					enemy.Fov.canSearch = false;
+					break;
+				}
+				case EnemyBeHaviour.Searching:
+				{		
+					if(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) <= 0.1F)
+					{
+						if(!isSearchWaitting)
+						{
+							if(enemyProjector)
+							{
+								enemyProjector.gameObject.SetActive(false);
+							}
+
+							enemy.MoveState = State.Idle;
+
+							StopCoroutine("SearchingWait");
+							StartCoroutine("SearchingWait",searchingWaitingTime);
+						}
+					}
+					else
+						enemy.MoveState = State.Walk;
+					break;
+				}
+				}
+				
+				
+				if((player.position - transform.position).magnitude <= stopDistance)
+				{
+					if(enemyProjector)
+					{
+						enemyProjector.gameObject.SetActive(false);
+					}
 					player.GetComponent<EthanController>().isCaught();
 					navAgent.SetDestination(transform.position);
+					enemy._Behaviour = EnemyBeHaviour.Idle;
 				}
-				returnedToInitialPos = false;
+				returnedToInitialPos = false;				
 			}
 			else
 			{				
 				if(!returnedToInitialPos)
 				{
-					navAgent.SetDestination(initPos);
+					navAgent.SetDestination(init.position);
 					returnedToInitialPos = true;
+					enemy.Fov.canSearch = enemy.CanSearch;
+				}
+				else if(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) <= 0.1F)
+				{
+					if(enemy.Type == EnemyType._Fixe || enemy.Type == EnemyType._Busy)
+					{
+						transform.rotation = Quaternion.Euler(init.eulerAngles);
+					}
+					else
+					if(isSettingDestination == false)
+					{
+						StopCoroutine("SetDestination");
+						StartCoroutine("SetDestination",WaitInSec);
+					}
 				}
 
-				if(Vector3.Distance(transform.position,navAgent.destination) <= 0.1F && isSettingDestination == false)
+				if(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) <= 0.1F)
 				{
-					StopCoroutine("SetDestination");
-					StartCoroutine("SetDestination",WaitInSec);
-				}
-
-				if(navAgent.desiredVelocity.magnitude != 0)
-				{
-					enemy.MoveState = State.Walk;
+					enemy.MoveState = State.Idle;
 				}
 				else
-					enemy.MoveState = State.Idle;
+					enemy.MoveState = State.Walk;
 			}						
 			anim.SetInteger("MoveState",(int)enemy.MoveState);
 		}
@@ -133,7 +201,8 @@
 				Vector3 point;
 				if (RandomPoint(transform.position, range, out point))
 				{
-					initPos = point;
+					init.position = point;
+					init.eulerAngles = transform.eulerAngles;
 					navAgent.SetDestination(point);
 					Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f);
 				}
@@ -142,43 +211,109 @@
 			if(enemy.Type == EnemyType._RoamingPath && Vector3.Distance(transform.position,navAgent.destination) <= 0.1F && waypointManager != null)
 			{
 				waypointManager.SetNextPoint();
-				initPos = waypointManager.NextPoint.transform.position;
-				navAgent.SetDestination(initPos);
+				init.position = waypointManager.NextPoint.transform.position;
+				init.eulerAngles = transform.eulerAngles;
+				navAgent.SetDestination(init.position);
 			}
 			isSettingDestination = false;
 		}
 
-		void UpdateFoVColor() {
-			
-			if(enemy.PlayerDetected) 
-				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, defaultAlpha); // Color RED
-			else 
-				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, defaultAlpha); // Color Green
-			
+		IEnumerator SearchingWait(int sec)
+		{
+			isSearchWaitting = true;
+			enemy.Fov.canSearch = true;
+
+			yield return new WaitForSeconds(sec);
+
+			enemy.Fov.canSearch = enemy.CanSearch;
+			isSearchWaitting = false;
+
+			enemy._Behaviour = EnemyBeHaviour.Idle;
 		}
 
+		void UpdateFoVColor() {
+
+			switch(enemy._Behaviour)
+			{
+			case EnemyBeHaviour.Idle:
+			{
+				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, defaultAlpha); // Color Green
+				break;
+			}
+			case EnemyBeHaviour.Curious:
+			{
+				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0, defaultAlpha); // Color Orange
+				break;
+			}
+			case EnemyBeHaviour.Alert:
+			{
+				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, defaultAlpha); // Color RED
+				break;
+			}
+			case EnemyBeHaviour.Searching:
+			{
+				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 1, defaultAlpha); // Color Blue
+				break;
+			}
+			}			
+		}
+		
 		void DetectPlayer() {
 			
-			if(enemy.Fov.GetDetectedObjects().Contains(player)) {
-				
+			if(enemy.Fov.GetDetectedObjects().Contains(player))
+			{								
 				enemy.PlayerDetected = true;
-				targetPos = player.position;
-				
-			} else {
-				
-				enemy.PlayerDetected = false;
-				
+
+				StopAllCoroutines();
+				isSettingDestination = false;
+				isSearchWaitting = false;
+
+				targetPos = player.position;				
+				navAgent.SetDestination(targetPos);
+
+				if(enemyProjector)
+				{
+					enemyProjector.gameObject.SetActive(true);
+					enemyProjector.Project(targetPos,Color.red);
+				}
+				else
+					print ("Pointer Projector not defined");
+
+				float distance = Vector3.Distance(player.position, transform.position);
+
+				if(distance >= enemy.Fov.fovDepth * 2 / 3 && enemy._Behaviour != EnemyBeHaviour.Alert)
+				{
+					if(enemy._Behaviour == EnemyBeHaviour.Searching)
+						enemy._Behaviour = EnemyBeHaviour.Alert;
+					else
+						enemy._Behaviour = EnemyBeHaviour.Curious;
+				}
+				else
+				{
+					enemy._Behaviour = EnemyBeHaviour.Alert;
+				}
 			}
-			
+			else 
+			{				
+				enemy.PlayerDetected = false;	
+
+				if(enemy._Behaviour == EnemyBeHaviour.Alert)
+					enemy._Behaviour = EnemyBeHaviour.Searching;
+			}			
 		}
 
 		void SetEnemy()
 		{
+			if(enemyProjector)
+			{
+				enemyProjector.gameObject.SetActive(false);
+			}
 			enemy.SwitchType(enemyType);
 			enemy.Fov = GetComponentInChildren<FieldOfView>();
 			enemy.Fov.canSearch = enemy.CanSearch;	
 			
-			initPos = transform.position;
+			init.position = transform.position;
+			init.eulerAngles = transform.eulerAngles;
 
 			if(enemy.Type == EnemyType._RoamingRandom)
 			{
@@ -187,13 +322,15 @@
 				{
 					navAgent.SetDestination(point);
 					Debug.DrawRay(point, Vector3.up, Color.blue, 1.0f);
-					initPos = point;
+					init.position = point;
+					init.eulerAngles = transform.eulerAngles;
 				}
 			}
 			if(enemy.Type == EnemyType._RoamingPath && waypointManager != null)
 			{
-				initPos = waypointManager.NextPoint.transform.position;
-				navAgent.SetDestination(initPos);
+				init.position = waypointManager.NextPoint.transform.position;
+				navAgent.SetDestination(init.position);
+				init.eulerAngles = transform.eulerAngles;
 			}
 		}
 

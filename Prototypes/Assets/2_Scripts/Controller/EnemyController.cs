@@ -20,7 +20,9 @@
 		[SerializeField]
 		float WaitInSec = 1.0f;		
 		[SerializeField]
-		float searchingWaitingTime = 3.0f;		
+		float searchTime_Searching = 3.0f;		
+		[SerializeField]
+		float searchTime_Curious = 3.0f;		
 		[SerializeField]
 		PointerProjector enemyProjector = null;
 
@@ -39,6 +41,10 @@
 		private bool returnedToInitialPos = true;
 		private bool isSearchWaitting = false;
 		private bool isSettingDestination = false;
+
+		private float timerCurious = 0.0f;
+		[SerializeField]
+		float maxTimerCurious = 3.0f;
 
 		#endregion
 
@@ -106,7 +112,7 @@
 							enemy.MoveState = State.Idle;
 
 							StopCoroutine("SearchingWait");
-							StartCoroutine("SearchingWait",searchingWaitingTime);
+							StartCoroutine("SearchingWait",searchTime_Curious);
 						}
 					}
 					else
@@ -136,7 +142,7 @@
 							enemy.MoveState = State.Idle;
 
 							StopCoroutine("SearchingWait");
-							StartCoroutine("SearchingWait",searchingWaitingTime);
+							StartCoroutine("SearchingWait",searchTime_Searching);
 						}
 					}
 					else
@@ -223,10 +229,58 @@
 			isSearchWaitting = true;
 			enemy.Fov.canSearch = true;
 
-			yield return new WaitForSeconds(sec);
+			if(enemy._Behaviour == EnemyBeHaviour.Curious)
+			{
+				float timer = Time.time;
+				float sequenceTime = sec / 6.0f;
+				float initFovRotSpeed = enemy.Fov.rotateSpeed;
+				enemy.Fov.rotateSpeed = sequenceTime / (Mathf.PI * 2);
+
+				yield return new WaitForSeconds(sequenceTime);	
+//				enemy.Fov.canSearch = false;
+
+				float rotateTime = Time.time + (sequenceTime); 
+				Vector3 temp_rotation = transform.eulerAngles;
+				temp_rotation.y += 120;
+				while(Time.time <= rotateTime)
+				{
+					transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(temp_rotation), sequenceTime * Time.deltaTime);
+				yield return null;	
+				}
+
+//				enemy.Fov.canSearch = true;
+				yield return new WaitForSeconds(sequenceTime);	
+//				enemy.Fov.canSearch = false;
+
+				rotateTime = Time.time + (sequenceTime); 
+				temp_rotation.y += 120;
+				while(Time.time <= rotateTime)
+				{
+					transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(temp_rotation), sequenceTime * Time.deltaTime);
+					yield return null;	
+				}
+
+//				enemy.Fov.canSearch = true;
+				yield return new WaitForSeconds(sequenceTime);	
+//				enemy.Fov.canSearch = false;
+
+				rotateTime = Time.time + (sequenceTime); 
+				temp_rotation.y += 120;
+				while(Time.time <= rotateTime)
+				{
+					transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(temp_rotation), sequenceTime * Time.deltaTime);
+					yield return null;	
+				}
+
+//				yield return new WaitForSeconds(sec / 6);
+				enemy.Fov.rotateSpeed = initFovRotSpeed;
+				print (Time.time - timer);
+			}
+			else
+				yield return new WaitForSeconds(sec);
 
 			enemy.Fov.canSearch = enemy.CanSearch;
-			isSearchWaitting = false;
+//			isSearchWaitting = false;
 
 			enemy._Behaviour = EnemyBeHaviour.Idle;
 		}
@@ -286,7 +340,17 @@
 					if(enemy._Behaviour == EnemyBeHaviour.Searching)
 						enemy._Behaviour = EnemyBeHaviour.Alert;
 					else
-						enemy._Behaviour = EnemyBeHaviour.Curious;
+					{
+						timerCurious += Time.deltaTime;
+
+						if(timerCurious >= maxTimerCurious)
+						{
+							timerCurious = 0;
+							enemy._Behaviour = EnemyBeHaviour.Alert;
+						}
+						else
+							enemy._Behaviour = EnemyBeHaviour.Curious;
+					}
 				}
 				else
 				{

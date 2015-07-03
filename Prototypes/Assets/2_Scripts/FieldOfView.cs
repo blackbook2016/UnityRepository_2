@@ -110,6 +110,8 @@
 		public float rotateSpeed = 1.0f;
 
 		private Transform player = null;
+
+		private float timer = 0.0f;
 		//
 		// Methods
 		//
@@ -119,8 +121,12 @@
 			{
 				RotateFOV();
 			}
-			else if(transform.rotation.y != 0)
-				transform.rotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
+			else
+			{
+				timer = 0.0f;
+				if(transform.rotation.y != 0)
+					transform.rotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
+			}
 
 			this.angle_lookat = 0f;
 			this.angle_start = this.angle_lookat - this.fovRange;
@@ -242,7 +248,8 @@
 
 		private void RotateFOV()
 		{
-			float requiredRotation = transform.parent.transform.rotation.eulerAngles.y + (rotationAngle * Mathf.Sin(Time.time* rotateSpeed));
+			timer += Time.deltaTime;
+			float requiredRotation = transform.parent.transform.rotation.eulerAngles.y + (rotationAngle * Mathf.Sin(timer * rotateSpeed));
 			transform.rotation = Quaternion.Euler(0.0f, requiredRotation, 0.0f);
 		}
 		

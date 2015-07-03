@@ -2489,6 +2489,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   plState: 0
+  rtsProjector: {fileID: 0}
 --- !u!136 &13603230
 CapsuleCollider:
   m_ObjectHideFlags: 1

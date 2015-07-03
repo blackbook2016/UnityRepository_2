@@ -6,7 +6,6 @@
 	[RequireComponent(typeof(Projector))]
 	public class PointerProjector : MonoBehaviour
 	{
-		public static PointerProjector Instance;
 		public float AnimTimeout;
 		public float Distance;
 		public float FovMax;
@@ -17,10 +16,7 @@
 		
 		void Awake()
 		{
-			Instance = this;
 			projector = GetComponent<Projector>();
-			if(projector == null)
-				print("Missing projector componnent!");
 		}
 		
 		public void Enable()

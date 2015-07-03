@@ -15,7 +15,9 @@
 		[Tooltip("Double Click Delays")]
 		float delay = 0.25F;
 		[SerializeField]
-		State state = State.Idle;
+		State state = State.Idle;		
+		[SerializeField]
+		PointerProjector pp = null;
 
 		private float lastClickTimeL = 0F;
 		private float lastClickTimeR = 0F;
@@ -114,7 +116,7 @@
 
 			if (Physics.Raycast(mouseRay, out hit,Mathf.Infinity,1<<8))
 			{
-				PointerProjector.Instance.Project(hit.point,Color.white);
+				pp.Project(hit.point,Color.white);
 				return hit.point;
 			}
 			return transform.position;

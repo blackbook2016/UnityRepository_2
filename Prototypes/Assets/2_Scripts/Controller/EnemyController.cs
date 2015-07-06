@@ -32,15 +32,15 @@
 		private Transform player;		
 		private NavMeshAgent navAgent;		
 		private Animator anim;
-
-		private float defaultAlpha;
 		
 		private TargetDestination init;		
 		private Vector3 targetPos;		
-
+		
 		private bool returnedToInitialPos = true;
 		private bool isSearchWaitting = false;
 		private bool isSettingDestination = false;
+		private bool isCuriousStarted = false;
+		private bool isFollowTargetPoint = false;
 
 		private float timerCurious = 0.0f;
 		[SerializeField]
@@ -55,16 +55,14 @@
 
 			anim = GetComponent<Animator>();
 			
-			navAgent = GetComponent<NavMeshAgent>();
-
-			defaultAlpha = GetComponentInChildren<MeshRenderer>().material.color.a;		
+			navAgent = GetComponent<NavMeshAgent>();		
 
 			if(waypointManager == null)
 				print("Pls set waypointManager of the enemy to use Path");
 			
-			SetEnemy();
+			InitEnemy();
 			
-			InvokeRepeating ("UpdateFoV", 0, 0.01f);
+			InvokeRepeating ("UpdateEnemy", 0, 0.01f);
 		}
 
 		void OnAnimatorMove ()
@@ -82,48 +80,48 @@
 		}
 		#endregion
 
-		#region Private
-		void UpdateFoV () {
-			Vector3 enemyPosOnNavMesh = transform.position;
-			enemyPosOnNavMesh.y = navAgent.destination.y;
+		#region API
+		public EnemyEntity Enemy 
+		{
+			get {
+				return this.enemy;
+			}
+		}
+		#endregion
 
+		#region Private
+		void UpdateEnemy () 
+		{
 			if(enemyType != enemy.Type)
-				SetEnemy();
+				InitEnemy();
 
 			DetectPlayer();
 
-			UpdateFoVColor();
+			StateMachine();
+		}
 
+		void StateMachine()
+		{
+			print (enemy.Fov.canSearch);
+			Vector3 enemyPosOnNavMesh = transform.position;
+			enemyPosOnNavMesh.y = navAgent.destination.y;
+			
 			if(enemy._Behaviour != EnemyBeHaviour.Idle) 
 			{				
 				switch(enemy._Behaviour)
 				{
 				case EnemyBeHaviour.Curious:
 				{
-					if(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) <= 0.1F)
+					if(!isCuriousStarted)
 					{
-						if(!isSearchWaitting)
-						{
-							if(enemyProjector)
-							{
-								enemyProjector.gameObject.SetActive(false);
-							}
-							
-							enemy.MoveState = State.Idle;
-
-							StopCoroutine("SearchingWait");
-							StartCoroutine("SearchingWait",searchTime_Curious);
-						}
-					}
-					else
-					{
-						enemy.MoveState = State.Walk;
-						enemy.Fov.canSearch = false;
+						StopCoroutine("Curious");
+						StartCoroutine("Curious");
 					}
 					break;
 				}
 				case EnemyBeHaviour.Alert:
 				{
+					navAgent.SetDestination(targetPos);
 					enemy.MoveState = State.Run;
 					enemy.Fov.canSearch = false;
 					break;
@@ -138,9 +136,9 @@
 							{
 								enemyProjector.gameObject.SetActive(false);
 							}
-
+							
 							enemy.MoveState = State.Idle;
-
+							
 							StopCoroutine("SearchingWait");
 							StartCoroutine("SearchingWait",searchTime_Searching);
 						}
@@ -167,7 +165,10 @@
 			else
 			{				
 				if(!returnedToInitialPos)
-				{
+				{							
+					StopAllCoroutines();
+					isCuriousStarted = false;
+					isFollowTargetPoint = false;
 					navAgent.SetDestination(init.position);
 					returnedToInitialPos = true;
 					enemy.Fov.canSearch = enemy.CanSearch;
@@ -179,13 +180,13 @@
 						transform.rotation = Quaternion.Euler(init.eulerAngles);
 					}
 					else
-					if(isSettingDestination == false)
+						if(isSettingDestination == false)
 					{
 						StopCoroutine("SetDestination");
 						StartCoroutine("SetDestination",WaitInSec);
 					}
 				}
-
+				
 				if(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) <= 0.1F)
 				{
 					enemy.MoveState = State.Idle;
@@ -196,6 +197,74 @@
 			anim.SetInteger("MoveState",(int)enemy.MoveState);
 		}
 
+		IEnumerator Curious()
+		{
+			isCuriousStarted = true;
+			print ("Curious");
+			enemy.Fov.canSearch = false;
+
+			yield return new WaitForSeconds(2.0f);
+
+			StopCoroutine("FollowTargetPoint");
+			yield return StartCoroutine("FollowTargetPoint");			
+
+			while(enemy._Behaviour != EnemyBeHaviour.Idle)
+			{
+				if(!isFollowTargetPoint)
+				{
+					if(enemy.PlayerDetected)
+					{
+						StopCoroutine("FollowTargetPoint");
+						StopCoroutine("SearchingWait");	
+
+						StartCoroutine("FollowTargetPoint");
+					}
+					else
+						if(!isSearchWaitting)
+						{
+							StopCoroutine("SearchingWait");	
+							StartCoroutine("SearchingWait",searchTime_Curious);
+						}
+				}
+				yield return null;
+			}
+			yield return StartCoroutine("SearchingWait",searchTime_Curious);
+			isCuriousStarted = false;
+		}
+
+		// Enemy follows the player tracks
+		IEnumerator FollowTargetPoint()
+		{
+			isFollowTargetPoint = true;
+			navAgent.SetDestination(targetPos);
+			enemy.MoveState = State.Walk;
+			
+			Vector3 enemyPosOnNavMesh = transform.position;
+			enemyPosOnNavMesh.y = navAgent.destination.y;
+			
+			while(Vector3.Distance(enemyPosOnNavMesh,navAgent.destination) > 0.1F)
+			{
+				if(enemy.PlayerDetected)
+				{
+//					enemy.Fov.canSearch = false;
+					navAgent.SetDestination(targetPos);
+				}
+//				else
+//					enemy.Fov.canSearch = true;
+				
+				enemyPosOnNavMesh = transform.position;
+				enemyPosOnNavMesh.y = navAgent.destination.y;
+				yield return null;
+			}
+
+			if(enemyProjector)
+			{
+				enemyProjector.gameObject.SetActive(false);
+			}
+			isFollowTargetPoint = false;
+		}
+
+		// Generate and sets the enemy next destination point dependent of his type (Random or Path) 
 		IEnumerator SetDestination(int sec)
 		{
 			isSettingDestination = true;
@@ -224,9 +293,12 @@
 			isSettingDestination = false;
 		}
 
+		// stays in position but rotates around himself in search of the player
 		IEnumerator SearchingWait(int sec)
-		{
+		{			
 			isSearchWaitting = true;
+
+			enemy.MoveState = State.Idle;
 			enemy.Fov.canSearch = true;
 
 			if(enemy._Behaviour == EnemyBeHaviour.Curious)
@@ -236,8 +308,15 @@
 				float initFovRotSpeed = enemy.Fov.rotateSpeed;
 				enemy.Fov.rotateSpeed = sequenceTime / (Mathf.PI * 2);
 
-				yield return new WaitForSeconds(sequenceTime);	
-//				enemy.Fov.canSearch = false;
+				while(Time.time - timer < sequenceTime)
+				{
+					yield return null;
+
+					if(enemy.PlayerDetected)
+						enemy.Fov.canSearch = false;
+					else
+						enemy.Fov.canSearch = true;
+				}
 
 				float rotateTime = Time.time + (sequenceTime); 
 				Vector3 temp_rotation = transform.eulerAngles;
@@ -248,9 +327,7 @@
 				yield return null;	
 				}
 
-//				enemy.Fov.canSearch = true;
 				yield return new WaitForSeconds(sequenceTime);	
-//				enemy.Fov.canSearch = false;
 
 				rotateTime = Time.time + (sequenceTime); 
 				temp_rotation.y += 120;
@@ -260,9 +337,7 @@
 					yield return null;	
 				}
 
-//				enemy.Fov.canSearch = true;
 				yield return new WaitForSeconds(sequenceTime);	
-//				enemy.Fov.canSearch = false;
 
 				rotateTime = Time.time + (sequenceTime); 
 				temp_rotation.y += 120;
@@ -272,58 +347,31 @@
 					yield return null;	
 				}
 
-//				yield return new WaitForSeconds(sec / 6);
 				enemy.Fov.rotateSpeed = initFovRotSpeed;
-				print (Time.time - timer);
 			}
 			else
 				yield return new WaitForSeconds(sec);
 
 			enemy.Fov.canSearch = enemy.CanSearch;
-//			isSearchWaitting = false;
 
 			enemy._Behaviour = EnemyBeHaviour.Idle;
 		}
 
-		void UpdateFoVColor() {
-
-			switch(enemy._Behaviour)
-			{
-			case EnemyBeHaviour.Idle:
-			{
-				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, defaultAlpha); // Color Green
-				break;
-			}
-			case EnemyBeHaviour.Curious:
-			{
-				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0, defaultAlpha); // Color Orange
-				break;
-			}
-			case EnemyBeHaviour.Alert:
-			{
-				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, defaultAlpha); // Color RED
-				break;
-			}
-			case EnemyBeHaviour.Searching:
-			{
-				enemy.Fov.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 1, defaultAlpha); // Color Blue
-				break;
-			}
-			}			
-		}
-		
+		// Update the player detection bool and sets the enemy behaviour
 		void DetectPlayer() {
 			
 			if(enemy.Fov.GetDetectedObjects().Contains(player))
 			{								
 				enemy.PlayerDetected = true;
 
-				StopAllCoroutines();
-				isSettingDestination = false;
+				if(isSettingDestination == true)
+				{
+					StopCoroutine("SetDestination");
+					isSettingDestination = false;
+				}
 				isSearchWaitting = false;
 
-				targetPos = player.position;				
-				navAgent.SetDestination(targetPos);
+				targetPos = player.position;		
 
 				if(enemyProjector)
 				{
@@ -335,17 +383,25 @@
 
 				float distance = Vector3.Distance(player.position, transform.position);
 
+				if(enemy._Behaviour == EnemyBeHaviour.Idle)
+					timerCurious = 0;
+
 				if(distance >= enemy.Fov.fovDepth * 2 / 3 && enemy._Behaviour != EnemyBeHaviour.Alert)
 				{
 					if(enemy._Behaviour == EnemyBeHaviour.Searching)
 						enemy._Behaviour = EnemyBeHaviour.Alert;
 					else
 					{
-						timerCurious += Time.deltaTime;
+						timerCurious += 0.01f;
 
-						if(timerCurious >= maxTimerCurious)
+						if(timerCurious > maxTimerCurious)
 						{
 							timerCurious = 0;
+
+							StopAllCoroutines();
+							isCuriousStarted = false;
+							isFollowTargetPoint = false;
+
 							enemy._Behaviour = EnemyBeHaviour.Alert;
 						}
 						else
@@ -366,7 +422,7 @@
 			}			
 		}
 
-		void SetEnemy()
+		void InitEnemy()
 		{
 			if(enemyProjector)
 			{
@@ -398,6 +454,7 @@
 			}
 		}
 
+		// generates a point for enemies whose type is roamingRandom
 		bool RandomPoint(Vector3 center, float range, out Vector3 result)
 		{
 			for (int i = 0; i < 30; i++)

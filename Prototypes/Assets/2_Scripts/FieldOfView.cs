@@ -112,20 +112,30 @@
 		private Transform player = null;
 
 		private float timer = 0.0f;
+
+		private EnemyController enemyController = null;
+
+		private MeshRenderer meshRenderer;
+
+		private float defaultAlpha = 0.0f;
 		//
 		// Methods
 		//
 		private void DrawFoV ()
 		{
-			if(canSearch)
+			if(Application.isPlaying)
 			{
-				RotateFOV();
-			}
-			else
-			{
-				timer = 0.0f;
-				if(transform.rotation.y != 0)
-					transform.rotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
+				UpdateFoVColor();
+				if(canSearch)
+				{
+					RotateFOV();
+				}
+				else
+				{
+					timer = 0.0f;
+					if(transform.rotation.y != 0)
+						transform.rotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
+				}
 			}
 
 			this.angle_lookat = 0f;
@@ -329,11 +339,15 @@
 
 		void Awake()
 		{
-			player = GameObject.FindGameObjectWithTag("Player").transform;
+
 		}
 
 		public virtual void Start ()
-		{
+		{			
+			player = GameObject.FindGameObjectWithTag("Player").transform;
+			enemyController = gameObject.GetComponentInParent<EnemyController>();
+			
+			this.meshRenderer = GetComponent<MeshRenderer> ();
 			this.meshFilter = GetComponent<MeshFilter> ();
 			this.mesh = new Mesh ();
 			this.meshFilter.sharedMesh = mesh;
@@ -357,6 +371,38 @@
 			{
 				InvokeRepeating ("DrawFoV", 0f, this.updateRate);
 			}
+		}
+
+		void UpdateFoVColor() {
+			
+			defaultAlpha = meshRenderer.material.color.a;
+			if(enemyController)
+			{
+				switch(enemyController.Enemy._Behaviour)
+				{
+				case EnemyBeHaviour.Idle:
+				{
+					meshRenderer.material.color = new Color(0, 1, 0, defaultAlpha); // Color Green
+					break;
+				}
+				case EnemyBeHaviour.Curious:
+				{
+					meshRenderer.material.color = new Color(1, 0.5f, 0, defaultAlpha); // Color Orange
+					break;
+				}
+				case EnemyBeHaviour.Alert:
+				{
+					meshRenderer.material.color = new Color(1, 0, 0, defaultAlpha); // Color RED
+					break;
+				}
+				case EnemyBeHaviour.Searching:
+				{
+					meshRenderer.material.color = new Color(0, 0, 1, defaultAlpha); // Color Blue
+					break;
+				}
+				}
+			}else
+				print ("FOV doesn't have an Enemy Parent");
 		}
 
 	}

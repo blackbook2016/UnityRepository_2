@@ -101,46 +101,53 @@
 			{
 				print ("Path endpoint or startpoint aren't defined");
 			}
-			currentPosition = points.IndexOf(nextPoint);
+			if(nextPoint == null)
+			{
+				nextPoint = StartPoint;
+			}
+			else
+			{
+				currentPosition = points.IndexOf(nextPoint);
 
-			switch (wpType)
-			{
-			case WaypointType.None:
-			{
-				if(currentPosition == points.IndexOf(EndPoint))
-					nextPoint = EndPoint;
-				else 
-					nextPoint = points[points.IndexOf(nextPoint) + 1];
-				break;
-			}
-			case WaypointType.ClosedLoop:
-			{			
-				if (nextPoint == EndPoint)
+				switch (wpType)
 				{
-					nextPoint = points[0];
-				}				
-				else 
-					nextPoint = points[points.IndexOf(nextPoint) + 1];
-				break;
-			}
-			case WaypointType.PingPong:
-			{
-				if(currentPosition == points.IndexOf(EndPoint) || (currentPosition == 0 && !direction))
-				{
-					direction = !direction;
+					case WaypointType.None:
+					{
+						if(currentPosition == points.IndexOf(EndPoint))
+							nextPoint = EndPoint;
+						else 
+							nextPoint = points[points.IndexOf(nextPoint) + 1];
+						break;
+					}
+					case WaypointType.ClosedLoop:
+					{			
+						if (nextPoint == EndPoint)
+						{
+							nextPoint = points[0];
+						}				
+						else 
+							nextPoint = points[points.IndexOf(nextPoint) + 1];
+						break;
+					}
+					case WaypointType.PingPong:
+					{
+						if(currentPosition == points.IndexOf(EndPoint) || (currentPosition == 0 && !direction))
+						{
+							direction = !direction;
+						}
+						if(direction)
+							nextPoint = points[currentPosition+1];
+						else
+							nextPoint = points[currentPosition-1];
+						break;
+					}
+					case WaypointType.RandomPath:
+					{
+						while(points.IndexOf(nextPoint) == currentPosition)
+							nextPoint = points[Random.Range(0, points.IndexOf(EndPoint) + 1)];
+						break;
+					}
 				}
-				if(direction)
-					nextPoint = points[currentPosition+1];
-				else
-					nextPoint = points[currentPosition-1];
-				break;
-			}
-			case WaypointType.RandomPath:
-			{
-				while(points.IndexOf(nextPoint) == currentPosition)
-					nextPoint = points[Random.Range(0, points.IndexOf(EndPoint) + 1)];
-				break;
-			}
 			}
 
 		}
@@ -161,10 +168,6 @@
 				else if(waypoint.pointType == PointType.End)
 					EndPoint = waypoint;
 			}			
-			if(nextPoint == null)
-			{
-				nextPoint = StartPoint;
-			}
 
 			giznextPoint = StartPoint;
 		}

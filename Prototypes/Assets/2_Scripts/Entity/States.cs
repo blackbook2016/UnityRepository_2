@@ -1,4 +1,5 @@
 ﻿namespace TheVandals {
+
 	using UnityEngine;
 	using System.Collections;
 
@@ -7,6 +8,11 @@
 		Walk,
 		Run,
 		Climb,
+	}	
+	
+	public enum PlayerState {
+		Free,
+		Caught,
 	}
 
 	public enum EnemyType {
@@ -23,11 +29,25 @@
 		Alert,
 		Searching,
 	}
-
-	public enum PlayerState {
-		Free,
-		Caught,
+	
+	public enum EnemyActions {
+		Idle,
+		GoToRandomPoint,
+		GoToPathPoint,
+		WatchPlayer,
+		FollowPlayerPoint,
+		Search,
+		ReturnToInitialPosition,
+		runTowardPlayer,
 	}
+
+	public enum AlertLevel {
+		None,
+		Low,
+		Medium,
+		High
+	}
+
 	public enum AreaMask {
 		
 		All = -1,

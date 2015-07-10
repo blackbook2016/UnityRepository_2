@@ -246,11 +246,8 @@
 			{
 				if(enemy.PlayerDetected)
 				{
-//					enemy.Fov.canSearch = false;
 					navAgent.SetDestination(targetPos);
 				}
-//				else
-//					enemy.Fov.canSearch = true;
 				
 				enemyPosOnNavMesh = transform.position;
 				enemyPosOnNavMesh.y = navAgent.destination.y;

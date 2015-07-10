@@ -115,6 +115,8 @@
 
 		private EnemyController enemyController = null;
 
+		private IAController iaController = null;
+
 		private MeshRenderer meshRenderer;
 
 		private float defaultAlpha = 0.0f;
@@ -346,6 +348,7 @@
 		{			
 			player = GameObject.FindGameObjectWithTag("Player").transform;
 			enemyController = gameObject.GetComponentInParent<EnemyController>();
+			iaController = gameObject.GetComponentInParent<IAController>();
 			
 			this.meshRenderer = GetComponent<MeshRenderer> ();
 			this.meshFilter = GetComponent<MeshFilter> ();
@@ -402,7 +405,35 @@
 				}
 				}
 			}else
-				print ("FOV doesn't have an Enemy Parent");
+			{
+//				print ("FOV doesn't have an Enemy Parent");
+				if(iaController)
+				{
+					switch(iaController.ReturnEnemy().AlertLVL)
+					{
+					case AlertLevel.None:
+					{
+						meshRenderer.material.color = new Color(0, 1, 0, defaultAlpha); // Color Green
+						break;
+					}
+					case AlertLevel.Low:
+					{
+						meshRenderer.material.color = new Color(1, 0.5f, 0, defaultAlpha); // Color Orange
+						break;
+					}
+					case AlertLevel.Medium:
+					{
+						meshRenderer.material.color = new Color(0, 0, 1, defaultAlpha); // Color Blue
+						break;
+					}
+					case AlertLevel.High:
+					{
+						meshRenderer.material.color = new Color(1, 0, 0, defaultAlpha); // Color Red
+						break;
+					}
+					}
+				}
+			}
 		}
 
 	}

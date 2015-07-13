@@ -15,7 +15,7 @@
 		AreaMask layer = AreaMask.All;
 
 		[SerializeField]
-		float searchTime = 15f;
+		float searchTime = 12;
 
 		[SerializeField]
 		EnemyActions publicAction = EnemyActions.Idle;
@@ -37,6 +37,7 @@
 
 		private float lowTimer = 0.0f;
 		private float maxlowTimer= 3.0f;
+		private float fovRotationSpeed = 1.0f;
 
 		private bool isLowAlertStarted = false;
 		private bool isMediumAlertStarted = false;
@@ -46,6 +47,8 @@
 		private bool isReturningToInit = false;
 		private bool isFollowingPlayerPoint = false;
 		private bool isWaiting = false;
+
+		private bool isReset = false;
 		#endregion
 
 		#region Unity
@@ -109,14 +112,16 @@
 				SwitchAction(publicAction);
 			
 			UpdateIsDestinationReached();
-			
-			UpdateAlertLevel();
-			
-			AlertManager();
-			
-			ActionManager();
-			
-			AnimatorManager();
+//			if(!isReset)
+//			{
+				UpdateAlertLevel();
+
+				AlertManager();
+				
+				ActionManager();
+				
+				AnimatorManager();
+//			}
 		}
 
 		void UpdateIsDestinationReached()
@@ -192,19 +197,13 @@
 			case AlertLevel.Low:
 			{
 				if(!isLowAlertStarted)
-				{					
 					StartCoroutine("LowAlert");
-					print ("started " + isLowAlertStarted);
-				}
 				break;
 			}
 			case AlertLevel.Medium:
 			{
 				if(!isMediumAlertStarted)
-				{					
 					StartCoroutine("MediumAlert");
-					print ("started " + isMediumAlertStarted);
-				}
 				break;
 			}
 			case AlertLevel.High:
@@ -287,7 +286,7 @@
 						if(!isSearchDone)
 						{
 							if(!isSearching)
-								SwitchAction(EnemyActions.Search);
+								SwitchAction(EnemyActions.SearchL);
 						}else
 							SwitchAction(EnemyActions.ReturnToInitialPosition);
 
@@ -312,7 +311,7 @@
 						if(!isSearchDone)
 						{
 							if(!isSearching)
-								SwitchAction(EnemyActions.Search);
+								SwitchAction(EnemyActions.SearchM);
 						}else
 							SwitchAction(EnemyActions.ReturnToInitialPosition);
 						
@@ -330,6 +329,7 @@
 			case EnemyActions.Idle:
 			{
 				enemy.NavAgent.Stop();
+//				print ("here");
 				break;
 			}
 			case EnemyActions.GoToRandomPoint:
@@ -366,19 +366,22 @@
 					StartCoroutine("WatchPlayer");
 				break;
 			}
-			case EnemyActions.Search:
+			case EnemyActions.SearchL:
 			{
-				if(!isSearching)			
-					StartCoroutine("Search");
+				if(!isSearching && !isSearchDone)			
+					StartCoroutine("SearchL");
+				break;
+			}
+			case EnemyActions.SearchM:
+			{
+				if(!isSearching && !isSearchDone)		
+					StartCoroutine("SearchM");
 				break;
 			}
 			case EnemyActions.FollowPlayerPoint:
 			{			
 				if(!isFollowingPlayerPoint)
-				{
-					StartCoroutine("FollowPlayerPoint");
-				}
-				
+					StartCoroutine("FollowPlayerPoint");				
 				break;
 			}
 			case EnemyActions.ReturnToInitialPosition:
@@ -398,7 +401,7 @@
 		IEnumerator WatchPlayer()
 		{
 			isWatchingPlayer = true;
-			
+			enemy.Fov.canSearch = false;
 			enemy.enableProjector(true);
 
 			float waitingTime = Time.time + 2.0f;
@@ -412,58 +415,87 @@
 			isWatchingPlayer = false;
 		}
 
-		IEnumerator Search()
+		IEnumerator SearchM()
 		{			
 			isSearching = true;
-
+			
+			fovRotationSpeed = 3.0f;
+			float initFovRotSpeed = enemy.Fov.rotateSpeed;
+			print ("initFovRotSpeed" + initFovRotSpeed);
+			enemy.Fov.rotateSpeed *= fovRotationSpeed;			
 			enemy.Fov.canSearch = true;
 
 			float sequenceTime = searchTime / 6.0f;
-//			float initFovRotSpeed = enemy.Fov.rotateSpeed;
-//			enemy.Fov.rotateSpeed = sequenceTime / (Mathf.PI * 2);
 
 			yield return new WaitForSeconds(sequenceTime);
 			
-			float rotateTime = Time.time + (sequenceTime); 
+			float rotateTime;
 			Vector3 temp_rotation = transform.eulerAngles;
-			temp_rotation.y += 120;
-			while(Time.time <= rotateTime)
+			for(int i =0; i < 3; i++)
 			{
-				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(temp_rotation), Time.time /sequenceTime);
-				yield return null;	
-			}
-			transform.rotation = Quaternion.Euler(temp_rotation);
+				rotateTime = Time.time + (sequenceTime); 
+				temp_rotation.y += 120;
+				while(Time.time <= rotateTime)
+				{
+					transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(temp_rotation), Time.deltaTime * 2);
+					yield return null;	
+				}
+				transform.rotation = Quaternion.Euler(temp_rotation);
 
-			yield return new WaitForSeconds(sequenceTime);	
-			
-			rotateTime = Time.time + (sequenceTime); 
-			temp_rotation.y += 120;
-			while(Time.time <= rotateTime)
-			{
-				transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(temp_rotation), Time.time);
-				yield return null;	
+				yield return new WaitForSeconds(sequenceTime);	
 			}
-			transform.rotation = Quaternion.Euler(temp_rotation);
-			
-			yield return new WaitForSeconds(sequenceTime);	
-			
-			rotateTime = Time.time + (sequenceTime); 
-			temp_rotation.y += 120;
-			while(Time.time <= rotateTime)
-			{
-				transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(temp_rotation), Time.deltaTime);
-				yield return null;	
-			}
-			transform.rotation = Quaternion.Euler(temp_rotation);
-			
-//			enemy.Fov.rotateSpeed = initFovRotSpeed;
+			enemy.Fov.rotateSpeed = initFovRotSpeed;
 			
 			enemy.Fov.canSearch = enemy.CanSearch;
 
 			isSearchDone = true;
 			isSearching = false;
+
+			fovRotationSpeed = 1.0f;
 		}
 
+		IEnumerator SearchL()
+		{			
+			isSearching = true;
+			
+			enemy.Fov.canSearch = true;
+			
+			float sequenceTime = searchTime / 5.0f;
+			
+			yield return new WaitForSeconds(sequenceTime);
+
+
+			float rotateTime = Time.time + (sequenceTime); 
+
+			float initRotation = transform.eulerAngles.y;
+			Vector3 temp_rotation = transform.eulerAngles;
+			temp_rotation.y += Random.Range(90,270);
+
+			while(Time.time <= rotateTime)
+			{
+				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(temp_rotation), Time.deltaTime * 2);
+				yield return null;	
+			}
+			transform.rotation = Quaternion.Euler(temp_rotation);
+			
+			yield return new WaitForSeconds(sequenceTime);	
+
+			rotateTime = Time.time + (sequenceTime); 
+			temp_rotation.y = initRotation;
+			while(Time.time <= rotateTime)
+			{
+				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(temp_rotation), Time.deltaTime * 2);
+				yield return null;	
+			}
+			transform.rotation = Quaternion.Euler(temp_rotation);
+				
+			yield return new WaitForSeconds(sequenceTime);	
+			
+			enemy.Fov.canSearch = enemy.CanSearch;
+			
+			isSearchDone = true;
+			isSearching = false;
+		}
 		IEnumerator ReturntoInit()
 		{
 			isReturningToInit = true;
@@ -475,6 +507,11 @@
 				yield return null;
 			}while(!isDestinationReached);
 
+			while(transform.eulerAngles != enemy.Init.eulerAngles)
+			{
+				transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(enemy.Init.eulerAngles), Time.deltaTime * 50);
+				yield return null;	
+			}
 			isReturnDone = true;
 			isReturningToInit = false;
 		}
@@ -551,12 +588,20 @@
 					enemy.enableProjector(false);
 					break;
 				}
-				case EnemyActions.Search:
+				case EnemyActions.SearchL:
 				{
-					StopCoroutine("Search");
+					StopCoroutine("SearchL");
 					isSearching = false;
 					break;
 				}
+				case EnemyActions.SearchM:
+				{
+					StopCoroutine("SearchM");
+					isSearching = false;
+					enemy.Fov.rotateSpeed = 1.0f;
+					break;
+				}
+
 				case EnemyActions.ReturnToInitialPosition:
 				{
 					StopCoroutine("ReturntoInit");
@@ -595,6 +640,8 @@
 				{					
 					StopCoroutine("LowAlert");	
 					isMediumAlertStarted = false;	
+					lowTimer = 0;
+					isWatchDone = false;
 					isSearchDone = false;
 					isReturnDone = false;
 					isFollowDone = false;
@@ -613,9 +660,25 @@
 				publicAlert = alertLevel;
 			}
 		}
+
 		public void CaughtPlayer()
 		{
 			enemy.Player.GetComponent<EthanController>().isCaught();
+		}
+
+		public void Reset()
+		{
+			isReset = true;
+			StopAllCoroutines();
+			enemy.NavAgent.Warp(enemy.Init.position);
+			transform.rotation = Quaternion.Euler(enemy.Init.eulerAngles);			
+			enemy.NavAgent.SetDestination(transform.position);
+			print("DestinationSet");
+			enemy.Fov.canSearch = enemy.CanSearch;
+			isWatchDone = false;
+			enemy.enableProjector(false);
+			SwitchAlertLevel(AlertLevel.None);
+			SwitchAction(EnemyActions.Idle);
 		}
 		#endregion
 

@@ -332,7 +332,7 @@
 		public void WatchPlayer(Transform tr)
 		{			
 			fov.canSearch = false;
-			tr.LookAt(player);
+			tr.LookAt(targetPos);
 //			Quaternion rotation = Quaternion.LookRotation(player.position - tr.position);
 //			tr.rotation = Quaternion.Slerp(tr.rotation, rotation, Time.deltaTime * 2.0f);
 		}
@@ -346,6 +346,8 @@
 		public void runTowardPlayer()
 		{
 			fov.canSearch = false;
+			enableProjector(true);
+			enemyProjector.Project(targetPos,Color.red);
 			GoToPosition(targetPos);
 			moveState = State.Run;
 		}

@@ -61,7 +61,7 @@
 			}
 			else
 			{
-				projector.fieldOfView = FovMax;
+				projector.fieldOfView = 0;
 			}
 		}
 	}

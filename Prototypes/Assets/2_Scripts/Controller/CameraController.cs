@@ -3,7 +3,8 @@
 	using UnityEngine;
 	using System.Collections;
 
-	public class CameraController : MonoBehaviour {
+	public class CameraController : MonoBehaviour
+	{
 
 		#region Properties
 		[Header("Configuration")]
@@ -52,6 +53,7 @@
 		private TargetDestination td = new TargetDestination(Vector3.zero,Vector3.zero);
 		private bool isplayingCinematique = false;
 		private Vector3 rotationTarget = Vector3.zero;
+		private TargetDestination init;
 		#endregion
 
 		#region Events
@@ -73,6 +75,7 @@
 		{
 			td.position = transform.position;
 			td.eulerAngles.x = Mathf.Clamp(transform.eulerAngles.x, PanAngleMin, PanAngleMax);
+			init = new TargetDestination(Vector3.zero,Vector3.zero);
 
 		}
 
@@ -90,6 +93,17 @@
 					UpdateCamera();
 			}
 		}
+
+		public void Message1()
+		{
+			Debug.Log ("Message 1 received");
+		}
+		
+		public void Message2()
+		{
+			Debug.Log ("Message 2 received");
+		}
+
 		#endregion
 
 		#region Handlers

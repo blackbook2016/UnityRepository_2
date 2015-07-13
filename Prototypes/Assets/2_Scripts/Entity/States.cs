@@ -36,7 +36,8 @@
 		GoToPathPoint,
 		WatchPlayer,
 		FollowPlayerPoint,
-		Search,
+		SearchL,
+		SearchM,
 		ReturnToInitialPosition,
 		runTowardPlayer,
 	}

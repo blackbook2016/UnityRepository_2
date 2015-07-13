@@ -124,6 +124,8 @@
 		{
 			if(state != State.Climb)
 				agent.Warp(initDes.position);
+			
+			GameController.instance.ResetEnemies();
 		}
 
 		private Vector3 RetrieveMousePosition()

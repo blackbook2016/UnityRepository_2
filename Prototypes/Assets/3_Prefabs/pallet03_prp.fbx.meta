@@ -10,7 +10,30 @@ labels:
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
+    100000: Collada_visual_scene_group
+    100002: Collada_visual_scene_group 1
+    100004: group
+    100006: group_1
+    100008: matrixTransform
+    100010: pallet03
+    100012: pallet03_1
+    100014: //RootNode
+    100016: sceneRoot
+    100018: sceneRoot 1
+    400000: Collada_visual_scene_group
+    400002: Collada_visual_scene_group 1
+    400004: group
+    400006: group_1
+    400008: matrixTransform
+    400010: pallet03
+    400012: pallet03_1
+    400014: //RootNode
+    400016: sceneRoot
+    400018: sceneRoot 1
+    2300000: pallet03_1
+    3300000: pallet03_1
     4300000: pallet03_1
+    11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 3

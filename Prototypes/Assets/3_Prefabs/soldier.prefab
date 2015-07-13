@@ -1214,7 +1214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73172c2907d41a749ab0542cca155693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fovDepth: 10
+  fovDepth: 15
   fovRange: 45
   interactiveFOV: 1
   executeInEditMode: 1
@@ -1228,8 +1228,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   canSearch: 0
-  rotationAngle: 45
-  rotateSpeed: 1
+  rotationAngle: 35
+  rotateSpeed: .699999988
 --- !u!114 &11464356
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1248,6 +1248,7 @@ MonoBehaviour:
   publicAlert: 0
   waypointManager: {fileID: 0}
   enemyProjector: {fileID: 0}
+  isReset: 0
 --- !u!136 &13653854
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -1353,7 +1354,23 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: fovRange
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: fovDepth
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: rotateSpeed
+      value: .699999988
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: rotationAngle
+      value: 35
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 199782}

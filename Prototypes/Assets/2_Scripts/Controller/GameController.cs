@@ -23,7 +23,6 @@
 			if (listIA.Count == 0)
 			{
 				GameObject[] ia = GameObject.FindGameObjectsWithTag("Enemy");
-				print(ia.Length);
 				foreach(GameObject tempIA in ia)
 					listIA.Add(tempIA.GetComponent<IAController>());
 			}
@@ -32,7 +31,10 @@
 		public void ResetEnemies()
 		{
 			foreach(IAController tempIA in listIA)
-				tempIA.Reset();
+			{
+				print(tempIA.gameObject);
+				tempIA.isReset = true;
+			}
 		}
 	}
 }

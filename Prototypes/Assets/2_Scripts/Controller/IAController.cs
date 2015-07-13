@@ -48,7 +48,10 @@
 		private bool isFollowingPlayerPoint = false;
 		private bool isWaiting = false;
 
-		private bool isReset = false;
+		private TargetDestination starting;
+
+		[HideInInspector]
+		public bool isReset = false; 
 		#endregion
 
 		#region Unity
@@ -71,6 +74,9 @@
 		
 		void Start()
 		{
+			starting.position = transform.position;
+			starting.eulerAngles = transform.eulerAngles;
+
 			InitEnemy();
 			InvokeRepeating ("UpdateEnemy", 0, 0.01f);			
 		}		
@@ -110,18 +116,20 @@
 			
 			if(publicAction != enemy.Action)
 				SwitchAction(publicAction);
+
+			if(isReset)
+				Reset();
 			
 			UpdateIsDestinationReached();
-//			if(!isReset)
-//			{
-				UpdateAlertLevel();
 
-				AlertManager();
-				
-				ActionManager();
-				
-				AnimatorManager();
-//			}
+			UpdateAlertLevel();
+
+			AlertManager();
+			
+			ActionManager();
+			
+			AnimatorManager();
+
 		}
 
 		void UpdateIsDestinationReached()
@@ -155,7 +163,7 @@
 						SwitchAlertLevel( AlertLevel.High);
 					}
 					else
-						SwitchAlertLevel( AlertLevel.Low);
+						SwitchAlertLevel( AlertLevel.Low);				
 				}
 				else
 					SwitchAlertLevel( AlertLevel.High);
@@ -342,7 +350,10 @@
 							StartCoroutine("WaitSeconds");
 					}
 					else
+					{
 						enemy.GoToRandomPoint(transform);
+						isWaitDone = false;
+					}
 				}
 				break;
 			}
@@ -356,7 +367,10 @@
 							StartCoroutine("WaitSeconds");
 					}
 					else
+					{
 						enemy.GoToPathPoint(transform);	
+						isWaitDone = false;
+					}
 				}		
 				break;
 			} 
@@ -421,7 +435,6 @@
 			
 			fovRotationSpeed = 3.0f;
 			float initFovRotSpeed = enemy.Fov.rotateSpeed;
-			print ("initFovRotSpeed" + initFovRotSpeed);
 			enemy.Fov.rotateSpeed *= fovRotationSpeed;			
 			enemy.Fov.canSearch = true;
 
@@ -618,7 +631,8 @@
 		public void SwitchAlertLevel(AlertLevel alertLevel)
 		{			
 			if(alertLevel != enemy.AlertLVL)
-			{
+			{				
+//				print ("Switch: "  + enemy.AlertLVL + "/" + alertLevel + "/" + enemy.PlayerDetected);
 				switch(enemy.AlertLVL)
 				{
 				case AlertLevel.None:
@@ -668,17 +682,22 @@
 
 		public void Reset()
 		{
-			isReset = true;
+			enemy.Fov.Reset();
 			StopAllCoroutines();
+			enemy.Init = starting;
 			enemy.NavAgent.Warp(enemy.Init.position);
 			transform.rotation = Quaternion.Euler(enemy.Init.eulerAngles);			
 			enemy.NavAgent.SetDestination(transform.position);
-			print("DestinationSet");
+
 			enemy.Fov.canSearch = enemy.CanSearch;
 			isWatchDone = false;
 			enemy.enableProjector(false);
+			enemy.WaypointManager.reset();
+
 			SwitchAlertLevel(AlertLevel.None);
 			SwitchAction(EnemyActions.Idle);
+			isReset = false;
+			UpdateAlertLevel();
 		}
 		#endregion
 

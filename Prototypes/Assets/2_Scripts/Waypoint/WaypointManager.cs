@@ -102,9 +102,7 @@
 				print ("Path endpoint or startpoint aren't defined");
 			}
 			if(nextPoint == null)
-			{
 				nextPoint = StartPoint;
-			}
 			else
 			{
 				currentPosition = points.IndexOf(nextPoint);
@@ -149,7 +147,11 @@
 					}
 				}
 			}
-
+		}
+		
+		public void reset()
+		{
+			nextPoint = null;
 		}
 		#endregion		
 

@@ -270,6 +270,11 @@
 			return this.detectedObjects;
 		}
 
+		public void Reset()
+		{
+			this.detectedObjects.Clear();
+		}
+
 		public virtual void LateUpdate ()
 		{
 			this.LimitsController ();

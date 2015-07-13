@@ -31,10 +31,7 @@
 		public void ResetEnemies()
 		{
 			foreach(IAController tempIA in listIA)
-			{
-				print(tempIA.gameObject);
 				tempIA.isReset = true;
-			}
 		}
 	}
 }

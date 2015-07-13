@@ -28,6 +28,7 @@
 		private Animator animator;
 		private TargetDestination initDes;
 
+		private Vector3 padVelocity ;
 		#endregion
 		
 		#region Unity
@@ -46,33 +47,54 @@
 		{
 			if(plState == PlayerState.Free)
 			{
-
-				if(state != State.Idle && agent.remainingDistance == 0 && state != State.Climb)
-					state = State.Idle;
-
 				if(state != State.Climb)
 				{
+					if(Input.GetAxis("Horizontal_R") != 0 || Input.GetAxis("Vertical_R") != 0)
+					{
+//						agent.Stop();
+						if(Input.GetAxis("RunJoystick")!=0)
+							state = State.Run;
+						else
+							if(state != State.Walk)
+								state = State.Walk;
+
+						float angleTranslation = Mathf.Atan2(Input.GetAxis("Horizontal_R"),Input.GetAxis("Vertical_R")) * (180 / Mathf.PI);
+
+						transform.rotation = Quaternion.Euler(new Vector3(0,transform.rotation.y + angleTranslation,0));
+					}
+					else
+					{
+						if(state != State.Idle && agent.remainingDistance == 0)
+						{
+							state = State.Idle;
+							agent.Warp(transform.position);
+						}
+//						agent.Resume();
+//						StopPlayer();
+					}
+
+
 					if(Input.GetKeyDown(KeyCode.Mouse0))	
 						MovePlayer();
 
 					if(Input.GetKeyDown(KeyCode.Mouse1))
 						lastClickTimeR = Time.time;
 					
-					if(Input.GetKeyUp(KeyCode.Mouse1) && Time.time < lastClickTimeR + delay)
-						StopPlayer();
+//					if(Input.GetKeyUp(KeyCode.Mouse1) && Time.time < lastClickTimeR + delay)
+//						StopPlayer();
 				}
 				
 				
-				if (agent.hasPath)
-				{		
-					if(state == State.Idle)
-						state = State.Walk;
-				}
-				if(agent.isOnOffMeshLink && state != State.Climb)
-				{
-					StopCoroutine(SelectLinkAnimation());
-					StartCoroutine(SelectLinkAnimation());
-				}
+//				if (agent.hasPath)
+//				{		
+//					if(state == State.Idle)
+//						state = State.Walk;
+//				}
+//				if(agent.isOnOffMeshLink && state != State.Climb)
+//				{
+//					StopCoroutine(SelectLinkAnimation());
+//					StartCoroutine(SelectLinkAnimation());
+//				}
 			}
 			
 			animator.SetInteger("MoveState", (int)state);
@@ -83,13 +105,14 @@
 			if (state != State.Idle && state != State.Climb && plState != PlayerState.Caught)
 			{
 				agent.velocity = animator.deltaPosition / Time.deltaTime;
-				
+				print (agent.velocity + "  " + agent.hasPath + "  " + animator.deltaPosition / Time.deltaTime);
 				if(agent.desiredVelocity != Vector3.zero)
 				{
 					Quaternion lookRotation = Quaternion.LookRotation(agent.desiredVelocity);
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, agent.angularSpeed * Time.deltaTime);
 				}
 //				transform.rotation = Quaternion.LookRotation(agent.desiredVelocity);
+
 			}		
 		}
 
@@ -114,11 +137,11 @@
 				lastClickTimeL = Time.time;
 		}
 		
-		private void StopPlayer()
-		{
-			agent.SetDestination(transform.position);
-			state = State.Idle;
-		}
+//		private void StopPlayer()
+//		{
+//			agent.SetDestination(transform.position);
+//			state = State.Idle;
+//		}
 
 		public void isCaught()
 		{

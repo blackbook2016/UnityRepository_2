@@ -105,7 +105,7 @@
 			if (state != State.Idle && state != State.Climb && plState != PlayerState.Caught)
 			{
 				agent.velocity = animator.deltaPosition / Time.deltaTime;
-				print (agent.velocity + "  " + agent.hasPath + "  " + animator.deltaPosition / Time.deltaTime);
+//				print (agent.velocity + "  " + agent.hasPath + "  " + animator.deltaPosition / Time.deltaTime);
 				if(agent.desiredVelocity != Vector3.zero)
 				{
 					Quaternion lookRotation = Quaternion.LookRotation(agent.desiredVelocity);

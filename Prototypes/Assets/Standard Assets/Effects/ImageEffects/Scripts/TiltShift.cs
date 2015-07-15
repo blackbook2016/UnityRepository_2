@@ -27,7 +27,7 @@ namespace UnityStandardAssets.ImageEffects
         [Range(0.0f, 25.0f)]
         public float maxBlurSize = 5.0f;
 
-        [Range(0, 1)]
+        [Range(0, 3)]
         public int downsample = 0;
 
         public Shader tiltShiftShader = null;

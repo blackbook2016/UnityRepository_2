@@ -85,7 +85,7 @@
 		{
 			if(plState == PlayerState.Free)
 			{
-				if(state != State.Climb && state != State.Dead)
+				if(state != State.Climb && state != State.Dead && !CameraController.instance.getIsPlayingCinematique())
 				{
 					if(Input.GetButton("Shout"))
 					{					
@@ -117,7 +117,7 @@
 					}
 
 
-					if(Input.GetKeyDown(KeyCode.Mouse0))	
+					if(Input.GetKeyDown(KeyCode.Mouse0) && !CameraController.instance.getIsPlayingCinematique())	
 						MovePlayer();
 
 					if(Input.GetKeyDown(KeyCode.Mouse1))
@@ -126,6 +126,9 @@
 					if(Input.GetKeyUp(KeyCode.Mouse1) && Time.time < lastClickTimeR + delay)
 						StopPlayer();
 				}
+				else
+					if(!CameraController.instance.getIsPlayingCinematique())
+						StopPlayer();
 				
 				
 				if (agent.hasPath)
@@ -161,7 +164,7 @@
 		void OnTriggerEnter(Collider other) 
 		{
 			string paintingTexture = other.GetComponentInParent<MeshRenderer>().material.mainTexture.name;
-			PaintingManager.instance.setPainting(paintingTexture);
+			PaintingManager.instance.setPainting(paintingTexture, other.transform.parent.transform);
 		}
 
 		void OnTriggerExit(Collider other) 
@@ -175,15 +178,18 @@
 		
 		private void MovePlayer()
 		{
-			agent.SetDestination(RetrieveMousePosition());
+			if(RetrieveMousePosition() != transform.position)
+			{
+				agent.SetDestination(RetrieveMousePosition());
 			
-			if(state != State.Run && Time.time - lastClickTimeL < delay)
-			{
-				state = State.Run;
-			}
-			else if(state != State.Walk && Time.time - lastClickTimeL >= delay && Input.GetKeyDown(KeyCode.Mouse0))
-			{
-				state = State.Walk;
+				if(state != State.Run && Time.time - lastClickTimeL < delay)
+				{
+					state = State.Run;
+				}
+				else if(state != State.Walk && Time.time - lastClickTimeL >= delay && Input.GetKeyDown(KeyCode.Mouse0))
+				{
+					state = State.Walk;
+				}
 			}
 
 			if(Input.GetKeyDown(KeyCode.Mouse0))
@@ -221,6 +227,11 @@
 		{			
 			Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit;
+
+			if(Physics.SphereCast (mouseRay, 1.0f, out hit, Mathf.Infinity, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
+			{				
+				return transform.position;
+			}
 			
 			if (Physics.Raycast(mouseRay, out hit,Mathf.Infinity,1 << 8 | 1 << 11))
 			{

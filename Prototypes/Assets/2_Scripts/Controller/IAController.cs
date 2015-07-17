@@ -151,7 +151,7 @@
 		
 		void UpdateAlertLevel()
 		{			
-			if(enemy.Fov.GetDetectedObjects().Contains(enemy.Player))
+			if(enemy.Fov.GetDetectedObjects().Contains(enemy.Player) && !CameraController.instance.getIsPlayingCinematique())
 			{								
 				enemy.PlayerDetected = true;				
 				enemy.setTargetPos();

@@ -100,7 +100,6 @@
 			{
 				if(playCinematique && cinematiqueTarget )
 				{
-					isplayingCinematique = true;
 					StopCoroutine("PlayCinematique");
 					StartCoroutine("PlayCinematique", cinematiqueTarget);
 				}
@@ -275,30 +274,43 @@
 			else
 			{
 				transform.position = Vector3.Lerp (transform.position, td.position, Time.deltaTime * smooth);
-				//transform.rotation = Quaternion.Lerp (Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(td.eulerAngles), Time.deltaTime * smooth);
+				transform.rotation = Quaternion.Lerp (Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(td.eulerAngles), Time.deltaTime * smooth);
 			}
   		}
 
-		IEnumerator PlayCinematique(Transform target)
+		public IEnumerator PlayCinematique(Transform target)
 		{
+			Vector3 goToPosition = target.position + target.forward * 2;
+			isplayingCinematique = true;
 			//TargetDestination initial = new TargetDestination(transform.position,transform.eulerAngles);
-
+			float t = 0;
 			float distance = Vector3.Distance(transform.position, target.position);
 			float maxdistance = distance;
-			while(distance> 2 * maxdistance /10)
+			while(distance > 0.1f * maxdistance /10)
 			{
 				SmoothLookAt(target);
-				transform.position = Vector3.Lerp(transform.position, target.position, Time.deltaTime * distance / maxdistance);
-				distance = Vector3.Distance(transform.position, target.position);
+//				transform.LookAt(target.position);
+//				transform.position = Vector3.Lerp(transform.position, goToPosition, Time.deltaTime * 2.0f * distance / maxdistance);
+				t += Time.deltaTime * 1/5;
+				transform.position = Vector3.Lerp(transform.position, goToPosition, Mathf.SmoothStep(0.0f, 1.0f, t));
+				distance = Vector3.Distance(transform.position, goToPosition);
 				yield return null;
 			}
+//			print ("WaitForSeconds");
+//			yield return new WaitForSeconds(3f);
 			
-			print ("WaitForSeconds");
-			yield return new WaitForSeconds(3f);
-			
-			print ("finished");
+//			print ("finished");
 			playCinematique = false;
+		}
+
+		public void disablePlayingCinematique()
+		{
 			isplayingCinematique = false;
+		}
+
+		public bool getIsPlayingCinematique()
+		{
+			return isplayingCinematique;
 		}
 
 		void SmoothLookAt (Transform target)

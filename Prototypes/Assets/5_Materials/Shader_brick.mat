@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Shader_brick
+  m_Shader: {fileID: 4800000, guid: 9d756e05d744a4ba7bed1e4f4ecec6d6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 2800000, guid: e22d981b5fae1414f8f7ed5dd8951e83, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _BumpMap
+        second:
+          m_Texture: {fileID: 2800000, guid: c011c6e4774ca49aa94e3a019a11d0bd, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Metallic
+        second: 0
+      data:
+        first:
+          name: _Gloss
+        second: .057
+      data:
+        first:
+          name: _node_5488
+        second: .66900003
+      data:
+        first:
+          name: _node_4607
+        second: 0
+      data:
+        first:
+          name: _node_8616
+        second: 0
+      data:
+        first:
+          name: _node_7147
+        second: 0
+      data:
+        first:
+          name: _node_5835
+        second: .487179488
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: 1, g: 1, b: .95588237, a: 1}

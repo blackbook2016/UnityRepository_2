@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Shader_brick2
+  m_Shader: {fileID: 4800000, guid: e824999709a664c2096a831cd2b95702, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _node_3403
+        second:
+          m_Texture: {fileID: 2800000, guid: c011c6e4774ca49aa94e3a019a11d0bd, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _node_7447
+        second:
+          m_Texture: {fileID: 2800000, guid: e22d981b5fae1414f8f7ed5dd8951e83, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _LightWrapping
+        second: .291000009
+      data:
+        first:
+          name: _node_6145
+        second: .512820482
+      data:
+        first:
+          name: _node_488
+        second: .223000005
+      data:
+        first:
+          name: _node_6983
+        second: .317000002
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: .632352948, g: .632352948, b: .632352948, a: 1}

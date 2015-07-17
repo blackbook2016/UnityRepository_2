@@ -4,9 +4,11 @@
 	using UnityEngine.UI;
 	using System.Collections;
 	using System.Collections.Generic;
+	using UnityStandardAssets.ImageEffects;
 
 	public class PaintingManager : MonoBehaviour 
 	{
+		#region Properties
 		private static PaintingManager _instance;
 		public static PaintingManager instance
 		{
@@ -21,30 +23,63 @@
 		public List<Sprite> paintingsList = new List<Sprite>();
 		public Text text_Title;
 		public Text text_Info;
+		public Image paintingToShow;
+		public Button button_Capture;
+		public GameObject Panel_CaptureOeuvre;
+		public Image iconLoading;
 
 		private List<PaintingEntity> paintings = new List<PaintingEntity>();
-		private TextAsset paintingInfo;
+		private string painting;
+		private GameObject Panel_PaintInfo;
 
+		private bool isCameraFPS = false;
+		private GameObject cameraRTS;
+		private GameObject cameraFPS;
+		private Blur blur;
+		#endregion
+
+		#region Unity
 		void Awake() 
 		{
-			ReadJSON rj = GetComponent<ReadJSON>();
+			ReadJSON rj = new ReadJSON();
 			paintings = rj.ReadJson();
+			Panel_PaintInfo = text_Info.transform.parent.transform.parent.gameObject;
+			cameraRTS = CameraController.instance.gameObject;
+	
+			try {
+				cameraFPS = FPSCameraController.instance.gameObject;
+				blur = cameraFPS.GetComponent<Blur>();
+			} catch {
+				print("Couldn't find FPSCameraController");
+				return;
+			}
 		}
 		void Start()
 		{ 
-			ShowText("banksy");
+			blur.blurSpread = 0;
+			blur.enabled = false;
+			cameraFPS.SetActive(false);
+			RemoveText();
 		}
+		#endregion
 
+		#region API
 		public Sprite PaintingSprite(string paintingName)
 		{
 			return paintingsList.Find(x => x.name.Equals(paintingName +"_Sprite"));
 		}
 
-		public void ShowText(string paintingName)
+		public void setPainting(string paintingName)
 		{
+			painting = paintingName;
+			button_Capture.gameObject.SetActive(true);
+		}
+		public void ShowText()
+		{
+			button_Capture.gameObject.SetActive(false);
 			PaintingEntity tempP;
 			try {
-				tempP = new PaintingEntity(paintings.Find(x => x.SpriteName.Equals(paintingName)));
+				tempP = new PaintingEntity(paintings.Find(x => x.TextureName.Equals(painting)));
 			} catch {
 				print("Couldn't find painting Check Json name!");
 				return;
@@ -52,12 +87,95 @@
 
 			text_Title.text = tempP.Title;
 			text_Info.text = tempP.Info;
-			text_Info.transform.parent.gameObject.SetActive(true);
+		}
+		public void SwitchCamera()
+		{
+			if(!isCameraFPS)
+			{
+				cameraRTS.SetActive(false);
+				cameraFPS.SetActive(true);
+				isCameraFPS = true;
+				EthanController.instance.StartFPSMode();
+			}
+			else
+			{
+				cameraFPS.SetActive(false);
+				cameraRTS.SetActive(true);
+				isCameraFPS = false;
+				EthanController.instance.EndFPSMode();
+			}
 		}
 
+		public void CaptureOeuvre()
+		{
+			SwitchCamera();
+			Panel_CaptureOeuvre.SetActive(true);	
+			StartCoroutine("CaptureOeuvreCoroutine");
+		}
+
+		IEnumerator CaptureOeuvreCoroutine()
+		{
+			FPSCameraController.instance.enableMouseControl(true);
+			Transform cam;
+			bool captured = false;			
+			RaycastHit hit;
+
+			while(!captured)
+			{
+				if(Input.GetButton("Fire2"))
+				{
+					cam =  Camera.main.transform;
+					if(Physics.Raycast (cam.position, cam.forward, out hit, 10.0f, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
+					{
+						iconLoading.fillAmount +=  Time.deltaTime;
+
+						if(iconLoading.fillAmount == 1)
+						{
+							captured = true;
+							ShowText();
+						}
+					}	
+				}
+				else
+				{
+					iconLoading.fillAmount = 0;
+				}
+				yield return null;
+			}
+			
+			Panel_CaptureOeuvre.SetActive(false);
+			Panel_PaintInfo.SetActive(true);
+			iconLoading.fillAmount = 0;
+			FPSCameraController.instance.enableMouseControl(false);
+
+			blur.enabled = true; 
+
+			paintingToShow.CrossFadeAlpha(1, 0.5f,false);
+			if(blur.blurSpread < 0.5f)
+			{
+				blur.blurSpread += Time.deltaTime * 0.5f;
+			}
+		}
+
+
+		public void EndCaptureOeuvre()
+		{
+			paintingToShow.CrossFadeAlpha(0F,2.0f,false);
+			iconLoading.fillAmount = 0;	
+			blur.blurSpread = 0;
+			blur.enabled = false;
+
+			RemoveText();
+			SwitchCamera();
+		}
+		
+		
 		public void RemoveText()
 		{
-			text_Info.transform.parent.gameObject.SetActive(false);
+			button_Capture.gameObject.SetActive(false);
+			Panel_PaintInfo.SetActive(false);
+			Panel_CaptureOeuvre.SetActive(false);
 		}
+		#endregion
 	}
 }

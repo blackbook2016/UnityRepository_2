@@ -102,7 +102,7 @@
 		
 		private float maxUpdateRate = float.PositiveInfinity;
 
-		[HideInInspector]
+//		[HideInInspector]
 		public  bool canSearch = false;
 
 		public float rotationAngle = 45.0f;
@@ -123,7 +123,7 @@
 		//
 		// Methods
 		//
-		private void DrawFoV ()
+		public void DrawFoV ()
 		{
 			if(Application.isPlaying)
 			{

@@ -6,12 +6,17 @@
 	using SimpleJSON;
 	using UnityEngine;
 
-	public class ReadJSON : MonoBehaviour {
+	public class ReadJSON  {
 
 		private string fileName = "PaintingInfo.json";
 		private string data;
 
 		private List<PaintingEntity> paintings = new List<PaintingEntity>();
+
+		public ReadJSON ()
+		{
+		}
+		
 
 		public List<PaintingEntity> ReadJson () 
 		{

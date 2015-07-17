@@ -331,10 +331,14 @@
 
 		public void WatchPlayer(Transform tr)
 		{			
-			fov.canSearch = false;
-			tr.LookAt(targetPos);
-//			Quaternion rotation = Quaternion.LookRotation(player.position - tr.position);
-//			tr.rotation = Quaternion.Slerp(tr.rotation, rotation, Time.deltaTime * 2.0f);
+			if(fov.canSearch)
+			{
+				fov.canSearch = false;
+				fov.DrawFoV();
+			}
+//			tr.LookAt(targetPos);
+			Quaternion rotation = Quaternion.LookRotation(targetPos - tr.position);
+			tr.rotation = Quaternion.Slerp(tr.rotation, rotation, Time.deltaTime * 2.0f);
 		}
 
 		public void ReturnToInitialPosition()
@@ -345,11 +349,16 @@
 
 		public void runTowardPlayer()
 		{
-			fov.canSearch = false;
-			enableProjector(true);
+			if(fov.canSearch)
+			{
+				fov.canSearch = false;
+				fov.DrawFoV();
+				enableProjector(true);
+			}
+			
+			moveState = State.Run;
 			enemyProjector.Project(targetPos,Color.red);
 			GoToPosition(targetPos);
-			moveState = State.Run;
 		}
 		#endregion
 	}

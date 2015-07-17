@@ -8,11 +8,14 @@
 		Walk,
 		Run,
 		Climb,
+		Dead,
+		Shout,
 	}	
 	
 	public enum PlayerState {
 		Free,
 		Caught,
+		FPS,
 	}
 
 	public enum EnemyType {

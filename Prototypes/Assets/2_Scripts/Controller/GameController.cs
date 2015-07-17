@@ -27,11 +27,20 @@
 					listIA.Add(tempIA.GetComponent<IAController>());
 			}
 		}
-
+		void Start()
+		{
+			Profiler.enabled = false;
+		}
 		public void ResetEnemies()
 		{
 			foreach(IAController tempIA in listIA)
 				tempIA.isReset = true;
+		}
+
+		public void PlayerShouted()
+		{
+			foreach(IAController tempIA in listIA)
+				tempIA.heardSound = true;
 		}
 	}
 }

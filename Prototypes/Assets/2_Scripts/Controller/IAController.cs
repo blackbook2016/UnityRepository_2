@@ -33,7 +33,7 @@
 		private bool isFollowDone = false;
 		private bool isReturnDone = false;
 		private bool isWaitDone = false;
-		private bool isWatchDone = false;
+		public bool isWatchDone = false;
 
 		private float lowTimer = 0.0f;
 		private float maxlowTimer= 3.0f;
@@ -48,10 +48,14 @@
 		private bool isFollowingPlayerPoint = false;
 		private bool isWaiting = false;
 
+		private bool isplayerCaught = false;
+
 		private TargetDestination starting;
 
 		[HideInInspector]
 		public bool isReset = false; 
+
+		public bool heardSound = false;
 		#endregion
 
 		#region Unity
@@ -152,7 +156,8 @@
 				enemy.PlayerDetected = true;				
 				enemy.setTargetPos();
 				
-				float distance = Vector3.Distance(enemy.Player.position, transform.position);				
+				float distance = Vector3.Distance(enemy.Player.position, transform.position);	
+
 				if(enemy.AlertLVL != AlertLevel.High  && enemy.AlertLVL != AlertLevel.Medium && distance >= enemy.Fov.fovDepth * 1 / 3)
 				{						
 					lowTimer += 0.01f;
@@ -174,9 +179,23 @@
 				if((enemy.AlertLVL == AlertLevel.Low || enemy.AlertLVL == AlertLevel.Medium) && isReturnDone)
 					SwitchAlertLevel( AlertLevel.None);
 				
-				if(enemy.AlertLVL == AlertLevel.High)
+				if(enemy.AlertLVL == AlertLevel.High && !isplayerCaught)
 					SwitchAlertLevel(AlertLevel.Medium);
-			}			
+
+				if(heardSound)
+				{
+
+					float distance = Vector3.Distance(EthanController.instance.transform.position, transform.position);	
+					if(enemy.AlertLVL != AlertLevel.High  && enemy.AlertLVL != AlertLevel.Medium && distance <= EthanController.instance.shoutMarker.localScale.magnitude / 4)
+					{			
+						enemy.PlayerDetected = true;
+						enemy.setTargetPos();
+						SwitchAlertLevel( AlertLevel.Low);				
+					}
+					if(enemy.Action != EnemyActions.SearchL && enemy.Action != EnemyActions.SearchM && enemy.Action != EnemyActions.ReturnToInitialPosition)
+						heardSound = false;
+				}
+			}	
 		}
 
 		void AnimatorManager()
@@ -187,7 +206,7 @@
 				enemy.MoveState = State.Idle;
 			else
 				if(enemy.MoveState != State.Run)
-				enemy.MoveState = State.Walk;
+					enemy.MoveState = State.Walk;
 			enemy.Anim.SetInteger("MoveState",(int)enemy.MoveState);
 		}
 		#endregion
@@ -216,14 +235,18 @@
 			}
 			case AlertLevel.High:
 			{
-				if(Vector3.Distance(transform.position,enemy.Player.position) < 1)
+				if(!isplayerCaught)
 				{
-					CaughtPlayer();
-				}
-				else
+					if(Vector3.Distance(enemy.Player.position, transform.position) < 1.5f)
+					{
+						CaughtPlayer();
+						SwitchAction(EnemyActions.Idle);
+					}
+					else
 					if(enemy.Action != EnemyActions.runTowardPlayer)
 						SwitchAction(EnemyActions.runTowardPlayer);
 				
+				}
 				break;
 			}
 			}
@@ -263,8 +286,7 @@
 					SwitchAction(EnemyActions.GoToRandomPoint);		
 				break;
 			}
-			}
-			
+			}			
 		}
 		
 		IEnumerator LowAlert()
@@ -284,10 +306,22 @@
 			{
 				if(isFollowDone)
 				{
-					if(enemy.PlayerDetected)
+					if(enemy.PlayerDetected || heardSound)
 					{
-						isFollowDone = false;
-						SwitchAction(EnemyActions.FollowPlayerPoint);
+						float distance = Vector3.Distance(EthanController.instance.transform.position, transform.position);	
+						if(distance <= EthanController.instance.shoutMarker.localScale.magnitude / 4)
+						{			
+							isFollowDone = false;
+							enemy.setTargetPos();	
+							SwitchAction(EnemyActions.FollowPlayerPoint);		
+						}
+						else
+							if(enemy.PlayerDetected)
+						{
+							isFollowDone = false;
+							SwitchAction(EnemyActions.FollowPlayerPoint);
+						}
+						heardSound = false;
 					}
 					else 
 					{
@@ -316,13 +350,32 @@
 			{
 				if(isFollowDone)
 				{
+					if(enemy.PlayerDetected || heardSound)
+					{
+						float distance = Vector3.Distance(EthanController.instance.transform.position, transform.position);	
+						if(distance <= EthanController.instance.shoutMarker.localScale.magnitude / 4)
+						{			
+							isFollowDone = false;
+							enemy.setTargetPos();	
+							SwitchAction(EnemyActions.FollowPlayerPoint);		
+						}
+						else
+							if(enemy.PlayerDetected)
+						{
+							isFollowDone = false;
+							SwitchAction(EnemyActions.FollowPlayerPoint);
+						}
+						heardSound = false;
+					}
+					else 
+					{
 						if(!isSearchDone)
 						{
 							if(!isSearching)
 								SwitchAction(EnemyActions.SearchM);
 						}else
 							SwitchAction(EnemyActions.ReturnToInitialPosition);
-						
+					}						
 				}
 				yield return null;
 			}
@@ -395,7 +448,12 @@
 			case EnemyActions.FollowPlayerPoint:
 			{			
 				if(!isFollowingPlayerPoint)
-					StartCoroutine("FollowPlayerPoint");				
+				{
+					if(enemy.AlertLVL == AlertLevel.Low)
+						StartCoroutine("FollowPlayerPoint", State.Walk);
+					else
+						StartCoroutine("FollowPlayerPoint", State.Run);
+				}
 				break;
 			}
 			case EnemyActions.ReturnToInitialPosition:
@@ -529,8 +587,9 @@
 			isReturningToInit = false;
 		}
 
-		IEnumerator FollowPlayerPoint()
+		IEnumerator FollowPlayerPoint(State st)
 		{
+			enemy.MoveState = st;
 			isFollowingPlayerPoint = true;
 			isSearchDone = false;
 
@@ -677,7 +736,10 @@
 
 		public void CaughtPlayer()
 		{
+			isplayerCaught = true;
 			enemy.Player.GetComponent<EthanController>().isCaught();
+			enemy.NavAgent.SetDestination(transform.position);
+			enemy.NavAgent.Stop();
 		}
 
 		public void Reset()
@@ -693,12 +755,14 @@
 			isWatchDone = false;
 			enemy.enableProjector(false);
 			enemy.WaypointManager.reset();
+			isplayerCaught = false;
 
 			SwitchAlertLevel(AlertLevel.None);
 			SwitchAction(EnemyActions.Idle);
 			isReset = false;
 			UpdateAlertLevel();
 		}
+
 		#endregion
 
 	}

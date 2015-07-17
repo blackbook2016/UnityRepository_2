@@ -618,11 +618,11 @@ GameObject:
   - 114: {fileID: 11464356}
   m_Layer: 0
   m_Name: soldier
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &417258
 Transform:
   m_ObjectHideFlags: 1
@@ -968,7 +968,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 199782}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.33700001, y: 0, z: -14.9200001}
+  m_LocalPosition: {x: 10, y: 1, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 496722}
@@ -1223,10 +1223,12 @@ MonoBehaviour:
   heightDetectionOffset: 0
   detectedObjects:
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   updateRate: .00999999978
   layerFOV:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966271
   canSearch: 0
   rotationAngle: 35
   rotateSpeed: .699999988
@@ -1241,14 +1243,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8102a3c4d14460f46b58039619d9670d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 3
+  enemyType: 0
   layer: -1
   searchTime: 12
   publicAction: 0
   publicAlert: 0
   waypointManager: {fileID: 0}
   enemyProjector: {fileID: 0}
+  isWatchDone: 0
   isReset: 0
+  heardSound: 0
 --- !u!136 &13653854
 CapsuleCollider:
   m_ObjectHideFlags: 1

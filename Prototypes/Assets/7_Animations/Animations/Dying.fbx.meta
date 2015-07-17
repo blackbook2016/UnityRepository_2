@@ -206,7 +206,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Dying
       takeName: UNTY_die_tk02
-      firstFrame: 140
+      firstFrame: 160
       lastFrame: 275
       wrapMode: 0
       orientationOffsetY: 0
@@ -225,7 +225,15 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 1
+        functionName: reset
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 741dde4436f02a149b03fc2aa015f160,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 0
       maskSource: {instanceID: 0}

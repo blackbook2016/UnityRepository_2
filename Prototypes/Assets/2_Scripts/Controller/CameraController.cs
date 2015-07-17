@@ -54,6 +54,17 @@
 		private bool isplayingCinematique = false;
 		private Vector3 rotationTarget = Vector3.zero;
 		private TargetDestination init;
+
+		private static CameraController _instance;
+		public static CameraController instance
+		{
+			get
+			{
+				if(_instance == null)
+					_instance = GameObject.FindObjectOfType<CameraController>();
+				return _instance;
+			}
+		}
 		#endregion
 
 		#region Events
@@ -67,6 +78,10 @@
 		#endregion
 		
 		#region API
+		public void Reset()
+		{
+			td = init;
+		}
 		#endregion
 
 		#region Unity
@@ -75,7 +90,7 @@
 		{
 			td.position = transform.position;
 			td.eulerAngles.x = Mathf.Clamp(transform.eulerAngles.x, PanAngleMin, PanAngleMax);
-			init = new TargetDestination(Vector3.zero,Vector3.zero);
+			init = td;
 
 		}
 
@@ -311,6 +326,7 @@
 				rotationTarget = ray.GetPoint(distance);
 			}
 		}
+
 		#endregion
 	}
 }

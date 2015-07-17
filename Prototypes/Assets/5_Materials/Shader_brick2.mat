@@ -33,7 +33,7 @@ Material:
       data:
         first:
           name: _LightWrapping
-        second: .291000009
+        second: .206
       data:
         first:
           name: _node_6145
@@ -50,4 +50,4 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: .632352948, g: .632352948, b: .632352948, a: 1}
+        second: {r: .477941155, g: .477941155, b: .477941155, a: 1}

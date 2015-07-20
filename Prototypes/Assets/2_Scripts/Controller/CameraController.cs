@@ -89,6 +89,7 @@
 		void Start()
 		{
 			td.position = transform.position;
+			td.eulerAngles = transform.eulerAngles;
 			td.eulerAngles.x = Mathf.Clamp(transform.eulerAngles.x, PanAngleMin, PanAngleMax);
 			init = td;
 

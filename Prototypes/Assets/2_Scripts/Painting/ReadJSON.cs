@@ -8,7 +8,7 @@
 
 	public class ReadJSON  {
 
-		private string fileName = "PaintingInfo";
+		private string fileName = "PaintingInfo.json";
 		private string data;
 
 		private List<PaintingEntity> paintings = new List<PaintingEntity>();
@@ -20,11 +20,11 @@
 
 		public List<PaintingEntity> ReadJson () 
 		{
-//			StreamReader sr = new StreamReader(Application.dataPath + "/Resources/" + fileName);
-//			data = sr.ReadToEnd();
-//			sr.Close();
-			TextAsset data= Resources.Load(fileName) as TextAsset;
-			JSONNode json = JSON.Parse(data.text);
+			StreamReader sr = new StreamReader(Application.dataPath + "/" + fileName);
+			data = sr.ReadToEnd();
+			sr.Close();
+
+			JSONNode json = JSON.Parse(data);
 //			print (json.Count);
 
 

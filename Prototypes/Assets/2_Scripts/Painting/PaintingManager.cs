@@ -76,8 +76,10 @@
 		
 		IEnumerator CaptureOeuvreCoroutine()
 		{
+			Transform cam;
 			bool captured = false;			
 			RaycastHit hit;
+			Vector3 normal;
 			iconLoading.fillAmount = 0;
 			Vector3 paintingScreenPosition;
 
@@ -94,9 +96,11 @@
 				if(Input.GetButton("Fire2"))
 				{
 					Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+					cam =  Camera.main.transform;
 					if(Physics.SphereCast (mouseRay, 1.0f,out hit, Mathf.Infinity, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
 					{
 						iconLoading.fillAmount +=  Time.deltaTime;
+						normal = hit.normal;
 						if(iconLoading.fillAmount == 1)
 						{
 							captured = true;

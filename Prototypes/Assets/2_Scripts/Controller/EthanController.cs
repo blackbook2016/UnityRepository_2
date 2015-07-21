@@ -15,9 +15,13 @@
 		[SerializeField]
 		PlayerState plState = PlayerState.Free;
 		[SerializeField]
+		PointerProjector rtsProjector = null;
+		[SerializeField]
 		GroundMarker groundMarker = null;
 		[SerializeField]
 		public Transform shoutMarker = null;
+		[SerializeField]
+		float shoutTime = 1.0f;
 		[SerializeField]
 		public float soundDistance = 5.0f;
 
@@ -49,6 +53,7 @@
 			}
 		}
 
+		private bool isShouting = false;
 		#endregion
 
 		void OnDrawGizmos()

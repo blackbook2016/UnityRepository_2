@@ -304,6 +304,11 @@
 			playCinematique = false;
 		}
 
+		public void enablePlayingCinematique()
+		{
+			isplayingCinematique = true;
+		}
+
 		public void disablePlayingCinematique()
 		{
 			isplayingCinematique = false;

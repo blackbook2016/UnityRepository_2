@@ -15,7 +15,7 @@
 	public enum PlayerState {
 		Free,
 		Caught,
-		FPS,
+		CaptureOeuvre,
 	}
 
 	public enum EnemyType {
@@ -72,6 +72,11 @@
 			this.position = position;
 			this.eulerAngles = eulerAngles;
 		}
+	}
+
+	public enum CaptureOeuvreType {
+		TypeFPS,
+		TypeRTS,
 	}
 
 //	public struct AreaMask {

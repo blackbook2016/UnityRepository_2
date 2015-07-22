@@ -267,7 +267,7 @@ namespace TheVandals
 
 		public void StartFPSMode()
 		{
-			plState = PlayerState.FPS;
+			plState = PlayerState.CaptureOeuvre;
 			StopPlayer();
 		}
 		public void EndFPSMode()

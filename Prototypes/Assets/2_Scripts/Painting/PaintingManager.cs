@@ -27,14 +27,24 @@
 		public Image iconCapture;
 		public Image iconLoading;
 		public Image iconBackground;
+		public Button button_Capture;
+		public Image iconCameraViewer;
+		public CaptureOeuvreType captureType = CaptureOeuvreType.TypeRTS;
 
+		private CaptureOeuvreType captureTypeCurrent;
 		private List<PaintingEntity> paintings = new List<PaintingEntity>();
 		private string painting;
 		private GameObject Panel_PaintInfo;
-		private Transform Panel_CaptureOeuvre;
+		private Transform Panel_CaptureOeuvreRTS;
+		private Transform Panel_CaptureOeuvreFPS;
 		private Blur blur;
+		private Blur blurFPS;
 		private Transform paintingTransform;
 		private Vector3 Paner_PaintInfoPosition;
+
+		private bool isCameraFPS = false;
+		public GameObject cameraRTS;
+		public GameObject cameraFPS;
 		#endregion
 
 		#region Unity
@@ -44,15 +54,41 @@
 			paintings = rj.ReadJson();
 
 			Panel_PaintInfo = text_Info.transform.parent.transform.parent.gameObject;
-			Panel_CaptureOeuvre = iconCapture.transform.parent.transform;
-			blur = Camera.main.GetComponent<Blur>();
+			Panel_CaptureOeuvreRTS = iconCapture.transform.parent.transform;
+			Panel_CaptureOeuvreFPS = button_Capture.transform.parent.transform;
+			blur = cameraRTS.GetComponent<Blur>();
+			blurFPS = cameraFPS.GetComponent<Blur>();
 		}
 		void Start()
 		{ 
+			captureTypeCurrent = captureType;
+			SetCaptureType();
+
 			blur.blurSpread = 0;
-			blur.enabled = false;
+			blur.enabled = false;	
+
+			blurFPS.blurSpread = 0;
+			blurFPS.enabled = false;	
 
 			RemoveText();
+		}
+		void Update()
+		{
+			if(captureTypeCurrent !=captureType)
+			{
+				captureTypeCurrent = captureType;
+				SetCaptureType();
+			}
+		}
+		void OnGUI () 
+		{
+			if(GUI.Button(new Rect(20,160,100,40), "FPS/RTS Capture")) {
+				if(captureType == CaptureOeuvreType.TypeRTS)
+					captureType = CaptureOeuvreType.TypeFPS;
+				else
+					captureType = CaptureOeuvreType.TypeRTS;
+				SetCaptureType();
+			}
 		}
 		#endregion
 
@@ -68,13 +104,24 @@
 			this.paintingTransform = paintingTarget;
 
 			paintingToShow.sprite = PaintingSprite(paintingName);
-			Panel_CaptureOeuvre.gameObject.SetActive(true);
 
-			StopCoroutine ("CaptureOeuvreCoroutine");
-			StartCoroutine("CaptureOeuvreCoroutine");
+			if(captureType == CaptureOeuvreType.TypeRTS)
+			{
+				Panel_CaptureOeuvreRTS.gameObject.SetActive(true);
+				StopCoroutine ("CaptureOeuvreCoroutineRTS");
+				StartCoroutine("CaptureOeuvreCoroutineRTS");
+			}
 		}
-		
-		IEnumerator CaptureOeuvreCoroutine()
+		public void CaptureOeuvre()
+		{
+			SwitchCamera();
+			button_Capture.gameObject.SetActive(false);
+			iconCameraViewer.enabled = true;
+			StopCoroutine ("CaptureOeuvreCoroutineFPS");
+			StartCoroutine("CaptureOeuvreCoroutineFPS");
+		}
+
+		IEnumerator CaptureOeuvreCoroutineRTS()
 		{
 			bool captured = false;			
 			RaycastHit hit;
@@ -109,13 +156,91 @@
 					iconLoading.fillAmount = 0;
 				}
 				yield return null;
-			}
-			Panel_CaptureOeuvre.gameObject.SetActive(false);
+			}			
+			EthanController.instance.StartCaptureOeuvreMode();
+			Panel_CaptureOeuvreRTS.gameObject.SetActive(false);
+
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+
 			yield return CameraController.instance.StartCoroutine("PlayCinematique",paintingTransform);
+			
+			Time.timeScale = 0;
+
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
 
 			Panel_PaintInfo.SetActive(true);
 			iconLoading.fillAmount = 0;
 			
+			blur.enabled = true; 
+			
+			paintingToShow.CrossFadeAlpha(1, 0.5f,false);
+			if(blur.blurSpread < 0.5f)
+			{
+				blur.blurSpread += Time.deltaTime * 0.5f;
+			}
+		}
+
+		IEnumerator CaptureOeuvreCoroutineFPS()
+		{
+			FPSCameraController.instance.enableMouseControl(true);
+			CameraController.instance.enablePlayingCinematique();
+			Transform cam;
+			bool captured = false;			
+			RaycastHit hit;
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
+
+			while(!captured)
+			{
+				if(Input.GetKeyDown(KeyCode.Escape))
+				{
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
+					SetCaptureType();
+					RemoveText();
+					yield break;
+				}
+				if(Input.GetButton("Fire2"))
+				{
+					cam =  Camera.main.transform;
+					if(Physics.Raycast (cam.position, cam.forward, out hit, Mathf.Infinity, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
+					{
+						captured = true;
+						setPainting(hit.collider.GetComponent<MeshRenderer>().material.mainTexture.name, hit.collider.transform.parent.transform);
+						FPSCameraController.instance.enableMouseControl(false);
+					}	
+				}
+				yield return null;
+			}
+			float opacity = 0.1f;
+			while(opacity <= 1.0f)
+			{
+				cameraFPS.GetComponent<ScreenOverlay>().intensity = opacity;
+				opacity += Time.deltaTime * 10.0f;
+				yield return null;
+			}			
+
+			while(opacity >= 0.0f)
+			{
+				cameraFPS.GetComponent<ScreenOverlay>().intensity = opacity;
+				opacity -= Time.deltaTime * 10.0f;
+				yield return null;
+			}				
+			cameraFPS.GetComponent<ScreenOverlay>().intensity = 0.0f;
+			yield return new WaitForSeconds(1.0f);
+
+			Time.timeScale = 0;
+
+			SwitchCamera();
+
+			iconCameraViewer.enabled = false;
+			Panel_CaptureOeuvreFPS.gameObject.SetActive(false);
+			Panel_PaintInfo.SetActive(true);			
+			ShowText();
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;			
 			blur.enabled = true; 
 			
 			paintingToShow.CrossFadeAlpha(1, 0.5f,false);
@@ -146,187 +271,69 @@
 			blur.blurSpread = 0;
 			blur.enabled = false;
 
+			blurFPS.blurSpread = 0;
+			blurFPS.enabled = false;
+
+			if(captureType == CaptureOeuvreType.TypeFPS)
+				SetCaptureType();
 			RemoveText();
 		}
-		
+
+		public void SwitchCamera()
+		{
+			if(!isCameraFPS)
+			{
+				cameraRTS.SetActive(false);
+				cameraFPS.SetActive(true);
+				isCameraFPS = true;
+				EthanController.instance.StartCaptureOeuvreMode();
+			}
+			else
+			{
+				cameraFPS.SetActive(false);
+				cameraRTS.SetActive(true);
+				isCameraFPS = false;
+//				EthanController.instance.EndFPSMode();
+			}
+		}
 		
 		public void RemoveText()
 		{
-			Panel_CaptureOeuvre.gameObject.SetActive(false);
+			EthanController.instance.EndCaptureOeuvreMode();
+			Panel_CaptureOeuvreRTS.gameObject.SetActive(false);
 			Panel_PaintInfo.SetActive(false);
-			StopCoroutine ("CaptureOeuvreCoroutine");
+			StopCoroutine ("CaptureOeuvreCoroutineRTS");
+			StopCoroutine ("CaptureOeuvreCoroutineFPS");		
+			Cursor.visible = true;
+			Cursor.lockState = CursorLockMode.None;
 			CameraController.instance.disablePlayingCinematique();
+			Time.timeScale = 1.0f;
+		}
+
+		void SetCaptureType()
+		{
+			switch(captureType)
+			{
+			case CaptureOeuvreType.TypeRTS:
+			{
+				cameraRTS.SetActive(true);
+				cameraFPS.SetActive(false);
+				Panel_CaptureOeuvreFPS.gameObject.SetActive(false);
+				break;
+			}
+			case CaptureOeuvreType.TypeFPS:
+			{
+				cameraRTS.SetActive(true);
+				cameraFPS.SetActive(false);
+				isCameraFPS = false;
+
+				button_Capture.gameObject.SetActive(true);
+				iconCameraViewer.enabled = false;
+				Panel_CaptureOeuvreFPS.gameObject.SetActive(true);
+				break;
+			}
+			}
 		}
 		#endregion
 	}
-	#region OldCapture
-//	#region Properties
-//	private static PaintingManager _instance;
-//	public static PaintingManager instance
-//	{
-//		get
-//		{
-//			if(_instance == null)
-//				_instance = GameObject.FindObjectOfType<PaintingManager>();
-//			return _instance;
-//		}
-//	}
-//	
-//	public List<Sprite> paintingsList = new List<Sprite>();
-//	public Text text_Title;
-//	public Text text_Info;
-//	public Image paintingToShow;
-//	public Button button_Capture;
-//	public GameObject Panel_CaptureOeuvre;
-//	public Image iconLoading;
-//	
-//	private List<PaintingEntity> paintings = new List<PaintingEntity>();
-//	private string painting;
-//	private GameObject Panel_PaintInfo;
-//	
-//	private bool isCameraFPS = false;
-//	private GameObject cameraRTS;
-//	private GameObject cameraFPS;
-//	private Blur blur;
-//	#endregion
-//	
-//	#region Unity
-//	void Awake() 
-//	{
-//		ReadJSON rj = new ReadJSON();
-//		paintings = rj.ReadJson();
-//		Panel_PaintInfo = text_Info.transform.parent.transform.parent.gameObject;
-//		cameraRTS = CameraController.instance.gameObject;
-//		
-//		try {
-//			cameraFPS = FPSCameraController.instance.gameObject;
-//			blur = cameraFPS.GetComponent<Blur>();
-//		} catch {
-//			print("Couldn't find FPSCameraController");
-//			return;
-//		}
-//	}
-//	void Start()
-//	{ 
-//		blur.blurSpread = 0;
-//		blur.enabled = false;
-//		cameraFPS.SetActive(false);
-//		RemoveText();
-//	}
-//	#endregion
-//	
-//	#region API
-//	public Sprite PaintingSprite(string paintingName)
-//	{
-//		return paintingsList.Find(x => x.name.Equals(paintingName +"_Sprite"));
-//	}
-//	
-//	public void setPainting(string paintingName)
-//	{
-//		painting = paintingName;
-//		button_Capture.gameObject.SetActive(true);
-//	}
-//	public void ShowText()
-//	{
-//		button_Capture.gameObject.SetActive(false);
-//		PaintingEntity tempP;
-//		try {
-//			tempP = new PaintingEntity(paintings.Find(x => x.TextureName.Equals(painting)));
-//		} catch {
-//			print("Couldn't find painting Check Json name!");
-//			return;
-//		}
-//		
-//		text_Title.text = tempP.Title;
-//		text_Info.text = tempP.Info;
-//	}
-//	public void SwitchCamera()
-//	{
-//		if(!isCameraFPS)
-//		{
-//			cameraRTS.SetActive(false);
-//			cameraFPS.SetActive(true);
-//			isCameraFPS = true;
-//			EthanController.instance.StartFPSMode();
-//		}
-//		else
-//		{
-//			cameraFPS.SetActive(false);
-//			cameraRTS.SetActive(true);
-//			isCameraFPS = false;
-//			EthanController.instance.EndFPSMode();
-//		}
-//	}
-//	
-//	public void CaptureOeuvre()
-//	{
-//		SwitchCamera();
-//		Panel_CaptureOeuvre.SetActive(true);	
-//		StartCoroutine("CaptureOeuvreCoroutine");
-//	}
-//	
-//	IEnumerator CaptureOeuvreCoroutine()
-//	{
-//		FPSCameraController.instance.enableMouseControl(true);
-//		Transform cam;
-//		bool captured = false;			
-//		RaycastHit hit;
-//		
-//		while(!captured)
-//		{
-//			if(Input.GetButton("Fire2"))
-//			{
-//				cam =  Camera.main.transform;
-//				if(Physics.Raycast (cam.position, cam.forward, out hit, 10.0f, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
-//				{
-//					iconLoading.fillAmount +=  Time.deltaTime;
-//					
-//					if(iconLoading.fillAmount == 1)
-//					{
-//						captured = true;
-//						ShowText();
-//					}
-//				}	
-//			}
-//			else
-//			{
-//				iconLoading.fillAmount = 0;
-//			}
-//			yield return null;
-//		}
-//		
-//		Panel_CaptureOeuvre.SetActive(false);
-//		Panel_PaintInfo.SetActive(true);
-//		iconLoading.fillAmount = 0;
-//		FPSCameraController.instance.enableMouseControl(false);
-//		
-//		blur.enabled = true; 
-//		
-//		paintingToShow.CrossFadeAlpha(1, 0.5f,false);
-//		if(blur.blurSpread < 0.5f)
-//		{
-//			blur.blurSpread += Time.deltaTime * 0.5f;
-//		}
-//	}
-//	
-//	
-//	public void EndCaptureOeuvre()
-//	{
-//		paintingToShow.CrossFadeAlpha(0F,2.0f,false);
-//		iconLoading.fillAmount = 0;	
-//		blur.blurSpread = 0;
-//		blur.enabled = false;
-//		
-//		RemoveText();
-//		SwitchCamera();
-//	}
-//	
-//	
-//	public void RemoveText()
-//	{
-//		button_Capture.gameObject.SetActive(false);
-//		Panel_PaintInfo.SetActive(false);
-//		Panel_CaptureOeuvre.SetActive(false);
-//	}
-	#endregion
 }

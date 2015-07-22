@@ -87,7 +87,7 @@
 		
 		void OnAnimatorMove ()
 		{ 
-			if (enemy.MoveState != State.Idle && enemy.MoveState != State.Climb)
+			if (enemy.MoveState != State.Idle && enemy.MoveState != State.Climb && Time.timeScale == 1.0f)
 			{
 				enemy.NavAgent.velocity = enemy.Anim.deltaPosition / Time.deltaTime;
 				

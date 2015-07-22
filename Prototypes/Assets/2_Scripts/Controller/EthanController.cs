@@ -143,7 +143,7 @@
 		
 		void OnAnimatorMove ()
 		{
-			if (state != State.Idle && state != State.Climb && state != State.Dead)
+			if (state != State.Idle && state != State.Climb && state != State.Dead && plState == PlayerState.Free)
 			{
 				agent.velocity = animator.deltaPosition / Time.deltaTime;
 				if(agent.desiredVelocity != Vector3.zero)
@@ -266,12 +266,12 @@
 		
 		#region Editor API
 
-		public void StartFPSMode()
+		public void StartCaptureOeuvreMode()
 		{
-			plState = PlayerState.FPS;
+			plState = PlayerState.CaptureOeuvre;
 			StopPlayer();
 		}
-		public void EndFPSMode()
+		public void EndCaptureOeuvreMode()
 		{
 			plState = PlayerState.Free;
 		}

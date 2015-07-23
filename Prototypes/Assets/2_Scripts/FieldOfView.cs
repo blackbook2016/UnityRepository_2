@@ -170,13 +170,17 @@
 				{
 					float distance = this.fovDepth;
 					RaycastHit raycastHit;
-					if (Physics.Raycast (new Ray (this.origin, this.tempRayVectorMiddle), out raycastHit, this.fovDepth, this.layerFOV))
+					if (Physics.Raycast (new Ray (this.origin, this.tempRayVectorMiddle), out raycastHit, this.fovDepth, this.layerFOV | 1 << 12 | 1 <<13))
 					{
 						distance = raycastHit.distance;
 						if (!this.isSecondFoV && !this.detectedObjects.Contains (raycastHit.collider.transform) && raycastHit.distance > this.fovVertexOffset)
 						{
 							this.detectedObjects.Add (raycastHit.collider.transform);
 						}
+					}
+					if (Physics.Raycast (new Ray (this.origin, this.tempRayVectorMiddle), out raycastHit, this.fovDepth, this.layerFOV))
+					{
+						distance = raycastHit.distance;
 						if (this.interactiveFOV && raycastHit.distance > this.fovVertexOffset)
 						{
 							this.pos_curr_min = this.sphere_curr * this.fovVertexOffset;

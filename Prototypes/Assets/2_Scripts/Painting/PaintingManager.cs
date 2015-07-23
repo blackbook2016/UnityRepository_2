@@ -30,6 +30,7 @@
 		public Button button_Capture;
 		public Image iconCameraViewer;
 		public CaptureOeuvreType captureType = CaptureOeuvreType.TypeRTS;
+		public AudioClip cameraCaptureAudio;
 
 		private CaptureOeuvreType captureTypeCurrent;
 		private List<PaintingEntity> paintings = new List<PaintingEntity>();
@@ -45,6 +46,7 @@
 		private bool isCameraFPS = false;
 		public GameObject cameraRTS;
 		public GameObject cameraFPS;
+		public GameObject cameraUI;
 		#endregion
 
 		#region Unity
@@ -191,6 +193,10 @@
 			RaycastHit hit;
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
+			AudioSource tempAS = EthanController.instance.GetComponent<AudioSource>();
+			AudioClip temp = tempAS.clip;
+			float startTime = 0.0f;
+			tempAS.clip = cameraCaptureAudio;
 
 			while(!captured)
 			{
@@ -210,30 +216,25 @@
 						captured = true;
 						setPainting(hit.collider.GetComponent<MeshRenderer>().material.mainTexture.name, hit.collider.transform.parent.transform);
 						FPSCameraController.instance.enableMouseControl(false);
+						startTime = Time.time;
+						tempAS.Play();
 					}	
 				}
 				yield return null;
 			}
+//			yield return new WaitForSeconds(2.0f);
+
 			float opacity = 0.1f;
 			while(opacity <= 1.0f)
 			{
 				cameraFPS.GetComponent<ScreenOverlay>().intensity = opacity;
 				opacity += Time.deltaTime * 10.0f;
 				yield return null;
-			}			
-
-			while(opacity >= 0.0f)
-			{
-				cameraFPS.GetComponent<ScreenOverlay>().intensity = opacity;
-				opacity -= Time.deltaTime * 10.0f;
-				yield return null;
-			}				
-			cameraFPS.GetComponent<ScreenOverlay>().intensity = 0.0f;
-			yield return new WaitForSeconds(1.0f);
-
-			Time.timeScale = 0;
-
-			SwitchCamera();
+			}						
+			
+			cameraFPS.SetActive(false);
+			cameraRTS.SetActive(true);
+			isCameraFPS = false;
 
 			iconCameraViewer.enabled = false;
 			Panel_CaptureOeuvreFPS.gameObject.SetActive(false);
@@ -242,12 +243,34 @@
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;			
 			blur.enabled = true; 
+
+			opacity = 2.0f;
+			while(opacity >= 0.0f)
+			{
+				cameraUI.GetComponent<ScreenOverlay>().intensity = opacity;
+				opacity -= Time.deltaTime * 3.0f;
+				yield return null;
+			}
+			cameraUI.GetComponent<ScreenOverlay>().intensity = 0.0f;
+			cameraFPS.GetComponent<ScreenOverlay>().intensity = 0.0f;
+//			yield return new WaitForSeconds(1.0f);
+
+			Time.timeScale = 0;
+
+
 			
 			paintingToShow.CrossFadeAlpha(1, 0.5f,false);
 			if(blur.blurSpread < 0.5f)
 			{
 				blur.blurSpread += Time.deltaTime * 0.5f;
 			}
+
+			while (Time.time < (startTime + tempAS.clip.length))
+			{
+				yield return null;
+			}
+
+			tempAS.clip = temp;
 		}
 
 		public void ShowText()
@@ -308,6 +331,8 @@
 			Cursor.lockState = CursorLockMode.None;
 			CameraController.instance.disablePlayingCinematique();
 			Time.timeScale = 1.0f;
+			cameraUI.GetComponent<ScreenOverlay>().intensity = 0.0f;
+			cameraFPS.GetComponent<ScreenOverlay>().intensity = 0.0f;
 		}
 
 		void SetCaptureType()

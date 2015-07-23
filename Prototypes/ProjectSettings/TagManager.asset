@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - StreetArt
   - Painting
+  - SafeZone
   layers:
   - Default
   - TransparentFX
@@ -21,8 +22,8 @@ TagManager:
   - StreetArt
   - Trigger
   - Projector
-  - 
-  - 
+  - Player
+  - Enemy
   - 
   - 
   - 

@@ -2,6 +2,7 @@
 {
 	using UnityEngine;
 	using System.Collections;
+	using System.Collections.Generic;
 	
 	[RequireComponent (typeof (NavMeshAgent), typeof (Animator))]
 	public class EthanController : MonoBehaviour {
@@ -37,6 +38,9 @@
 		private Vector3 padVelocity ;
 
 		private float shoutTimer = 0.0f;
+		[SerializeField]
+		private bool isSafe = false;
+		public  List<IAController> listAlertedGuards = new List<IAController>();
 
 		private static EthanController _instance;
 		public static EthanController instance
@@ -50,7 +54,8 @@
 		}
 
 		#endregion
-
+		
+		#region Unity
 		void OnDrawGizmos()
 		{
 			if(Application.isPlaying && shoutMarker)
@@ -65,7 +70,6 @@
 			animator = GetComponent<Animator>();
 			audioSource = GetComponent<AudioSource>();
 		}
-		#region Unity
 		void Start () 
 		{
 			agent.autoTraverseOffMeshLink = false;
@@ -158,13 +162,27 @@
 
 		void OnTriggerEnter(Collider other) 
 		{
-			string paintingTexture = other.GetComponentInParent<MeshRenderer>().material.mainTexture.name;
-			PaintingManager.instance.setPainting(paintingTexture, other.transform.parent.transform);
+			if(other.tag == "StreetArt")
+			{
+				string paintingTexture = other.GetComponentInParent<MeshRenderer>().material.mainTexture.name;
+				PaintingManager.instance.setPainting(paintingTexture, other.transform.parent.transform);
+			}
+
+			if(other.tag == "SafeZone" && listAlertedGuards.Count == 0)
+			{
+				isSafe = true;
+			}
 		}
 
 		void OnTriggerExit(Collider other) 
 		{
-			PaintingManager.instance.RemoveText();
+			if(other.tag == "StreetArt")
+				PaintingManager.instance.RemoveText();
+
+			if(other.tag == "SafeZone")
+			{
+				isSafe = false;
+			}
 		}
 
 		#endregion
@@ -274,6 +292,24 @@
 		public void EndCaptureOeuvreMode()
 		{
 			plState = PlayerState.Free;
+		}
+
+		public bool IsInSafeZone()
+		{
+			return isSafe;
+		}
+
+		public void PlayerIsDetected(IAController guard)
+		{
+			if(listAlertedGuards.Contains(guard))
+				return;
+			else
+				listAlertedGuards.Add(guard);
+		}
+		public void PlayerIsNotDetected(IAController guard)
+		{
+			if(listAlertedGuards.Contains(guard))
+				listAlertedGuards.Remove(guard);
 		}
 		#endregion 
 

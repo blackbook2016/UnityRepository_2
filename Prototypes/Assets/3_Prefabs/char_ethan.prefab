@@ -330,7 +330,7 @@ GameObject:
   - 114: {fileID: 11442504}
   - 82: {fileID: 8207364}
   - 54: {fileID: 5422076}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: char_ethan
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -2642,6 +2642,8 @@ MonoBehaviour:
   groundMarker: {fileID: 0}
   shoutMarker: {fileID: 0}
   soundDistance: 10
+  isSafe: 0
+  listAlertedGuards: []
 --- !u!114 &11443832
 MonoBehaviour:
   m_ObjectHideFlags: 1

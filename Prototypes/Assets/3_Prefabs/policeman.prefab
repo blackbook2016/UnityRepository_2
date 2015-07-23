@@ -1614,7 +1614,7 @@ GameObject:
   - 136: {fileID: 13676596}
   - 195: {fileID: 19523946}
   - 114: {fileID: 11434800}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: policeman
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -4021,7 +4021,7 @@ MonoBehaviour:
   updateRate: .00999999978
   layerFOV:
     serializedVersion: 2
-    m_Bits: 4294966271
+    m_Bits: 4294953983
   canSearch: 0
   rotationAngle: 35
   rotateSpeed: .699999988

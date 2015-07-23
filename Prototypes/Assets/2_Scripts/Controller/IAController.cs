@@ -151,8 +151,9 @@
 		
 		void UpdateAlertLevel()
 		{			
-			if(enemy.Fov.GetDetectedObjects().Contains(enemy.Player) && !CameraController.instance.getIsPlayingCinematique())
-			{								
+			if(enemy.Fov.GetDetectedObjects().Contains(enemy.Player) && !CameraController.instance.getIsPlayingCinematique() && !EthanController.instance.IsInSafeZone())
+			{				
+				EthanController.instance.PlayerIsDetected(this);
 				enemy.PlayerDetected = true;				
 				enemy.setTargetPos();
 				
@@ -174,10 +175,13 @@
 					SwitchAlertLevel( AlertLevel.High);
 			}
 			else 
-			{				
+			{			
 				enemy.PlayerDetected = false;
 				if((enemy.AlertLVL == AlertLevel.Low || enemy.AlertLVL == AlertLevel.Medium) && isReturnDone)
+				{
 					SwitchAlertLevel( AlertLevel.None);
+					EthanController.instance.PlayerIsNotDetected(this);
+				}
 				
 				if(enemy.AlertLVL == AlertLevel.High && !isplayerCaught)
 					SwitchAlertLevel(AlertLevel.Medium);
@@ -757,6 +761,7 @@
 			enemy.WaypointManager.reset();
 			isplayerCaught = false;
 
+			EthanController.instance.PlayerIsNotDetected(this);
 			SwitchAlertLevel(AlertLevel.None);
 			SwitchAction(EnemyActions.Idle);
 			isReset = false;

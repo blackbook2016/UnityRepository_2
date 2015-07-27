@@ -338,7 +338,38 @@
 			}
 //			tr.LookAt(targetPos);
 			Quaternion rotation = Quaternion.LookRotation(targetPos - tr.position);
+
 			tr.rotation = Quaternion.Slerp(tr.rotation, rotation, Time.deltaTime * 2.0f);
+		}
+		
+		public void ProximityWatchPlayer(Transform tr, float elapsed)
+		{
+			Vector3 rotation = Vector3.zero;	
+//			rotation.y = Quaternion.LookRotation(targetPos - tr.position).eulerAngles.y;	
+//			
+//			if(Mathf.Abs(tr.eulerAngles.y -rotation.y) < 0.1f)
+//			{
+//				tr.rotation = Quaternion.Euler(rotation);
+//				print ("finished");
+//			}
+//			else
+//			{
+			rotation.y = Mathf.Lerp(tr.rotation.eulerAngles.y,Quaternion.LookRotation(targetPos - tr.position).y,elapsed / 50.0f);
+			tr.rotation = Quaternion.Euler(rotation);
+//				tr.rotation = Quaternion.Lerp(tr.rotation,Quaternion.LookRotation(targetPos - tr.position),elapsed / 50.0f);
+				//					print (transform.eulerAngles.y + "/" + rotation.y);
+				//					if(transform.eulerAngles.y - rotation.y)
+				//					{
+				//						rotation.y = transform.eulerAngles.y + (Time.deltaTime * 10.0f);
+				//						print ("+");
+				//					}
+				//					else
+				//					{
+				//						rotation.y = transform.eulerAngles.y - (Time.deltaTime * 10.0f);
+				//						print ("-");
+				//					}
+				//					transform.eulerAngles = rotation;
+//			}
 		}
 
 		public void ReturnToInitialPosition()

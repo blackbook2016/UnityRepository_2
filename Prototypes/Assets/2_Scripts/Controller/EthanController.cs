@@ -17,12 +17,13 @@
 		PlayerState plState = PlayerState.Free;
 		[SerializeField]
 		GroundMarker groundMarker = null;
-		[SerializeField]
-		public Transform shoutMarker = null;
-		[SerializeField]
-		public float soundDistance = 5.0f;
 
-		private AudioSource audioSource;
+		public GameObject shoutMarkerPrefab = null;
+		private  List<Shout> listShoutMarkers = new List<Shout>();	
+
+		private float runningSoundTimer = 0f;
+
+		public float soundDistance = 5.0f;
 		
 		private float lastClickTimeL = 0F;
 		private float lastClickTimeR = 0F;
@@ -36,11 +37,11 @@
 		private TargetDestination initDes;
 
 		private Vector3 padVelocity ;
-
-		private float shoutTimer = 0.0f;
 		[SerializeField]
 		private bool isSafe = false;
 		public  List<IAController> listAlertedGuards = new List<IAController>();
+
+		private bool doubleClicked = false;
 
 		private static EthanController _instance;
 		public static EthanController instance
@@ -58,17 +59,16 @@
 		#region Unity
 		void OnDrawGizmos()
 		{
-			if(Application.isPlaying && shoutMarker)
-			{
-				Gizmos.DrawWireSphere(shoutMarker.position,shoutMarker.localScale.magnitude/4);
-			}
+//			if(Application.isPlaying && shoutMarker)
+//			{
+//				Gizmos.DrawWireSphere(shoutMarker.position,shoutMarker.localScale.magnitude/4);
+//			}
 		}
 
 		void Awake()
 		{
 			agent = GetComponent<NavMeshAgent>();
 			animator = GetComponent<Animator>();
-			audioSource = GetComponent<AudioSource>();
 		}
 		void Start () 
 		{
@@ -76,8 +76,6 @@
 			
 			initDes.position = transform.position;
 			initDes.eulerAngles = transform.eulerAngles;
-
-			shoutMarker.gameObject.SetActive(false);
 		}	
 		
 		void Update () 
@@ -86,16 +84,12 @@
 			{
 				if(state != State.Climb && state != State.Dead && !CameraController.instance.getIsPlayingCinematique())
 				{
-					if(Input.GetButton("Shout"))
+					if(Input.GetButtonDown("Shout"))
 					{					
-						StopCoroutine("ShoutCoroutine");
-						StartCoroutine("ShoutCoroutine");
-//						ResetShout();
-//						Shout();
+						StartCoroutine("ShoutCoroutine", soundDistance);
 					}
 					if(Input.GetAxis("Horizontal_R") != 0 || Input.GetAxis("Vertical_R") != 0)
 					{
-//						agent.Stop();
 						if(Input.GetAxis("RunJoystick")!=0)
 							state = State.Run;
 						else
@@ -114,27 +108,43 @@
 							agent.Warp(transform.position);
 						}
 					}
+					
+					if(Input.GetKeyUp(KeyCode.Mouse0))
+						doubleClicked = false;
 
-
-					if(Input.GetKeyDown(KeyCode.Mouse0) && !CameraController.instance.getIsPlayingCinematique())	
+					if(Input.GetKey(KeyCode.Mouse0) && !CameraController.instance.getIsPlayingCinematique())	
 						MovePlayer();
 
 					if(Input.GetKeyDown(KeyCode.Mouse1))
 						lastClickTimeR = Time.time;
 					
 					if(Input.GetKeyUp(KeyCode.Mouse1) && Time.time < lastClickTimeR + delay)
-						StopPlayer();
+						StopPlayer();	
+										
+					if (agent.hasPath)
+					{		
+						if(state == State.Idle)
+						{
+							if(doubleClicked)
+								state = State.Run;
+							else
+								state = State.Walk;
+						}
+					}
+					if(state == State.Run)
+					{
+						runningSoundTimer += Time.deltaTime;
+						if(runningSoundTimer > 0.5f)
+						{
+							StartCoroutine("ShoutCoroutine",soundDistance / 2);
+							runningSoundTimer -= 0.5f;
+						}
+					}
 				}
 				else
 					if(!CameraController.instance.getIsPlayingCinematique())
 						StopPlayer();
-				
-				
-				if (agent.hasPath)
-				{		
-					if(state == State.Idle)
-						state = State.Walk;
-				}
+
 				if(agent.isOnOffMeshLink && state != State.Climb)
 				{
 					StopCoroutine(SelectLinkAnimation());
@@ -194,19 +204,21 @@
 			if(RetrieveMousePosition() != transform.position)
 			{
 				agent.SetDestination(RetrieveMousePosition());
-			
-				if(state != State.Run && Time.time - lastClickTimeL < delay)
-				{
-					state = State.Run;
-				}
-				else if(state != State.Walk && Time.time - lastClickTimeL >= delay && Input.GetKeyDown(KeyCode.Mouse0))
-				{
-					state = State.Walk;
+
+				if(Input.GetKeyDown(KeyCode.Mouse0))
+				{							
+					if(state != State.Run && Time.time - lastClickTimeL < delay )
+					{
+						state = State.Run;
+						doubleClicked = true;
+					}
+					else if(state != State.Walk && Time.time - lastClickTimeL >= delay && Input.GetKeyDown(KeyCode.Mouse0))
+					{
+						state = State.Walk;
+					}
+					lastClickTimeL = Time.time;
 				}
 			}
-
-			if(Input.GetKeyDown(KeyCode.Mouse0))
-				lastClickTimeL = Time.time;
 		}
 		
 		public  void StopPlayer()
@@ -219,6 +231,7 @@
 		public void isCaught()
 		{
 			StopPlayer();
+			plState = PlayerState.Caught;
 			state = State.Dead;
 			animator.Play("Dying");	
 		}
@@ -228,12 +241,13 @@
 			state = State.Idle;
 			animator.Play("Idle");	
 
-			if(state != State.Climb)
-				agent.Warp(initDes.position);
+			agent.Warp(initDes.position);
 			
+			doubleClicked = false;
 			GameController.instance.ResetEnemies();
 			
 			CameraController.instance.Reset();
+			plState = PlayerState.Free;
 		}
 
 		private Vector3 RetrieveMousePosition()
@@ -311,48 +325,53 @@
 			if(listAlertedGuards.Contains(guard))
 				listAlertedGuards.Remove(guard);
 		}
+
+		
+		
+		public bool CheckShoutDistance(Vector3 enemyPos, out Transform tempShout)
+		{
+			for(int i = listShoutMarkers.Count-1; i > -1; i--)
+			{
+				tempShout = listShoutMarkers[i].obj.transform;
+				float distance = Vector3.Distance(tempShout.position, enemyPos);	
+				if(distance <= tempShout.localScale.magnitude / 4)
+					return true;
+			}
+			tempShout = null;
+			return false;
+		}
 		#endregion 
 
 		#region Action
-		private void Shout()
-		{
-			shoutMarker.gameObject.SetActive(true);
-			shoutTimer+=Time.deltaTime;
-			shoutMarker.localScale = Vector3.one * shoutTimer * soundDistance * 2;
-			if(shoutTimer >= 1)
-			{
-				shoutTimer = 0.0f;			
-				audioSource.Play();
-				GameController.instance.PlayerShouted();
-			}
-		}
 
-		private void ResetShout()
+		private IEnumerator ShoutCoroutine(float radius)
 		{
-			shoutTimer = 0.0f;
-			shoutMarker.gameObject.SetActive(false);
-			shoutMarker.localScale = Vector3.one;
-		}
+			float shoutTimer = 0.0f;
 
-		private IEnumerator ShoutCoroutine()
-		{
-			shoutTimer = 0.0f;
-			shoutMarker.localScale = Vector3.one;
+			GameObject currentShout = Instantiate(shoutMarkerPrefab) as GameObject;
+			Shout tempShout = new Shout(currentShout, radius);
+			listShoutMarkers.Add(tempShout);
+			currentShout.SetActive(false);	
+
+			currentShout.transform.localScale = Vector3.one;
 			Vector3 shoutPosition = transform.position;
-			shoutPosition.y = shoutMarker.position.y;
-			shoutMarker.position = shoutPosition;
-			shoutMarker.gameObject.SetActive(true);			
-			audioSource.Play();
+			shoutPosition.y = currentShout.transform.position.y;
+			currentShout.transform.position = shoutPosition;
+			currentShout.SetActive(true);			
+			SoundController.instance.PlayClip("shoutClip");
 			float startingTime = Time.time;
+
 			while(shoutTimer <= 1)
 			{
 				shoutTimer = (Time.time - startingTime) * 1  ;
 				shoutTimer /= 0.6f * (Time.time - startingTime + 0.5f);
-				shoutMarker.localScale = Vector3.one * shoutTimer * soundDistance * 2;
+				currentShout.transform.localScale = Vector3.one * shoutTimer * radius * 2;
 				GameController.instance.PlayerShouted();
 				yield return null;
 			}
-			shoutMarker.gameObject.SetActive(false);
+
+			listShoutMarkers.Remove(tempShout);			
+			Destroy(currentShout);
 		}
 
 		private IEnumerator Locomotion_ClimbAnimation() 

@@ -74,6 +74,18 @@
 		}
 	}
 
+	public struct Shout
+	{
+		public GameObject obj;
+		public float radius;
+
+		public Shout (GameObject obj, float radius)
+		{
+			this.obj = obj;
+			this.radius = radius;
+		}
+	}
+
 	public enum CaptureOeuvreType {
 		TypeFPS,
 		TypeRTS,

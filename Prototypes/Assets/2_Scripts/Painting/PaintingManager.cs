@@ -30,7 +30,6 @@
 		public Button button_Capture;
 		public Image iconCameraViewer;
 		public CaptureOeuvreType captureType = CaptureOeuvreType.TypeRTS;
-		public AudioClip cameraCaptureAudio;
 
 		private CaptureOeuvreType captureTypeCurrent;
 		private List<PaintingEntity> paintings = new List<PaintingEntity>();
@@ -193,10 +192,6 @@
 			RaycastHit hit;
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
-			AudioSource tempAS = EthanController.instance.GetComponent<AudioSource>();
-			AudioClip temp = tempAS.clip;
-			float startTime = 0.0f;
-			tempAS.clip = cameraCaptureAudio;
 
 			while(!captured)
 			{
@@ -216,13 +211,11 @@
 						captured = true;
 						setPainting(hit.collider.GetComponent<MeshRenderer>().material.mainTexture.name, hit.collider.transform.parent.transform);
 						FPSCameraController.instance.enableMouseControl(false);
-						startTime = Time.time;
-						tempAS.Play();
+						SoundController.instance.PlayClip("takePicClip");
 					}	
 				}
 				yield return null;
 			}
-//			yield return new WaitForSeconds(2.0f);
 
 			float opacity = 0.1f;
 			while(opacity <= 1.0f)
@@ -264,13 +257,6 @@
 			{
 				blur.blurSpread += Time.deltaTime * 0.5f;
 			}
-
-			while (Time.time < (startTime + tempAS.clip.length))
-			{
-				yield return null;
-			}
-
-			tempAS.clip = temp;
 		}
 
 		public void ShowText()

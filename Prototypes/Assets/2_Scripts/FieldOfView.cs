@@ -102,14 +102,11 @@
 		
 		private float maxUpdateRate = float.PositiveInfinity;
 
-//		[HideInInspector]
 		public  bool canSearch = false;
 
 		public float rotationAngle = 45.0f;
 
 		public float rotateSpeed = 1.0f;
-
-		private Transform player = null;
 
 		private float timer = 0.0f;
 
@@ -120,6 +117,8 @@
 		private MeshRenderer meshRenderer;
 
 		private float defaultAlpha = 0.0f;
+
+		public bool isfrozen = false;
 		//
 		// Methods
 		//
@@ -130,7 +129,8 @@
 				UpdateFoVColor();
 				if(canSearch)
 				{
-					RotateFOV();
+					if(!isfrozen)
+						RotateFOV();
 				}
 				else
 				{
@@ -155,7 +155,6 @@
 			this.rayActualAngle = -this.fovRange;
 			this.origin = transform.position;
 			this.origin.y = this.origin.y + this.heightDetectionOffset;
-			CheckPlayerInFoV();
 			if (this.detectedObjects != null)
 			{
 				this.detectedObjects.Clear ();
@@ -253,14 +252,6 @@
 				this.meshFilter.sharedMesh = mesh;
 			}
 		}
-		private void CheckPlayerInFoV()
-		{
-
-//			transform.LookAt(player.position);
-//			print( player.position + "  /  " +Vector3.Angle(transform.forward, player.position - transform.position));
-//			float angle = (transform.position - player.position).y;
-//			print(angle + "/" + angle_start + "/" + angle_end);
-		}
 
 		private void RotateFOV()
 		{
@@ -348,16 +339,11 @@
 			this.isSecondFoV = isSecond;
 		}
 
-		void Awake()
-		{
-
-		}
-
 		public virtual void Start ()
 		{			
-			player = GameObject.FindGameObjectWithTag("Player").transform;
 			enemyController = gameObject.GetComponentInParent<EnemyController>();
 			iaController = gameObject.GetComponentInParent<IAController>();
+			isfrozen = false;
 			
 			this.meshRenderer = GetComponent<MeshRenderer> ();
 			this.meshFilter = GetComponent<MeshFilter> ();

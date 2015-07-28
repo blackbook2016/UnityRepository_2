@@ -72,6 +72,7 @@
 			enemy.EnemyProjector = enemyProjector;
 			enemy.Layer = layer;
 
+			GameController.instance.AddEnemyToList(this);
 		}
 		
 		void Start()
@@ -113,25 +114,27 @@
 
 		void UpdateEnemy()
 		{
-			if(enemyType != enemy.Type)
-				InitEnemy();
-			
-			if(publicAction != enemy.Action)
-				SwitchAction(publicAction);
+			if(enemy.SetState == EnemyState.Free)
+			{
+				if(enemyType != enemy.Type)
+					InitEnemy();
+				
+				if(publicAction != enemy.Action)
+					SwitchAction(publicAction);
 
-			if(isReset)
-				Reset();
-			
-			UpdateIsDestinationReached();
+				if(isReset)
+					Reset();
+				
+				UpdateIsDestinationReached();
 
-			UpdateAlertLevel();
+				UpdateAlertLevel();
 
-			AlertManager();
-			
-			ActionManager();
-			
-			AnimatorManager();
-
+				AlertManager();
+				
+				ActionManager();
+				
+				AnimatorManager();
+			}
 		}
 
 		void UpdateIsDestinationReached()
@@ -791,6 +794,21 @@
 			UpdateAlertLevel();
 		}
 
+		public void Freeze()
+		{
+			enemy.NavAgent.Stop();
+			enemy.Anim.speed = 0.0f;
+			enemy.Fov.isfrozen = true;
+			enemy.SetState = EnemyState.Frozen;	
+		}
+
+		public void Resume()
+		{
+			enemy.NavAgent.Resume();
+			enemy.Anim.speed = 1.0f;
+			enemy.Fov.isfrozen = false;
+			enemy.SetState = EnemyState.Free;
+		}
 		#endregion
 
 	}

@@ -9,6 +9,7 @@
 		private EnemyType type;
 		private EnemyBeHaviour behaviour;
 		private State moveState;
+		private EnemyState setState;
 		private FieldOfView fov;
 		private bool playerDetected;
 		private bool canRoam;
@@ -199,8 +200,18 @@
 				targetPos = value;
 			}
 		}
+
 		public void setTargetPos() {
 			this.targetPos = player.position;
+		}	
+		
+		public	EnemyState SetState {
+			get {
+				return this.setState;
+			}
+			set {
+				setState = value;
+			}
 		}
 		#endregion
 
@@ -222,46 +233,38 @@
 			switch (tp)
 			{
 				case EnemyType._Busy:
-				{
-					this.type = tp;				
-					this.behaviour = EnemyBeHaviour.Idle;
-					this.playerDetected = false;
+				{				
 					this.canRoam = false;
 					this.canSearch = false;
 					this.canFollowPath = false;
 					break;
 				}
 				case EnemyType._Fixe:
-				{
-					this.type = tp;				
-					this.behaviour = EnemyBeHaviour.Idle;
-					this.playerDetected = false;
+				{			
 					this.canRoam = false;
 					this.canSearch = true;
 					this.canFollowPath = false;
 					break;
 				}
 				case EnemyType._RoamingRandom:
-				{
-					this.type = tp;				
-					this.behaviour = EnemyBeHaviour.Idle;
-					this.playerDetected = false;
+				{			
 					this.canRoam = true;
 					this.canSearch = true;
 					this.canFollowPath = false;
 					break;
 				}
 				case EnemyType._RoamingPath:
-				{
-					this.type = tp;				
-					this.behaviour = EnemyBeHaviour.Idle;
-					this.playerDetected = false;
+				{		
 					this.canRoam = true;
 					this.canSearch = true;
 					this.canFollowPath = true;
 					break;
 				}
 			}
+			this.type = tp;
+			this.setState = EnemyState.Free;		
+			this.behaviour = EnemyBeHaviour.Idle;
+			this.playerDetected = false;
 
 			return this.type;
 		}

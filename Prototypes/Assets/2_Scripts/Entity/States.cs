@@ -16,6 +16,13 @@
 		Free,
 		Caught,
 		CaptureOeuvre,
+		CreateOeuvre,
+		FinishedLvl,
+	}
+
+	public enum EnemyState {
+		Free,
+		Frozen,
 	}
 
 	public enum EnemyType {

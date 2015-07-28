@@ -212,7 +212,7 @@ namespace TheVandals
 			if(state != State.Climb)
 				agent.Warp(initDes.position);
 			
-			GameController.instance.ResetEnemies();
+			GameController.instance.Reset();
 			
 			CameraController.instance.Reset();
 		}

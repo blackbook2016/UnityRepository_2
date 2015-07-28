@@ -57,14 +57,6 @@
 		#endregion
 		
 		#region Unity
-		void OnDrawGizmos()
-		{
-//			if(Application.isPlaying && shoutMarker)
-//			{
-//				Gizmos.DrawWireSphere(shoutMarker.position,shoutMarker.localScale.magnitude/4);
-//			}
-		}
-
 		void Awake()
 		{
 			agent = GetComponent<NavMeshAgent>();
@@ -182,23 +174,34 @@
 			{
 				isSafe = true;
 			}
+
+			if(other.tag == "PaintingCreationZone")
+			{
+				GameController.instance.CreateOeuvre();
+				ChangeState(PlayerState.CreateOeuvre, State.Dead, "Wave");
+			}
+			if(other.tag == "EndZone")
+			{
+				GameController.instance.FinishLevel();
+				ChangeState(PlayerState.FinishedLvl, State.Dead, "Wave");
+			}
 		}
 
 		void OnTriggerExit(Collider other) 
 		{
 			if(other.tag == "StreetArt")
+			{
 				PaintingManager.instance.RemoveText();
+			}
 
 			if(other.tag == "SafeZone")
 			{
 				isSafe = false;
 			}
 		}
-
 		#endregion
 		
-		#region Private
-		
+		#region Private		
 		private void MovePlayer()
 		{
 			if(RetrieveMousePosition() != transform.position)
@@ -221,33 +224,19 @@
 			}
 		}
 		
-		public  void StopPlayer()
+		private  void StopPlayer()
 		{
 			agent.SetDestination(transform.position);
 			state = State.Idle;
 			agent.Warp(transform.position);
 		}
 
-		public void isCaught()
+		private void ChangeState(PlayerState plState, State state, string animName)
 		{
 			StopPlayer();
-			plState = PlayerState.Caught;
-			state = State.Dead;
-			animator.Play("Dying");	
-		}
-
-		public void reset()
-		{
-			state = State.Idle;
-			animator.Play("Idle");	
-
-			agent.Warp(initDes.position);
-			
-			doubleClicked = false;
-			GameController.instance.ResetEnemies();
-			
-			CameraController.instance.Reset();
-			plState = PlayerState.Free;
+			this.plState = plState;
+			this.state = state;
+			animator.Play(animName);	
 		}
 
 		private Vector3 RetrieveMousePosition()
@@ -296,8 +285,7 @@
 		}
 		#endregion
 		
-		#region Editor API
-
+		#region API
 		public void StartCaptureOeuvreMode()
 		{
 			plState = PlayerState.CaptureOeuvre;
@@ -339,6 +327,43 @@
 			}
 			tempShout = null;
 			return false;
+		}
+
+		public Vector3 GetPlayerInitPos()
+		{
+			Vector3 pos = initDes.position;
+			pos.y += 0.1f;
+			return pos;
+		}
+		
+		public void isCaught()
+		{
+			ChangeState(PlayerState.Caught, State.Dead, "Dying");
+		}	
+
+		public void reset()
+		{
+			if(plState != PlayerState.FinishedLvl)
+			{
+				GameController.instance.Reset();			
+				CameraController.instance.Reset();
+				PaintingManager.instance.Reset();
+			}
+			Resume();
+		}
+
+		public void Resume()
+		{
+			state = State.Idle;
+			animator.Play("Idle");	
+			doubleClicked = false;
+
+			if(plState == PlayerState.FinishedLvl || plState == PlayerState.Caught)
+				agent.Warp(initDes.position);
+			else
+				agent.Warp(transform.position);
+
+			plState = PlayerState.Free;
 		}
 		#endregion 
 

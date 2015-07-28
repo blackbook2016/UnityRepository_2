@@ -9,6 +9,9 @@ TagManager:
   - StreetArt
   - Painting
   - SafeZone
+  - Fire
+  - EndZone
+  - PaintingCreationZone
   layers:
   - Default
   - TransparentFX

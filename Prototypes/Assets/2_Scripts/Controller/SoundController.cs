@@ -26,14 +26,14 @@
 		private AudioClip takePicClip;
 
 		private AudioSource audioSource;
-		private AudioListener audioListener;
+//		private AudioListener audioListener;
 		#endregion
 
 		#region Unity
 		void Awake()
 		{
 			audioSource = GetComponent<AudioSource>();
-			audioListener = GetComponent<AudioListener>();
+//			audioListener = GetComponent<AudioListener>();
 		}
 		#endregion
 

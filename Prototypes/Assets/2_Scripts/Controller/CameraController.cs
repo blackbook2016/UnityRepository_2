@@ -66,35 +66,17 @@
 			}
 		}
 		#endregion
-
-		#region Events
-		#endregion
 		
-		#region Editor API
-		void OnGUI()
-		{
-
-		}
-		#endregion
-		
-		#region API
-		public void Reset()
-		{
-			td = init;
-		}
-		#endregion
-
 		#region Unity
-
 		void Start()
 		{
 			td.position = transform.position;
 			td.eulerAngles = transform.eulerAngles;
 			td.eulerAngles.x = Mathf.Clamp(transform.eulerAngles.x, PanAngleMin, PanAngleMax);
 			init = td;
-
+			
 		}
-
+		
 		void Update()
 		{
 			if(!isplayingCinematique)
@@ -108,7 +90,7 @@
 					UpdateCamera();
 			}
 		}
-
+		
 		public void Message1()
 		{
 			Debug.Log ("Message 1 received");
@@ -118,15 +100,58 @@
 		{
 			Debug.Log ("Message 2 received");
 		}
-
 		#endregion
 
-		#region Handlers
+		#region API
+		public void Reset()
+		{
+			td = init;
+			disablePlayingCinematique();
+		}
+
+		public IEnumerator PlayCinematique(Transform target)
+		{
+			Vector3 pos = target.position;
+			Vector3 goToPosition;
+
+			if(target.tag == "Player")
+				pos.y += 2.0f;
+			goToPosition = pos + target.forward * 2;
+
+			isplayingCinematique = true;
+
+			float t = 0;
+			float distance = Vector3.Distance(transform.position, target.position);
+			float maxdistance = distance;
+			while(distance > 0.1f * maxdistance /10)
+			{
+				SmoothLookAt(pos);
+				t += Time.deltaTime * 1/5;
+				transform.position = Vector3.Lerp(transform.position, goToPosition, Mathf.SmoothStep(0.0f, 1.0f, t));
+				distance = Vector3.Distance(transform.position, goToPosition);
+				yield return null;
+			}
+			playCinematique = false;
+		}
+		
+		public void enablePlayingCinematique()
+		{
+			isplayingCinematique = true;
+		}
+		
+		public void disablePlayingCinematique()
+		{
+			isplayingCinematique = false;
+		}
+		
+		public bool getIsPlayingCinematique()
+		{
+			return isplayingCinematique;
+		}
 		#endregion
 		
 		#region Private
-
-		void UpdateCamera()
+		private void UpdateCamera()
 		{
 			Vector3 translation = Vector3.zero;
 
@@ -279,50 +304,10 @@
 			}
   		}
 
-		public IEnumerator PlayCinematique(Transform target)
-		{
-			Vector3 goToPosition = target.position + target.forward * 2;
-			isplayingCinematique = true;
-			//TargetDestination initial = new TargetDestination(transform.position,transform.eulerAngles);
-			float t = 0;
-			float distance = Vector3.Distance(transform.position, target.position);
-			float maxdistance = distance;
-			while(distance > 0.1f * maxdistance /10)
-			{
-				SmoothLookAt(target);
-//				transform.LookAt(target.position);
-//				transform.position = Vector3.Lerp(transform.position, goToPosition, Time.deltaTime * 2.0f * distance / maxdistance);
-				t += Time.deltaTime * 1/5;
-				transform.position = Vector3.Lerp(transform.position, goToPosition, Mathf.SmoothStep(0.0f, 1.0f, t));
-				distance = Vector3.Distance(transform.position, goToPosition);
-				yield return null;
-			}
-//			print ("WaitForSeconds");
-//			yield return new WaitForSeconds(3f);
-			
-//			print ("finished");
-			playCinematique = false;
-		}
-
-		public void enablePlayingCinematique()
-		{
-			isplayingCinematique = true;
-		}
-
-		public void disablePlayingCinematique()
-		{
-			isplayingCinematique = false;
-		}
-
-		public bool getIsPlayingCinematique()
-		{
-			return isplayingCinematique;
-		}
-
-		void SmoothLookAt (Transform target)
+		private void SmoothLookAt (Vector3 target)
 		{
 			// Create a vector from the camera towards the player.
-			Vector3 relPlayerPosition = target.position - transform.position;
+			Vector3 relPlayerPosition = target - transform.position;
 			
 			// Create a rotation based on the relative position of the player being the forward vector.
 			Quaternion lookAtRotation = Quaternion.LookRotation(relPlayerPosition, Vector3.up);
@@ -331,7 +316,7 @@
 			transform.rotation = Quaternion.Lerp(transform.rotation, lookAtRotation, smooth * Time.deltaTime);
 		}
 
-		void GenerateCameraTarget()
+		private void GenerateCameraTarget()
 		{
 			Ray ray = new Ray(transform.position,transform.forward);
 			// create a plane at 0,0,0 whose normal points to +Y:

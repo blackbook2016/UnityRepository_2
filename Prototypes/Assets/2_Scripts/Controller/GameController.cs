@@ -23,7 +23,11 @@
 		[SerializeField]
 		private GameObject endZone;
 		[SerializeField]
-		private GameObject PaintingCreationZone;
+		private GameObject paintingCreationObject;
+		private GameObject paintingCreationParticle;
+		private GameObject paintingCreationTrigger;
+
+		public bool playcinematique = false;
 		#endregion
 
 		#region Unity
@@ -31,7 +35,21 @@
 		{
 			Profiler.enabled = false;
 			endZone.SetActive(false);
-			PaintingCreationZone.SetActive(false);
+
+			paintingCreationParticle = paintingCreationObject.GetComponentInChildren<ParticleSystem>().gameObject;
+			paintingCreationTrigger = paintingCreationObject.GetComponentInChildren<Collider>().gameObject;
+
+			paintingCreationParticle.SetActive(true); 
+			paintingCreationTrigger.SetActive(true); 
+		}
+
+		void Update()
+		{
+			if(playcinematique)
+			{
+				playcinematique = false;
+				CreateOeuvre();
+			}
 		}
 		#endregion
 
@@ -47,7 +65,8 @@
 			ResetEnemies();
 
 			endZone.SetActive(false);
-			PaintingCreationZone.SetActive(false);
+			paintingCreationParticle.SetActive(true); 
+			paintingCreationTrigger.SetActive(true); 
 		}
 
 		public void PlayerShouted()
@@ -58,7 +77,8 @@
 
 		public void PlayerCapturedAllPaintings()
 		{			
-			PaintingCreationZone.SetActive(true);
+//			paintingCreationParticle.SetActive(true); 
+//			paintingCreationTrigger.SetActive(true); 
 		}
 
 		public void CreateOeuvre()
@@ -81,12 +101,13 @@
 
 		private IEnumerator CreateOeuvreCrtn()
 		{
-			PaintingCreationZone.SetActive(false);
+			paintingCreationParticle.SetActive(false); 
+			paintingCreationTrigger.SetActive(false); 
 
 			foreach(IAController tempIA in listIA)
 				tempIA.Freeze();
 
-			yield return CameraController.instance.StartCoroutine("PlayCinematique", EthanController.instance.transform);
+			yield return CameraController.instance.StartCoroutine("PlayCinematique", paintingCreationObject.transform);
 
 			yield return new WaitForSeconds(3.0f);
 

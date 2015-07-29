@@ -359,7 +359,10 @@
 			doubleClicked = false;
 
 			if(plState == PlayerState.FinishedLvl || plState == PlayerState.Caught)
+			{
 				agent.Warp(initDes.position);
+				transform.eulerAngles = initDes.eulerAngles;
+			}
 			else
 				agent.Warp(transform.position);
 

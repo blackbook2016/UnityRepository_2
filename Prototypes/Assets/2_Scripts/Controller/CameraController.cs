@@ -125,12 +125,14 @@
 			float maxdistance = distance;
 			while(distance > 0.1f * maxdistance /10)
 			{
-				SmoothLookAt(pos);
+				SmoothLookAt(pos, distance/maxdistance);
 				t += Time.deltaTime * 1/5;
 				transform.position = Vector3.Lerp(transform.position, goToPosition, Mathf.SmoothStep(0.0f, 1.0f, t));
 				distance = Vector3.Distance(transform.position, goToPosition);
 				yield return null;
 			}
+			transform.position = goToPosition;
+			transform.LookAt(pos);
 			playCinematique = false;
 		}
 		
@@ -304,16 +306,14 @@
 			}
   		}
 
-		private void SmoothLookAt (Vector3 target)
+		private void SmoothLookAt (Vector3 target, float smooth)
 		{
-			// Create a vector from the camera towards the player.
-			Vector3 relPlayerPosition = target - transform.position;
-			
-			// Create a rotation based on the relative position of the player being the forward vector.
-			Quaternion lookAtRotation = Quaternion.LookRotation(relPlayerPosition, Vector3.up);
-			
-			// Lerp the camera's rotation between it's current rotation and the rotation that looks at the player.
-			transform.rotation = Quaternion.Lerp(transform.rotation, lookAtRotation, smooth * Time.deltaTime);
+			//Direction from cameraPos to targetPos
+			Vector3 direction = target - transform.position;
+			//Creates a rotation with the specified forward and upwards directions.
+			Quaternion lookAtRotation = Quaternion.LookRotation(direction, Vector3.up);			
+			// smooth goes from 1 to 0 depending on the distance remaining
+			transform.rotation = Quaternion.Lerp(transform.rotation, lookAtRotation, (smooth - 1) * -1);
 		}
 
 		private void GenerateCameraTarget()

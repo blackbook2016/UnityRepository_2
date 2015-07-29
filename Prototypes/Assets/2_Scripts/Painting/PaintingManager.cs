@@ -122,6 +122,7 @@
 		{
 			SwitchCamera();
 			button_Capture.gameObject.SetActive(false);
+			iconCameraViewer.material.color = Color.white;
 			iconCameraViewer.enabled = true;
 			StopCoroutine ("CaptureOeuvreCoroutineFPS");
 			StartCoroutine("CaptureOeuvreCoroutineFPS");
@@ -178,7 +179,7 @@
 		{
 			foreach (Transform child in transform)
 			{
-				if(child.gameObject.activeSelf)
+				if(child.gameObject.activeSelf && child.tag == "StreetArt")
 					paintingsInScene += 1;
 			}
 			text_CapturedPainting.text = paintingsCaptured + "/" + paintingsInScene;
@@ -270,23 +271,40 @@
 					RemoveText();
 					yield break;
 				}
-				if(Input.GetButton("Fire2"))
+
+				cam =  Camera.main.transform;
+				if(Physics.Raycast (cam.position, cam.forward, out hit, Mathf.Infinity, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
 				{
-					cam =  Camera.main.transform;
-					if(Physics.Raycast (cam.position, cam.forward, out hit, Mathf.Infinity, 1<<8 | 1<<9) && hit.collider.tag == "StreetArt")
+					iconCameraViewer.CrossFadeAlpha(1f, 0.5f, false);
+
+					if(hit.distance <= 12.0f)
 					{
-						captured = true;
+						iconCameraViewer.color = Color.white;
 
-						string paintingName = hit.collider.GetComponent<MeshRenderer>().material.mainTexture.name;
-						GameObject paintingObject = hit.collider.gameObject;
-						
-						setPainting(paintingName, paintingObject.transform);
-						UpdateCapturedPaintings(paintingName, paintingObject);
+						if(Input.GetButton("Fire2"))
+						{
+							captured = true;
 
-						FPSCameraController.instance.enableMouseControl(false);
-						SoundController.instance.PlayClip("takePicClip");
-					}	
+							string paintingName = hit.collider.GetComponent<MeshRenderer>().material.mainTexture.name;
+							GameObject paintingObject = hit.collider.gameObject;
+							
+							setPainting(paintingName, paintingObject.transform);
+							UpdateCapturedPaintings(paintingName, paintingObject);
+
+							FPSCameraController.instance.enableMouseControl(false);
+							SoundController.instance.PlayClip("takePicClip");
+						}
+					}
+					else
+						iconCameraViewer.color = Color.red;
+
 				}
+				else
+				{
+					iconCameraViewer.color = Color.white;
+					iconCameraViewer.CrossFadeAlpha(0.2f, 0.5f, false);
+				}
+				
 				yield return null;
 			}
 			

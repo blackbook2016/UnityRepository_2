@@ -70,6 +70,25 @@ MonoBehaviour:
       rotationPlacement: 0
       scalePlacement: 0
       texture: {fileID: 2800000, guid: b5fe736482951654a88e08efd89e606a, type: 3}
+    - name: picture-frame-29676_1280
+      id: 74e1f1af8b607f74ab920bda14b265cc
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 0
+      orgIndex: 3
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: 74e1f1af8b607f74ab920bda14b265cc, type: 3}
     name: 
     shader: {fileID: 0}
     isPacked: 0
@@ -148,6 +167,33 @@ MonoBehaviour:
     0
 
     2
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    picture-frame-29676_1280
+
+    74e1f1af8b607f74ab920bda14b265cc
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    0
+
+    0
+
+    3
 
     0
 

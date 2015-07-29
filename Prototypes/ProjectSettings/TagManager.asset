@@ -12,6 +12,7 @@ TagManager:
   - Fire
   - EndZone
   - PaintingCreationZone
+  - CreateArt
   layers:
   - Default
   - TransparentFX

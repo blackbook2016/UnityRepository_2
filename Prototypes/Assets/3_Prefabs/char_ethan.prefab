@@ -710,8 +710,11 @@ GameObject:
   - 124: {fileID: 12418628}
   - 92: {fileID: 9274686}
   - 114: {fileID: 11443832}
-  - 114: {fileID: 11486864}
+  - 114: {fileID: 11462020}
+  - 114: {fileID: 11433864}
   - 114: {fileID: 11486320}
+  - 114: {fileID: 11486864}
+  - 114: {fileID: 11449938}
   m_Layer: 0
   m_Name: CameraFPS
   m_TagString: MainCamera
@@ -2014,7 +2017,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 146626}
-  m_LocalRotation: {x: .644955158, y: .0484984778, z: -.747794569, w: .149946764}
+  m_LocalRotation: {x: .644955158, y: .0484984666, z: -.747794569, w: .149946764}
   m_LocalPosition: {x: 1.36345955e-06, y: 8.24110466e-05, z: .0325336903}
   m_LocalScale: {x: .999998093, y: 1.00000012, z: 1.00000095}
   m_Children:
@@ -2454,7 +2457,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 123366}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.8900003, y: .0199999996, z: -9.10999966}
+  m_LocalPosition: {x: -10.6000004, y: .0199999996, z: -10.1479998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 457762}
@@ -2487,7 +2490,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: .192156866, g: .301960796, b: .474509805, a: .0196078438}
+  m_BackGroundColor: {r: .0784313753, g: .0705882385, b: .129411772, a: .0196078438}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -2506,10 +2509,11 @@ Camera:
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
-  m_HDR: 0
+  m_HDR: 1
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: .0219999999
+  m_StereoMirrorMode: 0
 --- !u!54 &5422076
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -2549,6 +2553,29 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &11433864
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 158306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd6d4281e5d7cd44d8c6e38bc2c1b8d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  intensity: 1.5
+  chromaticAberration: .200000003
+  axialAberration: .5
+  blur: 1.5
+  blurSpread: .75
+  luminanceDependency: .25
+  blurDistance: 2.5
+  vignetteShader: {fileID: 4800000, guid: 627943dc7a9a74286b70a4f694a0acd5, type: 3}
+  separableBlurShader: {fileID: 4800000, guid: e97c14fbb5ea04c3a902cc533d7fc5d1, type: 3}
+  chromAberrationShader: {fileID: 4800000, guid: 2b4f29398d9484ccfa9fd220449f5eee,
+    type: 3}
 --- !u!114 &11442504
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2585,6 +2612,37 @@ MonoBehaviour:
   maximumX: 360
   minimumY: -60
   maximumY: 60
+--- !u!114 &11449938
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 158306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4566b3eb298778c45b0f4c8d47173dd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: 3ec0651fafad6384aa2f679777e1808f, type: 3}
+  lookupTexture: {fileID: 2800000, guid: a28ebc0416ad1c9469a75c8fddd80498, type: 3}
+  amount: .859000027
+  filter: 8
+--- !u!114 &11462020
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 158306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c12500f3afdeb24d9444042960a4cb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bloomIntensity: .0469999984
+  shader: {fileID: 4800000, guid: 6581f8d2f208b8340b8d59c7bf38cc9a, type: 3}
+  lensDirtTexture: {fileID: 2800000, guid: 8279120499888f0459f22a619fc51ab6, type: 3}
+  lensDirtIntensity: .949999988
+  inputIsHDR: 0
 --- !u!114 &11486320
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2596,9 +2654,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f19108706fdce9469603d07980eb8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blendMode: 0
-  intensity: 0
-  texture: {fileID: 0}
+  blendMode: 4
+  intensity: 1
+  texture: {fileID: 2800000, guid: 87e72591217ba45e4884b27739f50421, type: 3}
   overlayShader: {fileID: 4800000, guid: 8c81db0e527d24acc9bcec04e87781bd, type: 3}
 --- !u!114 &11486864
 MonoBehaviour:
@@ -2606,7 +2664,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 158306}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34382083ad114a07d000fbfb8d76c639, type: 3}
   m_Name: 
@@ -2882,7 +2940,23 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: lookupTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: a28ebc0416ad1c9469a75c8fddd80498, type: 3}
+    - target: {fileID: 0}
+      propertyPath: amount
+      value: .859000027
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: filter
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 123366}

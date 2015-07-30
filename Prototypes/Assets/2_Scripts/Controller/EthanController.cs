@@ -386,7 +386,7 @@
 			shoutPosition.y = currentShout.transform.position.y;
 			currentShout.transform.position = shoutPosition;
 			currentShout.SetActive(true);			
-			SoundController.instance.PlayClip("shoutClip");
+			//SoundController.instance.PlayClip("shoutClip");
 			float startingTime = Time.time;
 
 			while(shoutTimer <= 1)

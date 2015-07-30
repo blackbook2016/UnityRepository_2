@@ -102,7 +102,7 @@ Material:
       data:
         first:
           name: _Glossiness
-        second: .569999993
+        second: 0
       data:
         first:
           name: _Metallic
@@ -133,12 +133,12 @@ Material:
         second: 0
       data:
         first:
-          name: _Mode
-        second: 3
-      data:
-        first:
           name: _EmissionScaleUI
         second: 0
+      data:
+        first:
+          name: _Mode
+        second: 3
     m_Colors:
       data:
         first:
@@ -147,7 +147,7 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: .0491998196, g: .95588237, b: .243042231, a: .191}
+        second: {r: 0, g: 0, b: 0, a: .497000009}
       data:
         first:
           name: _SpecColor

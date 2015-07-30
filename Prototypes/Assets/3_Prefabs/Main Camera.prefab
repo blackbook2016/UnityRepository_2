@@ -10,10 +10,12 @@ GameObject:
   - 4: {fileID: 456680}
   - 20: {fileID: 2068346}
   - 92: {fileID: 9252046}
+  - 114: {fileID: 11429482}
   - 124: {fileID: 12420798}
-  - 81: {fileID: 8136182}
   - 114: {fileID: 11477332}
   - 114: {fileID: 11456862}
+  - 114: {fileID: 11438698}
+  - 114: {fileID: 11435546}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -27,8 +29,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 146094}
-  m_LocalRotation: {x: .42261833, y: 0, z: 0, w: .906307817}
-  m_LocalPosition: {x: -.300000012, y: 12.6999998, z: -8.30000019}
+  m_LocalRotation: {x: .390448481, y: .346828967, z: -.161729082, w: .837319136}
+  m_LocalPosition: {x: -19.5599995, y: 28.7999992, z: -21.2600002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -42,37 +44,30 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: .192156866, g: .301960796, b: .474509805, a: .0196078438}
+  m_BackGroundColor: {r: .0790896118, g: .0720155761, b: .132352948, a: .0196078438}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
     y: 0
     width: 1
     height: 1
-  near clip plane: .300000012
+  near clip plane: .00999999978
   far clip plane: 1000
   field of view: 60
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: -1
+  m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
-  m_HDR: 0
+  m_HDR: 1
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: .0219999999
   m_StereoMirrorMode: 0
---- !u!81 &8136182
-AudioListener:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 146094}
-  m_Enabled: 1
 --- !u!92 &9252046
 Behaviour:
   m_ObjectHideFlags: 1
@@ -80,13 +75,61 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 146094}
   m_Enabled: 1
---- !u!114 &11456862
+--- !u!114 &11429482
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 146094}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c12500f3afdeb24d9444042960a4cb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bloomIntensity: .0469999984
+  shader: {fileID: 4800000, guid: 6581f8d2f208b8340b8d59c7bf38cc9a, type: 3}
+  lensDirtTexture: {fileID: 2800000, guid: bc3fb3147f3a57d4aa9fce350ce85a64, type: 3}
+  lensDirtIntensity: .949999988
+  inputIsHDR: 0
+--- !u!114 &11435546
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 146094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4566b3eb298778c45b0f4c8d47173dd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: 3ec0651fafad6384aa2f679777e1808f, type: 3}
+  lookupTexture: {fileID: 2800000, guid: a28ebc0416ad1c9469a75c8fddd80498, type: 3}
+  amount: .859000027
+  filter: 8
+--- !u!114 &11438698
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 146094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a22b3a7095a744a428c134b5e26ad68e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  quality: 1
+  blurArea: 3.5
+  maxBlurSize: 5
+  downsample: 0
+  tiltShiftShader: {fileID: 4800000, guid: bf34d2a25450349699e8ae6456fa7ca9, type: 3}
+--- !u!114 &11456862
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 146094}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34382083ad114a07d000fbfb8d76c639, type: 3}
   m_Name: 
@@ -105,8 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a8183dcb3cc4244a6de0334bfd7ad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelArea: 20
-  ScrollArea: 20
+  LevelArea: 40
+  ScrollArea: 40
   ScrollSpeed: 10
   DragSpeed: 40
   ZoomSpeed: 15
@@ -118,7 +161,7 @@ MonoBehaviour:
   RotSpeed: 50
   smooth: 9
   draggable: 1
-  mouseBorders: 1
+  mouseBorders: 0
   playCinematique: 0
   cinematiqueTarget: {fileID: 0}
   NewCameraRotation: 1
@@ -135,7 +178,23 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: ZoomMin
+      value: -15
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: ZoomMax
+      value: 107
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: lensDirtTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: bc3fb3147f3a57d4aa9fce350ce85a64, type: 3}
+    - target: {fileID: 0}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 146094}

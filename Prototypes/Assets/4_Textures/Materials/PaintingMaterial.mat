@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: DrawPaiting
-  m_Shader: {fileID: 4800000, guid: c3e04a5e211c4df43b004a7dff6af5fd, type: 3}
+  m_Name: PaintingMaterial
+  m_Shader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
@@ -25,7 +25,7 @@ Material:
         first:
           name: _BumpMap
         second:
-          m_Texture: {fileID: 2800000, guid: f0b5dbf92ef3d904692e37c781ad6b0f, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -33,13 +33,6 @@ Material:
           name: _DetailNormalMap
         second:
           m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Detail
-        second:
-          m_Texture: {fileID: 2800000, guid: f0b5dbf92ef3d904692e37c781ad6b0f, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -84,57 +77,11 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Painting
-        second:
-          m_Texture: {fileID: 2800000, guid: 95134bb4da01af844a8d4a173626cdec, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _CutTex
-        second:
-          m_Texture: {fileID: 2800000, guid: f0b5dbf92ef3d904692e37c781ad6b0f, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Texture2
-        second:
-          m_Texture: {fileID: 2800000, guid: f0b5dbf92ef3d904692e37c781ad6b0f, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _LitTex
-        second:
-          m_Texture: {fileID: 2800000, guid: 45126bc9cbd9a2b4494cfc0b2bbfaa73, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _Spray
-        second:
-          m_Texture: {fileID: 2800000, guid: 703859600cb7db0479c16266617b9556, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _PaintingSprite
-        second:
-          m_Texture: {fileID: 2800000, guid: 4ca77927f81e2804fa031f1855447db7, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
-          name: _Radius
-        second: .159999996
-      data:
-        first:
           name: _Cutoff
-        second: 0
+        second: .5
       data:
         first:
           name: _SrcBlend
@@ -154,7 +101,7 @@ Material:
       data:
         first:
           name: _Glossiness
-        second: 0
+        second: .5
       data:
         first:
           name: _BumpScale
@@ -196,11 +143,3 @@ Material:
         first:
           name: _EmissionColorUI
         second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _ObjPos
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _MousePos
-        second: {r: -1, g: -10, b: -1, a: -1}

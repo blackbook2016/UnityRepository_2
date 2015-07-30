@@ -1,42 +1,89 @@
-﻿Shader "Custom/DrawPainting" {
-	Properties {
-		_Color ("Color", Color) = (1,1,1,1)
-		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_Painting ("Albedo (RGB)", 2D) = "white" {}
-		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
+﻿Shader "Custom/DrawPainting" 
+{ 
+	Properties 
+	{ 
+		_MainTex ("Texture", 2D) = "white" {} 
+		_LitTex ("Texture", 2D) = "white" {} 
+		_ObjPos ("ObjPos", Vector) = (-1,-10,-1,-1)
+		_Radius ("HoleRadius", Range(0.1,5)) = 2
 	}
-	SubShader {
-		Tags { "RenderType"="Opaque" }
-		LOD 200
-		
+
+	SubShader 
+	{ 
+		Tags 
+		{
+			"Queue"="Transparent"
+			"IgnoreProjector"="True"
+			"RenderType"="Transparent"
+		} 
+//		LOD 200
+//		Cull Off
+
 		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+		// add Alpha
+		#pragma surface surf Lambert alpha:blend finalcolor:finalblend
 
-		// Use shader model 3.0 target, to get nicer looking lighting
-		#pragma target 3.0
+		sampler2D _MainTex; 	
+		sampler2D _LitTex;
+		
+		float4 _ObjPos;
+		float _Radius;
 
-		sampler2D _MainTex;
-
-		struct Input {
+		struct Input 
+		{ 
 			float2 uv_MainTex;
+			float2 uv_LitTex;
+			float3 worldPos;
+			fixed4 color;
 		};
 
-		half _Glossiness;
-		half _Metallic;
-		fixed4 _Color;
-
-		void surf (Input IN, inout SurfaceOutputStandard o) {
-			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			o.Albedo = c.rgb;
-			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
-			o.Smoothness = _Glossiness;
-			o.Alpha = c.a;
+		void surf (Input IN, inout SurfaceOutput o) 
+		{ 
+		
+//			float dx = length(_ObjPos.x-IN.worldPos.x);
+//			float dy = length(_ObjPos.y-IN.worldPos.y);
+//			float dz = length(_ObjPos.z-IN.worldPos.z);
+//			float dist = (dx*dx+dy*dy+dz*dz) / _Radius;
+////			float dist = distance(_ObjPos,IN.worldPos) / _Radius;
+//			dist = clamp(dist,0,1);
+//			
+//			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * dist; 
+//			
+//			o.Albedo = c.rgb;
+//			o.Alpha = dist;
+			o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
+		} 
+		
+		void finalblend (Input IN, SurfaceOutput o, inout fixed4 color)
+		{
+			float dx = length(_ObjPos.x-IN.worldPos.x);
+			float dy = length(_ObjPos.y-IN.worldPos.y);
+			float dz = length(_ObjPos.z-IN.worldPos.z);
+			float dist = (dx*dx+dy*dy+dz*dz) / _Radius;
+//			float dist = distance(_ObjPos,IN.worldPos) / _Radius;
+			if (dist <= 1)
+			{
+				color = tex2D(_LitTex, IN.uv_LitTex);
+			}
+			else
+			{
+				color = tex2D(_MainTex, IN.uv_MainTex);
+			}
+			
+//			else
+//			{
+//				color *= lerp(tex2D(_MainTex, IN.uv_MainTex), tex2D(_LitTex, IN.uv_MainTex), (light - _DarkThreshold) / (_LightThreshold - _DarkThreshold));
+//			}
+//			//color *= IN.color;
+//			if (color.a < _Cutout) discard;
+//			
+//			//if (light <= _DarkThreshold) discard;
+//			//color = light;
+//			color.a = 1;
+			
 		}
-		ENDCG
-	} 
-	FallBack "Diffuse"
+		ENDCG 
+	
+	}
+//	Fallback "Transparent/VertexLit" 
 }

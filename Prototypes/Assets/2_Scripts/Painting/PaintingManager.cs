@@ -92,16 +92,16 @@
 			}
 		}
 
-		void OnGUI () 
-		{
-			if(GUI.Button(new Rect(20,160,100,40), "FPS/RTS Capture")) {
-				if(captureType == CaptureOeuvreType.TypeRTS)
-					captureType = CaptureOeuvreType.TypeFPS;
-				else
-					captureType = CaptureOeuvreType.TypeRTS;
-				SetCaptureType();
-			}
-		}
+//		void OnGUI () 
+//		{
+//			if(GUI.Button(new Rect(20,160,100,40), "FPS/RTS Capture")) {
+//				if(captureType == CaptureOeuvreType.TypeRTS)
+//					captureType = CaptureOeuvreType.TypeFPS;
+//				else
+//					captureType = CaptureOeuvreType.TypeRTS;
+//				SetCaptureType();
+//			}
+//		}
 		#endregion
 
 		#region API

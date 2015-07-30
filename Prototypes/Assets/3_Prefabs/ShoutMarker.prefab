@@ -8,14 +8,14 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 406528}
-  - 212: {fileID: 21255220}
+  - 212: {fileID: 21250204}
   m_Layer: 0
   m_Name: ShoutMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &406528
 Transform:
   m_ObjectHideFlags: 1
@@ -28,7 +28,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!212 &21255220
+--- !u!212 &21250204
 SpriteRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -52,8 +52,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 1278f81a2dce8604a988a82186b87de1, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: .0410000011}
+  m_Sprite: {fileID: 21300000, guid: aa85a18695d9f42ed8723f37eecfe883, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: .409000009}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -63,12 +63,25 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: m_Color.a
-      value: .0410000011
+      value: .409000009
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalPosition.y
       value: .100000001
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: aa85a18695d9f42ed8723f37eecfe883,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5008b49c286fb4a44a815c8a975a223e, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 175272}

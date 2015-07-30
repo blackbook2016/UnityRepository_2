@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 2Backgrounds-4Refractors
+  m_Shader: {fileID: 4800000, guid: 4b9b5e2b489644c4caa1509bf0393977, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _Background
+        second:
+          m_Texture: {fileID: 2800000, guid: 3ea8328288947654eb49a84b5ab92bed, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Background2
+        second:
+          m_Texture: {fileID: 2800000, guid: 16e82045a99de467494e09f9d9564712, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 7db06fcd9acd57041b9e1ea9f6010d96, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap2
+        second:
+          m_Texture: {fileID: 2800000, guid: 7db06fcd9acd57041b9e1ea9f6010d96, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap3
+        second:
+          m_Texture: {fileID: 2800000, guid: 7db06fcd9acd57041b9e1ea9f6010d96, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap4
+        second:
+          m_Texture: {fileID: 2800000, guid: 7db06fcd9acd57041b9e1ea9f6010d96, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _BackgroundScrollX
+        second: 0
+      data:
+        first:
+          name: _BackgroundScrollY
+        second: 0
+      data:
+        first:
+          name: _BackgroundScaleX
+        second: 1
+      data:
+        first:
+          name: _BackgroundScaleY
+        second: 1
+      data:
+        first:
+          name: _BackgroundScrollX2
+        second: 0
+      data:
+        first:
+          name: _BackgroundScrollY2
+        second: 0
+      data:
+        first:
+          name: _BackgroundScaleX2
+        second: 1
+      data:
+        first:
+          name: _BackgroundScaleY2
+        second: 1
+      data:
+        first:
+          name: _BackgroundFade2
+        second: 1
+      data:
+        first:
+          name: _DistortionScrollX
+        second: 0
+      data:
+        first:
+          name: _DistortionScrollY
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY
+        second: 1
+      data:
+        first:
+          name: _DistortionPower
+        second: .0799999982
+      data:
+        first:
+          name: _DistortionScrollX2
+        second: .25
+      data:
+        first:
+          name: _DistortionScrollY2
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX2
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY2
+        second: 1
+      data:
+        first:
+          name: _DistortionPower2
+        second: .0799999982
+      data:
+        first:
+          name: _DistortionScrollX3
+        second: .5
+      data:
+        first:
+          name: _DistortionScrollY3
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX3
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY3
+        second: 1
+      data:
+        first:
+          name: _DistortionPower3
+        second: .0799999982
+      data:
+        first:
+          name: _DistortionScrollX4
+        second: .75
+      data:
+        first:
+          name: _DistortionScrollY4
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX4
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY4
+        second: 1
+      data:
+        first:
+          name: _DistortionPower4
+        second: .0799999982
+    m_Colors: {}

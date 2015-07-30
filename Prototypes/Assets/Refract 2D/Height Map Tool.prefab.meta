@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 0041122cd52894ec7a7443eb169d7cda
+labels:
+- 2d
+- light
+- material
+- refract
+- reflect
+- distort
+- warp
+- lens
+- lighting
+- map
+- image
+- shader
+- height
+- surface
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,9 +1,0 @@
-{
-  "Default":  {
-    "FOV":             ["Range", 60, 20, 100],
-    "Orthographic":    ["Bool", false],
-    "RotationSpeedX":  ["Range", 8, 0, 10],
-    "RotationSpeedY":  ["Range", 5, 0, 10],
-    "MoveSpeed":       ["Range", 1, 0, 1]
-  }
-}

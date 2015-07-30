@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Aquarium Material
+  m_Shader: {fileID: 4800000, guid: 30958c724c2564e1d8197a28406b0081, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Background
+        second:
+          m_Texture: {fileID: 2800000, guid: f56467f928f9e4b4c8c3ae6b9fb6c4e0, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Background2
+        second:
+          m_Texture: {fileID: 2800000, guid: bccf06d9813bbd14d9a84e79642a2283, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Background3
+        second:
+          m_Texture: {fileID: 2800000, guid: c9eadc78aabe003499237cc5e2cec08d, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 3b7ee9015b01b754d89b75054b7cc3d5, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Midground
+        second:
+          m_Texture: {fileID: 2800000, guid: 16e82045a99de467494e09f9d9564712, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Refraction
+        second: .400000006
+      data:
+        first:
+          name: _BackgroundScrollX
+        second: 0
+      data:
+        first:
+          name: _BackgroundScrollY
+        second: 0
+      data:
+        first:
+          name: _BackgroundScaleX
+        second: 2
+      data:
+        first:
+          name: _BackgroundScaleY
+        second: 1
+      data:
+        first:
+          name: _BackgroundScrollX2
+        second: .0599999987
+      data:
+        first:
+          name: _BackgroundScrollY2
+        second: 0
+      data:
+        first:
+          name: _BackgroundScaleX2
+        second: .5
+      data:
+        first:
+          name: _BackgroundScaleY2
+        second: 1
+      data:
+        first:
+          name: _BackgroundFade2
+        second: 1
+      data:
+        first:
+          name: _Refraction2
+        second: 2
+      data:
+        first:
+          name: _BackgroundScrollX3
+        second: .25
+      data:
+        first:
+          name: _BackgroundScrollY3
+        second: .0599999987
+      data:
+        first:
+          name: _BackgroundScaleX3
+        second: 1
+      data:
+        first:
+          name: _BackgroundScaleY3
+        second: 1
+      data:
+        first:
+          name: _BackgroundFade3
+        second: 1
+      data:
+        first:
+          name: _Refraction3
+        second: 2.63000011
+      data:
+        first:
+          name: _DistortionScrollX
+        second: 0
+      data:
+        first:
+          name: _DistortionScrollY
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX
+        second: 2
+      data:
+        first:
+          name: _DistortionScaleY
+        second: 2
+      data:
+        first:
+          name: _DistortionPower
+        second: .0799999982
+      data:
+        first:
+          name: _MidgroundScrollX
+        second: 0
+      data:
+        first:
+          name: _MidgroundScrollY
+        second: 0
+      data:
+        first:
+          name: _MidgroundScaleX
+        second: 1
+      data:
+        first:
+          name: _MidgroundScaleY
+        second: 1
+      data:
+        first:
+          name: _MidgroundFade
+        second: 1
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: 1, g: 1, b: 1, a: 1}

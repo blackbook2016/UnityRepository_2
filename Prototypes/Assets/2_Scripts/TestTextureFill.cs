@@ -23,7 +23,7 @@ public class TestTextureFill : MonoBehaviour {
 		RaycastHit hit ;
 		if (Physics.Raycast (ray,out hit, Mathf.Infinity)) 
 		{
-			GetComponent<Renderer>().material.SetVector("_ObjPos",new Vector4(hit.point.x,hit.point.y,hit.point.z,0));
+			GetComponent<Renderer>().material.SetVector("_MousePos",new Vector4(hit.point.x,hit.point.y,hit.point.z,0));
 		}
 		if (Input.GetKey ("q"))
 		{

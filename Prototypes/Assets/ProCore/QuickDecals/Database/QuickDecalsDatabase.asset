@@ -95,6 +95,89 @@ MonoBehaviour:
     material: {fileID: 0}
     maxAtlasSize: 0
     padding: 0
+  - decals:
+    - name: DecalsLeaking0156_3_S
+      id: b915ec5861568438db8c83204c65e1cb
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 1
+      orgIndex: 0
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: b915ec5861568438db8c83204c65e1cb, type: 3}
+    - name: DecalBottom0006_1_S
+      id: ea541970a04c44d338575707d545bff0
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 3}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 1
+      orgIndex: 1
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: ea541970a04c44d338575707d545bff0, type: 3}
+    - name: DecalsDamagePlaster0027_1_S
+      id: dad0315648e2345c8b8e8b82a294fdc5
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 1
+      orgIndex: 2
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: dad0315648e2345c8b8e8b82a294fdc5, type: 3}
+    - name: DecalsDamagePlaster0027_3_S
+      id: 4b97b69ffc1b14dcf92fbbe070fdaeb9
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 1
+      orgIndex: 3
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: 4b97b69ffc1b14dcf92fbbe070fdaeb9, type: 3}
+    name: 
+    shader: {fileID: 0}
+    isPacked: 0
+    material: {fileID: 0}
+    maxAtlasSize: 0
+    padding: 0
   s_decals:
   - '{
 
@@ -190,6 +273,114 @@ MonoBehaviour:
     (0, 0, 1, 1)
 
     0
+
+    0
+
+    3
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    DecalsLeaking0156_3_S
+
+    b915ec5861568438db8c83204c65e1cb
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    1
+
+    0
+
+    0
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    DecalBottom0006_1_S
+
+    ea541970a04c44d338575707d545bff0
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 3.0)
+
+    (0, 0, 1, 1)
+
+    1
+
+    0
+
+    1
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    DecalsDamagePlaster0027_1_S
+
+    dad0315648e2345c8b8e8b82a294fdc5
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    1
+
+    0
+
+    2
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    DecalsDamagePlaster0027_3_S
+
+    4b97b69ffc1b14dcf92fbbe070fdaeb9
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    1
 
     0
 

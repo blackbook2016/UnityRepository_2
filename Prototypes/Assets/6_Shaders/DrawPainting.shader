@@ -22,7 +22,8 @@
 
 		CGPROGRAM
 		// add Alpha
-		#pragma surface surf Lambert alpha:blend 
+		#pragma surface surf Lambert  alpha:blend
+		#pragma target 3.0
 //finalcolor:finalblend
 		sampler2D _MainTex; 	
 		sampler2D _PaintingSprite;
@@ -30,33 +31,47 @@
 		
 		float4 _MousePos;
 		float _Radius;
+		float myarrayy[200];
+		float myarrayx[200];
 
 		struct Input 
 		{ 
 			float2 uv_MainTex;
 			float2 uv_PaintingSprite;
 			float3 worldPos;
+			float4 screenPos;
 			fixed4 color;
 		};
 
 		void surf (Input IN, inout SurfaceOutput o) 
 		{ 
-		
-			float dx = length(_ObjPos.x-IN.worldPos.x);
-			float dy = length(_ObjPos.y-IN.worldPos.y);
-			float dz = length(_ObjPos.z-IN.worldPos.z);
-			float dist = (dx*dx+dy*dy+dz*dz) / _Radius;
+			int alpha = 0;
+			
+			fixed4 c = tex2D(_PaintingSprite, IN.uv_PaintingSprite);
+//			for(int i = 0; i < 100; i++)
+//			{
+//				if(myarrayx[i] == IN.worldPos.x && myarrayy[i] == IN.worldPos.y)
+//				{					
+//					alpha = 1;
+//				}
+//			}
+			if(myarrayx[0] == 482)
+				alpha = 1;
+//			float dx = length(_ObjPos.x-IN.worldPos.x);
+//			float dy = length(_ObjPos.y-IN.worldPos.y);
+//			float dz = length(_ObjPos.z-IN.worldPos.z);
+//			float dist = (dx*dx+dy*dy+dz*dz) / _Radius;
 ////			float dist = distance(_ObjPos,IN.worldPos) / _Radius;
-			dist = clamp(dist,0,1);
-			if (dist <= 1)
-			{
-				tex2D(_MainTex, IN.uv_MainTex).rgb = tex2D(_PaintingSprite, IN.uv_PaintingSprite);
-			}
+//			dist = clamp(dist,0,1);
+//			if (dist <= 1)
+//			{
+//				tex2D(_MainTex, IN.uv_MainTex).rgb = tex2D(_PaintingSprite, IN.uv_PaintingSprite);
+//			}
 //			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * dist; 
 //			
 //			o.Albedo = c.rgb;
-//			o.Alpha = dist;
-			o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
+			o.Albedo = c.rgb;
+			o.Alpha = c.a * alpha;
 		} 
 		
 		void finalblend (Input IN, SurfaceOutput o, inout fixed4 color)

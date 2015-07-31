@@ -1142,7 +1142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Position: {x: .703389764, y: .491525441}
-  Size: {x: .0847457424, y: .160037771}
+  Size: {x: .0847457424, y: .269593835}
   PreserveTextureRatio: 1
   Side: 2
   DisableInputGroup: 3
@@ -1175,7 +1175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Position: {x: .797424853, y: .491525441}
-  Size: {x: .0847457424, y: .160037771}
+  Size: {x: .0847457424, y: .269593835}
   PreserveTextureRatio: 1
   Side: 2
   DisableInputGroup: 3
@@ -1208,7 +1208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Position: {x: .709022641, y: .649156153}
-  Size: {x: .0847457424, y: .160037771}
+  Size: {x: .0847457424, y: .269593835}
   PreserveTextureRatio: 1
   Side: 2
   DisableInputGroup: 3
@@ -1241,7 +1241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Position: {x: .797368467, y: .649156153}
-  Size: {x: .0847457424, y: .160037771}
+  Size: {x: .0847457424, y: .269593835}
   PreserveTextureRatio: 1
   Side: 2
   DisableInputGroup: 3

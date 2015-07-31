@@ -176,11 +176,12 @@
 			}
 			else 
 			{			
-				enemy.PlayerDetected = false;
+				enemy.PlayerDetected = false;				
+				EthanController.instance.PlayerIsNotDetected(this);
+
 				if((enemy.AlertLVL == AlertLevel.Low || enemy.AlertLVL == AlertLevel.Medium) && isReturnDone)
 				{
 					SwitchAlertLevel( AlertLevel.None);
-					EthanController.instance.PlayerIsNotDetected(this);
 				}
 				
 				if(enemy.AlertLVL == AlertLevel.High && !isplayerCaught)

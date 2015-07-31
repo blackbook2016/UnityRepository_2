@@ -42,6 +42,7 @@
 		public  List<IAController> listAlertedGuards = new List<IAController>();
 
 		private bool doubleClicked = false;
+		private bool playsound = false;
 
 		private static EthanController _instance;
 		public static EthanController instance
@@ -78,6 +79,7 @@
 				{
 					if(Input.GetButtonDown("Shout"))
 					{					
+						playsound = true;
 						StartCoroutine("ShoutCoroutine", soundDistance);
 					}
 					if(Input.GetAxis("Horizontal_R") != 0 || Input.GetAxis("Vertical_R") != 0)
@@ -151,6 +153,21 @@
 		{
 			if (state != State.Idle && state != State.Climb && state != State.Dead && plState == PlayerState.Free)
 			{
+//				float walkAnimationSpeed = 1.5f;
+//				float runAnimationSpeed = 4.0f;
+//				float speedThreshold = 0.1f;
+//				
+//				Vector3 velocityXZ = new Vector3(agent.velocity.x, 0.0f , agent.velocity.z);
+//				float speed = velocityXZ.magnitude;
+//
+//				if(state == State.Walk)
+//					animator.speed = speed / walkAnimationSpeed;
+//				else
+//					if(state == State.Run)
+//						animator.speed = speed / runAnimationSpeed;
+//				else
+//					animator.speed = 1.0f;
+//				print (animator.speed);
 				agent.velocity = animator.deltaPosition / Time.deltaTime;
 				if(agent.desiredVelocity != Vector3.zero)
 				{
@@ -158,7 +175,6 @@
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, agent.angularSpeed * Time.deltaTime);
 				}
 //				transform.rotation = Quaternion.LookRotation(agent.desiredVelocity);
-
 			}		
 		}
 
@@ -385,17 +401,26 @@
 			Vector3 shoutPosition = transform.position;
 			shoutPosition.y = currentShout.transform.position.y;
 			currentShout.transform.position = shoutPosition;
-			currentShout.SetActive(true);			
-			SoundController.instance.PlayClip("shoutClip");
-			float startingTime = Time.time;
+			currentShout.SetActive(true);
 
+			if(playsound)
+			{
+				SoundController.instance.PlayClip("shoutClip");
+				playsound = false;
+			}
+			float startingTime = Time.time;
+			SpriteRenderer objectSprite = currentShout.GetComponent<SpriteRenderer>();
+			Color col = new Color(1,1,1,1);
 			while(shoutTimer <= 1)
 			{
 				shoutTimer = (Time.time - startingTime) * 1  ;
 				shoutTimer /= 0.6f * (Time.time - startingTime + 0.5f);
+				print (shoutTimer);
+				col.a = (1-shoutTimer);
 				currentShout.transform.localScale = Vector3.one * shoutTimer * radius * 2;
 				GameController.instance.PlayerShouted();
 				yield return null;
+				objectSprite.color = col;
 			}
 
 			listShoutMarkers.Remove(tempShout);			

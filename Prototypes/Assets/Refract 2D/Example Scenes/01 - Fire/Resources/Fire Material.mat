@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Fire Material
+  m_Shader: {fileID: 4800000, guid: 5dc5f7663f4bffb4a83a9f919b927fe1, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Background
+        second:
+          m_Texture: {fileID: 2800000, guid: 37474cbdb41b54bb1972d9f6b9f2c323, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap
+        second:
+          m_Texture: {fileID: 2800000, guid: 2d41b1481008342b1a8e378a78735bbd, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap2
+        second:
+          m_Texture: {fileID: 2800000, guid: 19a3730adadc24044825eda99175cb49, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap3
+        second:
+          m_Texture: {fileID: 2800000, guid: 2d41b1481008342b1a8e378a78735bbd, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DistortionMap4
+        second:
+          m_Texture: {fileID: 2800000, guid: 19a3730adadc24044825eda99175cb49, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Refraction
+        second: .610000014
+      data:
+        first:
+          name: _BackgroundScrollX
+        second: 0
+      data:
+        first:
+          name: _BackgroundScrollY
+        second: .180000007
+      data:
+        first:
+          name: _BackgroundScaleX
+        second: 1
+      data:
+        first:
+          name: _BackgroundScaleY
+        second: .5
+      data:
+        first:
+          name: _Refraction2
+        second: 1
+      data:
+        first:
+          name: _DistortionScrollX
+        second: 0
+      data:
+        first:
+          name: _DistortionScrollY
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY
+        second: .5
+      data:
+        first:
+          name: _DistortionPower
+        second: .0700000003
+      data:
+        first:
+          name: _DistortionScrollX2
+        second: 0
+      data:
+        first:
+          name: _DistortionScrollY2
+        second: .5
+      data:
+        first:
+          name: _DistortionScaleX2
+        second: .5
+      data:
+        first:
+          name: _DistortionScaleY2
+        second: 1
+      data:
+        first:
+          name: _DistortionPower2
+        second: .0599999987
+      data:
+        first:
+          name: _DistortionScrollX3
+        second: 0
+      data:
+        first:
+          name: _DistortionScrollY3
+        second: .140000001
+      data:
+        first:
+          name: _DistortionScaleX3
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY3
+        second: .5
+      data:
+        first:
+          name: _DistortionPower3
+        second: .0500000007
+      data:
+        first:
+          name: _DistortionScrollX4
+        second: 0
+      data:
+        first:
+          name: _DistortionScrollY4
+        second: 0
+      data:
+        first:
+          name: _DistortionScaleX4
+        second: 1
+      data:
+        first:
+          name: _DistortionScaleY4
+        second: .5
+      data:
+        first:
+          name: _DistortionPower4
+        second: .0299999993
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: 1, g: 1, b: 1, a: 1}

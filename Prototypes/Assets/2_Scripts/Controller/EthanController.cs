@@ -415,7 +415,6 @@
 			{
 				shoutTimer = (Time.time - startingTime) * 1  ;
 				shoutTimer /= 0.6f * (Time.time - startingTime + 0.5f);
-				print (shoutTimer);
 				col.a = (1-shoutTimer);
 				currentShout.transform.localScale = Vector3.one * shoutTimer * radius * 2;
 				GameController.instance.PlayerShouted();

@@ -11,13 +11,13 @@
 		[SerializeField]
 		[Tooltip("Camera limits in width and length")]
 		int LevelArea = 50;
-		[SerializeField]
-		[Tooltip("Move camera if mouse pointer reaches screen borders")]
-		int ScrollArea = 50;
-		[SerializeField]
-		int ScrollSpeed = 100;
-		[SerializeField]
-		int DragSpeed = 100;
+//		[SerializeField]
+//		[Tooltip("Move camera if mouse pointer reaches screen borders")]
+//		int ScrollArea = 50;
+//		[SerializeField]
+//		int ScrollSpeed = 100;
+//		[SerializeField]
+//		int DragSpeed = 100;
 		
 		[SerializeField]
 		int ZoomSpeed = 25;
@@ -39,10 +39,10 @@
 		float smooth = 9f;
 
 		[Header("Function")]
-		[SerializeField]
-		bool draggable = true;
-		[SerializeField]
-		bool mouseBorders = true;
+//		[SerializeField]
+//		bool draggable = true;
+//		[SerializeField]
+//		bool mouseBorders = true;
 		[SerializeField]
 		bool playCinematique = false;
 		[SerializeField]
@@ -54,7 +54,7 @@
 
 		private TargetDestination td = new TargetDestination(Vector3.zero,Vector3.zero);
 		private bool isplayingCinematique = false;
-		private Vector3 rotationTarget = Vector3.zero;
+//		private Vector3 rotationTarget = Vector3.zero;
 		private TargetDestination init;
 
 		private static CameraController _instance;
@@ -163,10 +163,10 @@
 			Vector3 translation = Vector3.zero;
 			Vector2 trRot = Vector2.zero;
 
-			float angle = transform.rotation.eulerAngles.y;
+//			float angle = transform.rotation.eulerAngles.y;
 
-			Vector3 right = new Vector3(Mathf.Sin(Mathf.Deg2Rad * (angle + 90)), 0,Mathf.Cos(Mathf.Deg2Rad * (angle + 90)) );
-			Vector3 forward = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), 0,Mathf.Cos(Mathf.Deg2Rad * angle) );
+//			Vector3 right = new Vector3(Mathf.Sin(Mathf.Deg2Rad * (angle + 90)), 0,Mathf.Cos(Mathf.Deg2Rad * (angle + 90)) );
+//			Vector3 forward = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), 0,Mathf.Cos(Mathf.Deg2Rad * angle) );
 
 			/////////////////////////////////////////////////////   MOVE CAMERA      ////////////////////////////////////////////////////////////////
 
@@ -343,7 +343,7 @@
 			// if the ray hits the plane...
 			if (hPlane.Raycast(ray, out distance)){
 				// get the hit point:
-				rotationTarget = ray.GetPoint(distance);
+//				rotationTarget = ray.GetPoint(distance);
 			}
 		}
 

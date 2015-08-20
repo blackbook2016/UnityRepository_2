@@ -2,6 +2,7 @@
 	Properties {
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
 		_MaskTex ("Texture", 2D) = "white" {}
+		_Alpha ("Alpha", Range(0,1)) = 0
 	}
 	SubShader 
 	{
@@ -17,10 +18,13 @@
 			#pragma fragment frag
 			#pragma fragmentoption ARB_precision_hint_fastest
 			#include "UnityCG.cginc"
+			
 			uniform sampler2D _MainTex;
 			uniform sampler2D _MaskTex;
 			uniform float4 _MainTex_ST;
 			uniform float4 _MaskTex_ST;
+			float _Alpha;
+			
 			struct app2vert
 			{
 				float4 position: POSITION;
@@ -42,7 +46,8 @@
 			{
 				fixed4 main_color = tex2D(_MainTex, input.texcoord);
 				fixed4 mask_color = tex2D(_MaskTex, input.texcoord);
-				return fixed4(main_color.r, main_color.g, main_color.b, main_color.a * ( mask_color.a));
+				float alpha = main_color.a * ( mask_color.a + _Alpha);
+				return fixed4(main_color.r, main_color.g, main_color.b, alpha);
 			}
 			ENDCG
 		}

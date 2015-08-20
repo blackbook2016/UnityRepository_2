@@ -17,7 +17,7 @@
 			Lighting Off
 			SetTexture[_MainTex] 
 			{
-				matrix [_UVMatrix]
+//				matrix [_UVMatrix]
 				ConstantColor [_Color]
 				combine texture * constant
 			}

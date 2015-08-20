@@ -34,7 +34,7 @@
 		private bool isWatchDone = false;
 
 		private float lowTimer = 0.0f;
-		private float maxlowTimer= 3.0f;
+		private float maxlowTimer= 1.0f;
 		private float fovRotationSpeed = 1.0f;
 
 		private bool isLowAlertStarted = false;
@@ -506,7 +506,7 @@
 //			}
 //			else
 //			{
-				float waitingTime = Time.time + 2.0f;
+				float waitingTime = Time.time + 1.0f;
 				while(Time.time < waitingTime)
 				{
 					enemy.EnemyProjector.Project(enemy.TargetPos,Color.red);

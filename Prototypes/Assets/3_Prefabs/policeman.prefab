@@ -4105,7 +4105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyType: 2
   layer: -1
-  searchTime: 12
+  searchTime: 8
   publicAction: 0
   waypointManager: {fileID: 0}
   enemyProjector: {fileID: 0}
@@ -4479,6 +4479,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: fovDepth
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: searchTime
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

@@ -45,14 +45,14 @@ public class CameraMasking : MonoBehaviour
 	{
 		GUI.Label(new Rect(0, 0, 30, 20),(maxQuads - paintingQuads.Count) * 100 /maxQuads+"%");
 
-		if(isFadeInPainting)
-		{
+//		if(isFadeInPainting)
+//		{
 			if(GUI.Button(new Rect(0, 40, 120, 20), "Restart"))
 			{
 				StopAllCoroutines();
 				StartCoroutine("ResetPainting");
 			}
-		}
+//		}
 	}
 	
 	public IEnumerator Start()
@@ -105,7 +105,6 @@ public class CameraMasking : MonoBehaviour
 				if (ScreenRect.Contains(v))
 				{
 					//Get MousePosition for eraser
-					print (ScreenRect );
 					newHolePosition = new Vector2(100 * (v.x - ScreenRect.xMin),
 					                              100 * (v.y - ScreenRect.yMin));
 
@@ -252,6 +251,11 @@ public class CameraMasking : MonoBehaviour
 
 		Dust.GetComponent<Renderer>().material.SetFloat("_Alpha", 0);
 		yield return null;
+	}
+
+	private void PlaySound()
+	{
+
 	}
 	#endregion
 

@@ -222,7 +222,7 @@
 						translation += transform.forward * ZoomSpeed * zoomDelta;
 				}
 
-				if(Input.GetKey(KeyCode.Mouse2))
+				if(Input.GetKey(KeyCode.Mouse2) || Input.GetKey(KeyCode.Mouse1))
 				{
 					translation = Vector2.zero;
 					//translation -= transform.right * Input.GetAxis("Mouse X") * RotSpeed * 0.1f;
@@ -277,7 +277,7 @@
 
 			td.position += translation;
 
-			if((trRot.x !=0 || trRot.y != 0 || Input.GetKey(KeyCode.Mouse2)) && NewCameraRotation)
+			if((trRot.x !=0 || trRot.y != 0 || Input.GetKey(KeyCode.Mouse2)|| Input.GetKey(KeyCode.Mouse1)) && NewCameraRotation)
 			{
 //				GenerateCameraTarget();
 

@@ -5,5 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/1_Scenes/Proto6_DemoIA.unity
+  - enabled: 1
+    path: Assets/mXRayShaderMouse/scene_xrayshadermouse1.unity
+  - enabled: 0
+    path: Assets/1_Scenes/Proto8_CreationOeuvre.unity

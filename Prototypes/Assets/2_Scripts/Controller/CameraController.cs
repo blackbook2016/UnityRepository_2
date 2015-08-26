@@ -5,7 +5,6 @@
 
 	public class CameraController : MonoBehaviour
 	{
-
 		#region Properties
 		[Header("Configuration")]
 		[SerializeField]

@@ -8,8 +8,8 @@
 	{
 		Tags {"Queue"="Transparent" "IgnoreProjector"="True"
 		"RenderType"="Transparent"}
-		ZWrite Off
-		ZTest Off
+//		ZWrite Off
+//		ZTest Off
 		Blend SrcAlpha OneMinusSrcAlpha
 		Pass
 		{
@@ -46,7 +46,7 @@
 			{
 				fixed4 main_color = tex2D(_MainTex, input.texcoord);
 				fixed4 mask_color = tex2D(_MaskTex, input.texcoord);
-				float alpha = main_color.a * ( mask_color.a + _Alpha);
+				float alpha = main_color.a * (mask_color.a + _Alpha);
 				return fixed4(main_color.r, main_color.g, main_color.b, alpha);
 			}
 			ENDCG

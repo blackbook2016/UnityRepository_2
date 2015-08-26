@@ -1,12 +1,12 @@
-﻿/////////////////////////////////////////////	Draw On Mouse Position //////////////////////////////////////////
+﻿
+///////////////////////////////////////////	Draw from maskTexture //////////////////////////////////////////
 Shader "Custom/DrawPainting" 
 { 
 	Properties 
 	{ 
 		_MainTex ("Texture", 2D) = "white" {} 
-		_PaintingSprite ("Painting Sprite", 2D) = "white" {} 
-		_MousePos ("MousePos", Vector) = (-1,-10,-1,-1)
-		_Radius ("HoleRadius", Range(0.1,5)) = 2
+		_MaskTex ("Texture", 2D) = "white" {}
+		_Alpha ("Alpha", Range(0,1)) = 0
 	}
 
 	SubShader 
@@ -23,42 +23,88 @@ Shader "Custom/DrawPainting"
 		#pragma target 3.0
 		
 		sampler2D _MainTex; 	
-		sampler2D _PaintingSprite;
-		
-		float4 _MousePos;
-		float _Radius;
+		sampler2D _MaskTex;
+		float _Alpha;
 
 		struct Input 
 		{ 
 			float2 uv_MainTex;
-			float2 uv_PaintingSprite;
-			float3 worldPos;
+			float2 uv_MaskTex;
 		};
 
 		void surf (Input IN, inout SurfaceOutput o) 
-		{ 						
-			float dx = length(_MousePos.x-IN.worldPos.x);
-			float dy = length(_MousePos.y-IN.worldPos.y);
-			float dz = length(_MousePos.z-IN.worldPos.z);
-			
-			float alpha = (dx*dx+dy*dy+dz*dz) / _Radius;
-			alpha = clamp(alpha,0,1);	
-			if(alpha == 1)
-			{
-				alpha = 0;
-//				tex2D(_MainTex, IN.uv_MainTex) = tex2D(_PaintingSprite, IN.uv_PaintingSprite);
-			}
-				else
-				alpha = 1;
-			
+		{ 	
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
+			fixed4 m = tex2D(_MaskTex, IN.uv_MaskTex);
+			float alpha = c.a * ( m.a + _Alpha);
 			o.Albedo = c.rgb;
-			o.Alpha = c.a * alpha;
-			
+			o.Alpha = c.a * _Alpha;			
 		} 
 		ENDCG 	        
 	}
 }
+
+/////////////////////////////////////////////	Draw On Mouse Position //////////////////////////////////////////
+//Shader "Custom/DrawPainting" 
+//{ 
+//	Properties 
+//	{ 
+//		_MainTex ("Texture", 2D) = "white" {} 
+//		_PaintingSprite ("Painting Sprite", 2D) = "white" {} 
+//		_MousePos ("MousePos", Vector) = (-1,-10,-1,-1)
+//		_Radius ("HoleRadius", Range(0.1,5)) = 2
+//	}
+//
+//	SubShader 
+//	{ 
+//		Tags 
+//		{
+//			"Queue"="Transparent"
+//			"IgnoreProjector"="True"
+//			"RenderType"="Transparent"
+//		} 
+//
+//		CGPROGRAM
+//		#pragma surface surf Lambert  alpha:blend
+//		#pragma target 3.0
+//		
+//		sampler2D _MainTex; 	
+//		sampler2D _PaintingSprite;
+//		
+//		float4 _MousePos;
+//		float _Radius;
+//
+//		struct Input 
+//		{ 
+//			float2 uv_MainTex;
+//			float2 uv_PaintingSprite;
+//			float3 worldPos;
+//		};
+//
+//		void surf (Input IN, inout SurfaceOutput o) 
+//		{ 						
+//			float dx = length(_MousePos.x-IN.worldPos.x);
+//			float dy = length(_MousePos.y-IN.worldPos.y);
+//			float dz = length(_MousePos.z-IN.worldPos.z);
+//			
+//			float alpha = (dx*dx+dy*dy+dz*dz) / _Radius;
+//			alpha = clamp(alpha,0,1);	
+//			if(alpha == 1)
+//			{
+//				alpha = 0;
+////				tex2D(_MainTex, IN.uv_MainTex) = tex2D(_PaintingSprite, IN.uv_PaintingSprite);
+//			}
+//				else
+//				alpha = 1;
+//			
+//			fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
+//			o.Albedo = c.rgb;
+//			o.Alpha = c.a * alpha;
+//			
+//		} 
+//		ENDCG 	        
+//	}
+//}
 
 /////////////////////////////////////////////	SetPixel //////////////////////////////////////////
 //Shader "Custom/DrawPainting" 

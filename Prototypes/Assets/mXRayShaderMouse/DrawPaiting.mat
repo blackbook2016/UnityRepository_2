@@ -37,13 +37,6 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _Detail
-        second:
-          m_Texture: {fileID: 2800000, guid: f0b5dbf92ef3d904692e37c781ad6b0f, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
           name: _ParallaxMap
         second:
           m_Texture: {fileID: 0}
@@ -86,6 +79,27 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
+          name: _MaskTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Detail
+        second:
+          m_Texture: {fileID: 2800000, guid: f0b5dbf92ef3d904692e37c781ad6b0f, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _PaintingSprite
+        second:
+          m_Texture: {fileID: 2800000, guid: 597a460351ac12c49a406fb5fb243479, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
           name: _Painting
         second:
           m_Texture: {fileID: 2800000, guid: 95134bb4da01af844a8d4a173626cdec, type: 3}
@@ -117,13 +131,6 @@ Material:
           name: _Spray
         second:
           m_Texture: {fileID: 2800000, guid: 703859600cb7db0479c16266617b9556, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _PaintingSprite
-        second:
-          m_Texture: {fileID: 2800000, guid: 597a460351ac12c49a406fb5fb243479, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -189,6 +196,10 @@ Material:
       data:
         first:
           name: _Metallic
+        second: 0
+      data:
+        first:
+          name: _Alpha
         second: 0
       data:
         first:

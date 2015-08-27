@@ -17,14 +17,17 @@ public class CameraMasking : MonoBehaviour
 	private bool firstFrame;
 	private Vector2? newHolePosition;
 	
-	[Range(-5, 5)]
-	public int brushSize = 1;
+	[Range(0, 1)]
+	public float brushSize = 1.0f;
+
+	[Range(0, 5)]
+	public float cursorTextureSize = 1.0f;
+	private Rect brushRect;
 
 	public Transform cursorTexture;
 
 	public int percentage = 15; 
 
-	private Rect brushRect;
 	private int maxQuads = 0; 
 	
 	private List<Rect> paintingQuads = new List<Rect>();
@@ -49,14 +52,12 @@ public class CameraMasking : MonoBehaviour
 		LeftDown
 	}
 	private CursorDirection dirCursor;
-	private Vector2 minCursor = Vector2.zero;
+	private Vector2? minCursor = null;
 	private Vector2 maxCursor = Vector2.zero;
 
 	private bool isRechargingSpray = false;
 
 	private float shakeDistance;
-
-	private bool isStartFinished = false;
 	
 	private int shakeIterations = 0;
 
@@ -65,39 +66,72 @@ public class CameraMasking : MonoBehaviour
 	private Vector2? mouseLastPosition = null;
 	private float mouseLastDrawClick;
 	private bool playerClicked = false;
+
 	private List<Rect> list_mousePos = new List<Rect>();
 	private List<Rect> list_mousePosGizmos = new List<Rect>();
+
+	private bool canDrawPercGiz = false;
+	private bool canDrawMousePathGiz = false;
+	private bool canDrawMouseShakeGiz = false;
+
+	private List<Vector2> list_ShakePoints = new List<Vector2>();
 
 	#endregion
 
 	#region Unity
 	void OnDrawGizmos()
 	{
-		Gizmos.color = Color.red;
-		foreach(Rect cb in paintingQuads)
+		if(canDrawPercGiz)
 		{
-			Gizmos.DrawCube(cb.center, cb.size);
+			Gizmos.color = Color.red;
+			foreach(Rect cb in paintingQuads)
+			{
+				Gizmos.DrawCube(cb.center, cb.size);
+			}
 		}
-		Rect lastPoint = new Rect();
-		int i = 0;
-		Gizmos.color = Color.black;
-		foreach(Rect point in list_mousePosGizmos)
+
+		if(canDrawMousePathGiz)
 		{
-			if(i!=0)
-				Gizmos.DrawLine(lastPoint.min,point.min);
-			Gizmos.DrawSphere(new Vector3 (point.x, point.y, 0), 0.1f);
-			i++;
-			lastPoint = point;
+			Rect lastPoint = new Rect();
+			int i = 0;
+			Gizmos.color = Color.black;
+
+			foreach(Rect point in list_mousePosGizmos)
+			{
+				if(i!=0)
+					Gizmos.DrawLine(lastPoint.min,point.min);
+	//			Gizmos.DrawSphere(new Vector3 (point.x, point.y, 0), 0.1f);
+				i++;
+				lastPoint = point;
+			}
+			
+			Gizmos.DrawLine(brushRect.min, new Vector2(brushRect.xMin,brushRect.yMax));
+			Gizmos.DrawLine(brushRect.min, new Vector2(brushRect.xMax,brushRect.yMin));
+			Gizmos.DrawLine(brushRect.max, new Vector2(brushRect.xMin,brushRect.yMax));
+			Gizmos.DrawLine(brushRect.max, new Vector2(brushRect.xMax,brushRect.yMin));
 		}
-		Gizmos.DrawLine(brushRect.min, new Vector2(brushRect.xMin,brushRect.yMax));
-		Gizmos.DrawLine(brushRect.min, new Vector2(brushRect.xMax,brushRect.yMin));
-		Gizmos.DrawLine(brushRect.max, new Vector2(brushRect.xMin,brushRect.yMax));
-		Gizmos.DrawLine(brushRect.max, new Vector2(brushRect.xMax,brushRect.yMin));
+
+		if(canDrawMouseShakeGiz)
+		{
+			Vector2? lastPointShake = null;
+			Gizmos.color = Color.black;
+			
+			foreach(Vector2 point in list_ShakePoints)
+			{
+				if(lastPointShake != null)
+					Gizmos.DrawLine(lastPointShake.Value,point);
+
+				Gizmos.DrawSphere(new Vector3 (point.x, point.y, 0), 0.1f);
+				lastPointShake = point;
+			}
+		}
 	}
+
 	void OnGUI()
 	{
 		GUI.Label(new Rect(0, 0, 160, 20),"PaintPercentage: " + ((maxQuads - paintingQuads.Count) * 100 /maxQuads)+"%");
 		GUI.Label(new Rect(0, 40, 120, 20),"ShakeIterations: " + shakeIterations + "/4");
+
 //		if(isFadeInPainting)
 //		{
 			if(GUI.Button(new Rect(0, 80, 120, 20), "Restart"))
@@ -106,20 +140,27 @@ public class CameraMasking : MonoBehaviour
 				StartCoroutine("ResetPainting");
 			}
 //		}
+
 		if(Application.isPlaying && !isFadeInPainting && Input.GetMouseButton(0) && image_SprayCapacity.fillAmount > 0)
 		{			
 			Event e = Event.current;
-//			print ("GUI");
-//			print(e.delta + "/" + new Vector2(e.delta.x, - e.delta.y).magnitude + "/" + brushRect.width + "/" + 2 * brushRect.size.magnitude);
-//			if(new Vector2(e.delta.x, - e.delta.y).magnitude < 2 * brushRect.size.magnitude)
-//				print ("true" );
 			GenerateListMousePosition(e.mousePosition);
 		}
+//#if UNITY_EDITOR
+		if(GUI.Toggle(new Rect(0, 120, 200, 20),false, "Show Percentage Gizmos"))
+			canDrawPercGiz = !canDrawPercGiz;
+		
+		if(GUI.Toggle(new Rect(0, 160, 200, 20),false, "Show Mouse Draw Points Gizmos"))
+			canDrawMousePathGiz = !canDrawMousePathGiz;
+
+		if(GUI.Toggle(new Rect(0, 200, 200, 20),false, "Show Mouse Shake Points Gizmos"))
+			canDrawMouseShakeGiz = !canDrawMouseShakeGiz;
+//#endif
 	}
 	
 	public void Start()
 	{
-		Cursor.visible = false;
+//		Cursor.visible = false;
 		firstFrame = true;
 
 		//Get Erase effect boundary area
@@ -130,19 +171,8 @@ public class CameraMasking : MonoBehaviour
 
 		dustDepth = Dust.transform.position.z - transform.position.z;
 
-		brushRect.width = EraserMaterial.mainTexture.width / 100.0f;
-		brushRect.height = EraserMaterial.mainTexture.height / 100.0f;
-
-		if(brushSize >= 0)
-		{
-			brushRect.width *= Mathf.Abs(brushSize);
-			brushRect.height *= Mathf.Abs(brushSize);
-		}
-		else
-		{
-			brushRect.width /= Mathf.Abs(brushSize);
-			brushRect.height /= Mathf.Abs(brushSize);
-		}
+		brushRect.width = EraserMaterial.mainTexture.width / 100.0f * brushSize;
+		brushRect.height = EraserMaterial.mainTexture.height / 100.0f * brushSize;
 
 		rt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
 
@@ -156,61 +186,72 @@ public class CameraMasking : MonoBehaviour
 
 		dirCursor = CursorDirection.None;
 
-		shakeDistance = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height)) * 10 / 100;
-
-		isStartFinished = true;
+		shakeDistance = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height)) * 5f / 100;
+		
+		cursorTexture.localScale = Vector3.one * cursorTextureSize * brushSize;
 	}
 
 	public void Update()
 	{
-		if(isStartFinished)
-		{
-			if(!isFadeInPainting && !isRechargingSpray)
-			{
-				newHolePosition = null;
-				
-				if (Input.GetMouseButton(0) && image_SprayCapacity.fillAmount > 0)
-				{							
+		brushRect.width = EraserMaterial.mainTexture.width / 100.0f * brushSize;
+		brushRect.height = EraserMaterial.mainTexture.height / 100.0f * brushSize;
+
+		newHolePosition = null;
+
+		if(!isFadeInPainting && !isRechargingSpray)
+		{				
+			if (Input.GetMouseButton(0) && image_SprayCapacity.fillAmount > 0)
+			{				
+				//Reset Shake Points
+				if(minCursor != null)
+				{
+					list_ShakePoints.Clear();
+					minCursor = null;				
 					shakeIterations = 0;
+				}
 
-					if(!isPlayingSound)
-						PlaySound(ac_Spraying, true);
+				if(!isPlayingSound)
+					PlaySound(ac_Spraying, true);
 
-					image_SprayCapacity.fillAmount -= Time.deltaTime / 3;
+				image_SprayCapacity.fillAmount -= Time.deltaTime / 3;
 
-					Vector2 v = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, dustDepth));
+				Vector2 v = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, dustDepth));
 
-					if (ScreenRect.Contains(v))
-					{						
-						//Get MousePosition for eraser
-						newHolePosition = new Vector2(100 * (v.x - ScreenRect.xMin),
-						                              100 * (v.y - ScreenRect.yMin));
-					}
-					else
-						if(playerClicked)
-					{
-						CancelInvoke();
-						playerClicked = false;
-					}
+				if (ScreenRect.Contains(v))
+				{						
+					//Get MousePosition for eraser
+					newHolePosition = new Vector2(100 * (v.x - ScreenRect.xMin),
+					                              100 * (v.y - ScreenRect.yMin));
 				}
 				else
-				{
-					mouseLastPosition = null;
 					if(playerClicked)
-					{
-						CancelInvoke();
-						playerClicked = false;
-					}
-					StopSound();
-					if(!Input.GetMouseButton(0))
-						if((image_SprayCapacity.fillAmount < 1 && CheckShake()) || image_SprayCapacity.fillAmount == 0 )
-							StartCoroutine("RecharcheSpray");
+				{
+					CancelInvoke();
+					playerClicked = false;
 				}
 			}
-			//		Cursor Texture
-			cursorTexture.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, dustDepth- 0.5f));
-			cursorTexture.localScale = brushSize >= 0 ? Vector3.one * brushSize : Vector3.one / brushSize;
+			else
+			{
+				mouseLastPosition = null;
+
+				if(playerClicked)
+				{
+					CancelInvoke();
+					playerClicked = false;
+				}
+
+				StopSound();
+
+				if(!Input.GetMouseButton(0))
+					if((image_SprayCapacity.fillAmount < 1 && CheckShake()) || image_SprayCapacity.fillAmount == 0 )
+						StartCoroutine("RecharcheSpray");
+			}
 		}
+		//		Cursor Texture
+//			cursorTexture.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,0));
+		cursorTexture.position = Input.mousePosition;
+		cursorTexture.localScale = Vector3.one * cursorTextureSize * brushSize;
+
 	}
 	public void OnPostRender()
 	{
@@ -239,41 +280,31 @@ public class CameraMasking : MonoBehaviour
 			Rect positionRect  = new Rect();
 			if(newHolePosition != null)
 			{
-				float brushWidth = 0.0f;
-				float brushHeight = 0.0f;
-				if(brushSize >= 0)
-				{
-					brushWidth = EraserMaterial.mainTexture.width * brushSize;
-					brushHeight = EraserMaterial.mainTexture.height * brushSize;
-				}
-				else
-				{
-					brushWidth = EraserMaterial.mainTexture.width / brushSize;
-					brushHeight = EraserMaterial.mainTexture.height / brushSize;
-				}
 				positionRect = new Rect(
-					(newHolePosition.Value.x - 0.5f * brushWidth) /  imageSize.x,
-					(newHolePosition.Value.y - 0.5f * brushHeight) / imageSize.y,
-					brushWidth / imageSize.x,
-					brushHeight / imageSize.y
+					(newHolePosition.Value.x - 0.5f * -brushRect.width * 100) /  imageSize.x,
+					(newHolePosition.Value.y - 0.5f * -brushRect.height * 100) / imageSize.y,
+					brushRect.width * 100 / imageSize.x,
+					brushRect.height * 100 / imageSize.y
 					); 
+
+				GL.PushMatrix();
+				GL.LoadOrtho();
+				EraserMaterial.SetPass(0);
+				GL.Begin(GL.QUADS);
+				GL.Color(Color.white);
+				GL.TexCoord2(textureRect.xMin, textureRect.yMax);
+				GL.Vertex3(positionRect.xMin, positionRect.yMax, 0.0f);
+				GL.TexCoord2(textureRect.xMax, textureRect.yMax);
+				GL.Vertex3(positionRect.xMax, positionRect.yMax, 0.0f);
+				GL.TexCoord2(textureRect.xMax, textureRect.yMin);
+				GL.Vertex3(positionRect.xMax, positionRect.yMin, 0.0f);
+				GL.TexCoord2(textureRect.xMin, textureRect.yMin);
+				GL.Vertex3(positionRect.xMin, positionRect.yMin, 0.0f);
+				GL.End();
+				GL.PopMatrix();
 			}
 
-			GL.PushMatrix();
-			GL.LoadOrtho();
-			EraserMaterial.SetPass(0);
-			GL.Begin(GL.QUADS);
-			GL.Color(Color.white);
-			GL.TexCoord2(textureRect.xMin, textureRect.yMax);
-			GL.Vertex3(positionRect.xMin, positionRect.yMax, 0.0f);
-			GL.TexCoord2(textureRect.xMax, textureRect.yMax);
-			GL.Vertex3(positionRect.xMax, positionRect.yMax, 0.0f);
-			GL.TexCoord2(textureRect.xMax, textureRect.yMin);
-			GL.Vertex3(positionRect.xMax, positionRect.yMin, 0.0f);
-			GL.TexCoord2(textureRect.xMin, textureRect.yMin);
-			GL.Vertex3(positionRect.xMin, positionRect.yMin, 0.0f);
-			GL.End();
-			GL.PopMatrix();
+
 		}
 		else
 		{
@@ -306,27 +337,16 @@ public class CameraMasking : MonoBehaviour
 		Vector2 v = Camera.main.ScreenToWorldPoint(pos);
 		if (ScreenRect.Contains(v))
 		{	
-			Vector2 imageLocalPosition = new Vector2(100 * (v.x - ScreenRect.xMin),
-			                              100 * (v.y - ScreenRect.yMin));
-
-			float brushWidth = 0.0f;
-			float brushHeight = 0.0f;
-			if(brushSize >= 0)
-			{
-				brushWidth = EraserMaterial.mainTexture.width * brushSize;
-				brushHeight = EraserMaterial.mainTexture.height * brushSize;
-			}
-			else
-			{
-				brushWidth = EraserMaterial.mainTexture.width / brushSize;
-				brushHeight = EraserMaterial.mainTexture.height / brushSize;
-			}
+			Vector2 imageLocalPosition = new Vector2(
+				100 * (v.x - ScreenRect.xMin),
+				100 * (v.y - ScreenRect.yMin)
+				);
 
 			Rect positionRect = new Rect(
-				(imageLocalPosition.x - 0.5f * brushWidth) / 1024,
-				(imageLocalPosition.y - 0.5f * brushHeight) / 614,
-				brushWidth / 1024,
-				brushHeight / 614
+				(imageLocalPosition.x - 0.5f * brushRect.width * 100) / 1024,
+				(imageLocalPosition.y - 0.5f * brushRect.height * 100) / 614,
+				brushRect.width * 100 / 1024,
+				brushRect.height * 100 / 614
 				); 
 
 			if(!list_mousePosGizmos.Contains(positionRect))
@@ -341,26 +361,32 @@ public class CameraMasking : MonoBehaviour
 					while(Vector2.Distance(mouseLastPosition.Value,mousePos) > 15)
 					{
 						Vector2 dir = 10 * new Vector2(mousePos.x - mouseLastPosition.Value.x, mousePos.y -mouseLastPosition.Value.y).normalized;
-
 						mouseLastPosition += dir;
+
 						pos = new Vector3(mouseLastPosition.Value.x, Screen.height - mouseLastPosition.Value.y - 1.0f, dustDepth);
 						v = Camera.main.ScreenToWorldPoint(pos);
+
 						if (ScreenRect.Contains(v))
 						{
-							imageLocalPosition = new Vector2(100 * (v.x - ScreenRect.xMin),
-							                                         100 * (v.y - ScreenRect.yMin));
+							imageLocalPosition = new Vector2(
+								100 * (v.x - ScreenRect.xMin),
+								100 * (v.y - ScreenRect.yMin)
+								);
+
 							positionRect = new Rect(
-								(imageLocalPosition.x - 0.5f * brushWidth) / 1024,
-								(imageLocalPosition.y - 0.5f * brushHeight) / 614,
-								brushWidth / 1024,
-								brushHeight / 614
+								(imageLocalPosition.x - 0.5f * brushRect.width * 100) / 1024,
+								(imageLocalPosition.y - 0.5f * brushRect.height * 100) / 614,
+								brushRect.width * 100 / 1024,
+								brushRect.height * 100 / 614
 								); 
+
 							if(!list_mousePos.Contains(positionRect))
 							{
 								list_mousePos.Add(positionRect);
 								list_mousePosGizmos.Add(new Rect(v.x,v.y,1,1));
+
+								EraseRects(v);
 							}
-							EraseRects(v);
 						}
 					}
 				}
@@ -441,7 +467,7 @@ public class CameraMasking : MonoBehaviour
 		float alpha = 0.0f;
 		Material mat = Dust.GetComponent<Renderer>().material;
 		
-		GL.Clear(true, true, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+//		GL.Clear(true, true, new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		while(alpha != 1)
 		{			
 			alpha += Time.deltaTime * 0.5f;
@@ -449,6 +475,7 @@ public class CameraMasking : MonoBehaviour
 			mat.SetFloat("_Alpha", alpha);
 			yield return null;
 		}
+//		StartCoroutine("ResetPainting");
 	}
 
 	private IEnumerator ResetPainting()
@@ -505,16 +532,18 @@ public class CameraMasking : MonoBehaviour
 		if(Input.mousePosition.x >= 0 && Input.mousePosition.x <= Screen.width 
 		   && Input.mousePosition.y >= 0 && Input.mousePosition.y <= Screen.height)
 		{	
-			if(minCursor == Vector2.zero)
+			if(minCursor == null)
 			{
-				minCursor =  Input.mousePosition;
+				minCursor =  Input.mousePosition;	
+
+				list_ShakePoints.Add(Camera.main.ScreenToWorldPoint(new Vector3(minCursor.Value.x, minCursor.Value.y, dustDepth)));
 				return false;
 			}
 
 			maxCursor = Input.mousePosition;
-			Vector2 mouseDir = maxCursor - minCursor;
+			Vector2 mouseDir = maxCursor - minCursor.Value;
 
-			if(Vector2.Distance(minCursor,maxCursor) > shakeDistance)
+			if(Vector2.Distance(minCursor.Value,maxCursor) > shakeDistance)
 			{
 				CursorDirection tempDirCursor;
 				if(mouseDir.x >= 0)
@@ -528,6 +557,9 @@ public class CameraMasking : MonoBehaviour
 					{
 						shakeIterations ++;
 	//					print ("Shake Iteration From " + dirCursor + " To " + tempDirCursor + " / " + shakeIterations);
+						
+						list_ShakePoints.Add(Camera.main.ScreenToWorldPoint(new Vector3(minCursor.Value.x, minCursor.Value.y, dustDepth)));
+						list_ShakePoints.Add(Camera.main.ScreenToWorldPoint(new Vector3(maxCursor.x, maxCursor.y, dustDepth)));
 					}
 					minCursor =  Input.mousePosition;
 					dirCursor = tempDirCursor;

@@ -1,605 +1,419 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
+﻿namespace TheVandals
+{
+	using UnityEngine;
+	using UnityEngine.UI;
+	using System.Collections;
+	using System.Collections.Generic;
 
-public class CreateOeuvre : MonoBehaviour {
-
-	public GameObject Dust;
-	Rect ScreenRect;
-	public RenderTexture rt;
-	public Texture2D tex;
-	public Material EraserMaterial;
-	private bool firstFrame;
-	private Vector2? newHolePosition;
-
-	void OnGUI()
-	{
-		if(GUI.Button(new Rect(0, 80, 120, 20), "Restart"))
-		{				
-			GL.Clear(true, true, new Color(1.0f, 1.0f, 1.0f, 1.0f));
-			rt.Release();
-		}
-	}
-	private void EraseBrush(Vector2 imageSize, Vector2 imageLocalPosition)
-	{
-		
-		Rect textureRect = new Rect(0.0f, 0.0f, 1.0f, 1.0f); //this will get erase material texture part
-		Rect positionRect = new Rect(
-			(imageLocalPosition.x - 0.5f * EraserMaterial.mainTexture.width) / imageSize.x,
-			(imageLocalPosition.y - 0.5f * EraserMaterial.mainTexture.height) / imageSize.y,
-			EraserMaterial.mainTexture.width / imageSize.x,
-			EraserMaterial.mainTexture.height / imageSize.y
-			); //This will Generate position of eraser according to mouse position and size of eraser texture
-		
-		//Draw Graphics Quad using GL library to render in target render texture of camera to generate effect
-		GL.PushMatrix();
-		GL.LoadOrtho();
-		for (int i = 0; i < EraserMaterial.passCount; i++)
+	public class CreateOeuvre : MonoBehaviour 
+	{		
+		private static CreateOeuvre _instance;
+		public static CreateOeuvre instance
 		{
-			EraserMaterial.SetPass(i);
-			GL.Begin(GL.QUADS);
-			GL.Color(Color.white);
-			GL.TexCoord2(textureRect.xMin, textureRect.yMax);
-			GL.Vertex3(positionRect.xMin, positionRect.yMax, 0.0f);
-			GL.TexCoord2(textureRect.xMax, textureRect.yMax);
-			GL.Vertex3(positionRect.xMax, positionRect.yMax, 0.0f);
-			GL.TexCoord2(textureRect.xMax, textureRect.yMin);
-			GL.Vertex3(positionRect.xMax, positionRect.yMin, 0.0f);
-			GL.TexCoord2(textureRect.xMin, textureRect.yMin);
-			GL.Vertex3(positionRect.xMin, positionRect.yMin, 0.0f);
-			GL.End();
-		}
-		GL.PopMatrix();
-	}
-	
-	public void Start()
-	{
-		firstFrame = true;
-		//Get Erase effect boundary area
-		ScreenRect.x = Dust.GetComponent<Renderer>().bounds.min.x;
-		ScreenRect.y = Dust.GetComponent<Renderer>().bounds.min.y;
-		ScreenRect.width = Dust.GetComponent<Renderer>().bounds.size.x;
-		ScreenRect.height = Dust.GetComponent<Renderer>().bounds.size.y;
-		
-//		Create new render texture for camera target texture
-		rt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
-		
-//		yield return rt.Create();
-
-		Graphics.Blit(tex, rt);
-		GetComponent<Camera>().targetTexture = rt;
-		
-		//Set Mask Texture to dust material to Generate Dust erase effect
-		Dust.GetComponent<Renderer>().material.SetTexture("_MaskTex", rt);
-		
-
-	}
-	
-	public void Update()
-	{
-		newHolePosition = null;
-		if (Input.GetMouseButton(0)) //Check if MouseDown
-		{
-			Vector2 v = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y,  Dust.transform.position.z - transform.position.z));
-			Rect worldRect = ScreenRect;
-			if (worldRect.Contains(v)) 
+			get
 			{
-				//Get MousePosition for eraser
-				newHolePosition = new Vector2(800f * (v.x - worldRect.xMin) / worldRect.width, 600f* (v.y - worldRect.yMin) / worldRect.height);
+				if(_instance == null)
+					_instance = GameObject.FindObjectOfType<CreateOeuvre>();
+				return _instance;
+			}
+		}
+
+		[Header("Links To Painting")]
+		public Renderer painting_Renderer;
+		public RenderTexture rt;	
+		public Material brush_Material;
+		public GameObject Panel_DrawTexture;
+		public Transform cursorTexture;		
+
+		public Image image_Fill;
+
+		[Header("Configuration")]
+		[Range(0, 1)]
+		public float brushSize = 1.0f;	
+		[Range(0, 5)]
+		public float cursorTextureSize = 1.0f;
+		public int percentage = 15; 
+
+		private Vector2 brush_Position;
+		private Vector2? mouseLastPosition = null;
+		private Rect brush_Rect;
+		private Rect ScreenRect;
+
+		private bool firstFrame = true;
+		private bool canPlayerPaint = false;
+
+		private List<Rect> paintingQuads = new List<Rect>();
+		private List<Rect> paintingQuadsToRemove = new List<Rect>();
+		private int maxQuads = 0;
+
+		private List<Vector2> list_mousePos = new List<Vector2>();
+
+		private enum CursorDirection
+		{
+			None,
+			RightUp,
+			LeftUp,
+			RightDown,
+			LeftDown
+		}
+		private CursorDirection dirCursor;
+		private Vector2? minCursor = null;
+		private Vector2 maxCursor = Vector2.zero;	
+		private bool isRechargingSpray = false;
+		private float shakeDistance;		
+		private int shakeIterations = 0;
+
+		#region Unity
+		void OnDrawGizmos()
+		{
+			Gizmos.color = Color.red;
+			foreach(Rect cb in paintingQuads)
+			{
+				Gizmos.DrawCube(cb.center, cb.size);
+			}
+			Gizmos.color = Color.black;
+			Gizmos.DrawLine(brush_Rect.min, new Vector2(brush_Rect.xMin,brush_Rect.yMax));
+			Gizmos.DrawLine(brush_Rect.min, new Vector2(brush_Rect.xMax,brush_Rect.yMin));
+			Gizmos.DrawLine(brush_Rect.max, new Vector2(brush_Rect.xMin,brush_Rect.yMax));
+			Gizmos.DrawLine(brush_Rect.max, new Vector2(brush_Rect.xMax,brush_Rect.yMin));
+		}
+
+		void OnGUI()
+		{
+			if(GUI.Button(new Rect(0, 80, 120, 20), "Restart"))
+			{				
+				GL.Clear(true, true, new Color(1.0f, 1.0f, 1.0f, 1.0f));
+				rt.Release();
+				GenerateRects();
+				
+				list_mousePos.Clear();
+				mouseLastPosition = null;
+				
+				painting_Renderer.material.SetFloat("_Alpha", 0);
 			}
 		}
 		
-//		Material mat = Dust.GetComponent<Renderer>().material;
-//		mat.SetFloat("_Alpha", Mathf.Abs(Mathf.Sin(Time.time)));		
-	}
-	
-	public void OnPostRender()
-	{
-		//Start  It will clear Graphics buffer 
-		if (firstFrame)
+		public void Start()
 		{
-			firstFrame = false;
-			GL.Clear(false, true, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+			if(!painting_Renderer)
+			{
+				print ("Please set a painting to draw to the gameController");
+				gameObject.SetActive(false);
+			}
+		
+			//Get Brush effect boundary area on painting with a rotation zero and position zero
+			Vector3 painting_size = Quaternion.AngleAxis(-painting_Renderer.transform.eulerAngles.y, Vector3.up) * painting_Renderer.bounds.size;
+			
+			ScreenRect.width = Mathf.Abs(painting_size.x);
+			ScreenRect.height = Mathf.Abs(painting_size.y);		
+			
+			ScreenRect.x = -ScreenRect.width / 2;
+			ScreenRect.y = -ScreenRect.height / 2;
+
+			brush_Rect.width = brush_Material.mainTexture.width / 100.0f * brushSize;
+			brush_Rect.height = brush_Material.mainTexture.height / 100.0f * brushSize;
+
+			rt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
+			GetComponent<Camera>().targetTexture = rt;
+			painting_Renderer.material.SetTexture("_MaskTex", rt);
+
+			GenerateRects ();
+
+			cursorTexture.localScale = Vector3.one * cursorTextureSize * brushSize;
+			shakeDistance = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height)) * 5f / 100;
+
+			firstFrame = true;
+			canPlayerPaint = false;		
+			Panel_DrawTexture.SetActive(false);
 		}
-		//Generate GL quad according to eraser material texture
-		if (newHolePosition != null)
-			EraseBrush(new Vector2(800.0f, 600f), newHolePosition.Value);
+		
+		public void Update()
+		{
+			if(canPlayerPaint)
+			{
+				if (Input.GetMouseButton(0) && image_Fill.fillAmount > 0 && !isRechargingSpray)
+				{		
+					image_Fill.fillAmount -= Time.deltaTime / 3;
+
+					if(!SoundController.instance.IsPlaying())
+						SoundController.instance.PlayClip("sprayClip");
+
+					if(minCursor != null)
+					{
+						minCursor = null;				
+						shakeIterations = 0;
+					}
+
+					Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+					RaycastHit hit;
+					if (Physics.Raycast(ray, out hit, Mathf.Infinity) && hit.collider.tag == "Painting")					
+						GenerateListMousePosition(hit);
+				}
+				else
+				{
+					mouseLastPosition = null;
+
+					if(!isRechargingSpray)
+						SoundController.instance.StopClip();
+					
+					if(image_Fill.fillAmount == 0 || 
+					   (!Input.GetMouseButton(0) && image_Fill.fillAmount < 1 && CheckShake()))
+							StartCoroutine("RecharcheSpray");
+				}
+
+				cursorTexture.position = Input.mousePosition;
+				cursorTexture.localScale = Vector3.one * cursorTextureSize * brushSize;
+			}
+		}
+		
+		public void OnPostRender()
+		{
+			//clear Graphics buffer 
+			if (firstFrame)
+			{
+				firstFrame = false;
+				GL.Clear(false, true, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+			}
+
+			if (list_mousePos.Count != 0)
+			{
+				foreach(Vector2 imageLocalPosition in list_mousePos)
+				{
+					DrawBrushOnPainting(new Vector2(1024.0f, 614), imageLocalPosition);
+				}
+				list_mousePos.Clear();
+			}
+		}
+		#endregion
+
+		#region Private 
+		#region Functions		
+		private void GenerateRects()
+		{		
+			paintingQuads.Clear();
+			
+			int widthQuadsCount = 10;
+			int heightQuadsCount = 10;
+			
+			
+			float paintingQuadsWidth = ScreenRect.width / widthQuadsCount;
+			float paintingQuadsHeight = -ScreenRect.height / heightQuadsCount;
+			
+			for(int i = 0; i < widthQuadsCount; i++)
+			{
+				for(int y = 0; y < heightQuadsCount; y++)
+				{
+					paintingQuads.Add(new Rect((i * paintingQuadsWidth) + ScreenRect.x,
+					                           (y * paintingQuadsHeight) - ScreenRect.y,
+					                           paintingQuadsWidth,
+					                           paintingQuadsHeight));
+				}
+			}
+			maxQuads = paintingQuads.Count;
+		}
+		
+		private void RemoveRects(Vector3 v)
+		{
+			brush_Rect.center = v;
+			
+			//Check Rectangle close to mouse position
+			foreach(Rect rt in paintingQuads)
+				if(brush_Rect.Contains(rt.center))
+					paintingQuadsToRemove.Add(rt);
+			
+			//Remove rectangles from the list
+			foreach(Rect tc in paintingQuadsToRemove)
+				paintingQuads.Remove(tc);
+			
+			paintingQuadsToRemove.Clear();
+			
+			if(paintingQuads.Count * 100 / maxQuads < percentage)
+			{			
+				StartCoroutine("FadeInPainting");
+			}
+		}
+
+		private void GenerateListMousePosition(RaycastHit hit)
+		{
+			// Le screenrect qui est la taille et position du graffiti a la position vector3.zero
+			// On va deplacer et faire une rotation du hit point du raycast pour avoir sa position a la position vector0 du screenRect
+			Vector2 v = Quaternion.AngleAxis(-hit.transform.eulerAngles.y, Vector3.up) * (hit.point - hit.transform.position);
+			
+			if (ScreenRect.Contains(v)) 
+			{
+				//Transpose mouse position from world into pixels
+				brush_Position = new Vector2(1024 * (v.x - ScreenRect.xMin) / ScreenRect.width,
+				                             614 * (v.y - ScreenRect.yMin) / ScreenRect.height);
+				if(!list_mousePos.Contains(brush_Position))
+				{
+					list_mousePos.Add(brush_Position);				
+					RemoveRects(v);
+					
+					if(mouseLastPosition != null)
+					{
+						while(Vector2.Distance(mouseLastPosition.Value,brush_Position) > 15)
+						{
+							Vector2 dir = 10 * new Vector2(brush_Position.x - mouseLastPosition.Value.x, brush_Position.y -mouseLastPosition.Value.y).normalized;
+							mouseLastPosition += dir;
+							
+							if(!list_mousePos.Contains(mouseLastPosition.Value))
+							{
+								list_mousePos.Add(mouseLastPosition.Value);
+								//On recupere le v initial pour le removeRect
+								Vector2 temprect = new Vector2(
+									(ScreenRect.width * mouseLastPosition.Value.x / 1024) + ScreenRect.xMin,
+									(ScreenRect.height * mouseLastPosition.Value.y / 614) + ScreenRect.yMin);
+								RemoveRects(temprect);
+							}
+						}
+					}					
+					mouseLastPosition = brush_Position;
+					return;
+				}
+			}
+		}
+		
+		private void DrawBrushOnPainting(Vector2 imageSize, Vector2 imageLocalPosition)
+		{
+			Rect textureRect = new Rect(0.0f, 0.0f, 1.0f, 1.0f); //this will get brush material texture part
+			Rect positionRect = new Rect(
+				(imageLocalPosition.x - 0.5f * brush_Rect.width * 100) /  imageSize.x,
+				(imageLocalPosition.y - 0.5f * brush_Rect.height * 100) / imageSize.y,
+				brush_Rect.width * 100 / imageSize.x,
+				brush_Rect.height * 100 / imageSize.y
+				);  //This will Generate position of the brush according to mouse position and size of brush texture
+			
+			//Draw Graphics Quad using GL library to render in target render texture of camera to generate effect
+			GL.PushMatrix();
+			GL.LoadOrtho();
+			for (int i = 0; i < brush_Material.passCount; i++)
+			{
+				brush_Material.SetPass(i);
+				GL.Begin(GL.QUADS);
+				GL.Color(Color.white);
+				GL.TexCoord2(textureRect.xMin, textureRect.yMax);
+				GL.Vertex3(positionRect.xMin, positionRect.yMax, 0.0f);
+				GL.TexCoord2(textureRect.xMax, textureRect.yMax);
+				GL.Vertex3(positionRect.xMax, positionRect.yMax, 0.0f);
+				GL.TexCoord2(textureRect.xMax, textureRect.yMin);
+				GL.Vertex3(positionRect.xMax, positionRect.yMin, 0.0f);
+				GL.TexCoord2(textureRect.xMin, textureRect.yMin);
+				GL.Vertex3(positionRect.xMin, positionRect.yMin, 0.0f);
+				GL.End();
+			}
+			GL.PopMatrix();
+		}
+
+		private bool CheckShake()
+		{
+			if(Input.mousePosition.x >= 0 && Input.mousePosition.x <= Screen.width 
+			   && Input.mousePosition.y >= 0 && Input.mousePosition.y <= Screen.height)
+			{	
+				if(minCursor == null)
+				{
+					minCursor =  Input.mousePosition;	
+					return false;
+				}
+				
+				maxCursor = Input.mousePosition;
+				Vector2 mouseDir = maxCursor - minCursor.Value;
+				
+				if(Vector2.Distance(minCursor.Value,maxCursor) > shakeDistance)
+				{
+					CursorDirection tempDirCursor;
+					if(mouseDir.x >= 0)
+						tempDirCursor = mouseDir.y >= 0 ? CursorDirection.RightUp : CursorDirection.LeftUp;
+					else
+						tempDirCursor = mouseDir.y >= 0 ? CursorDirection.RightDown : CursorDirection.LeftDown;
+					
+					if(dirCursor != tempDirCursor)
+					{
+						if(dirCursor != CursorDirection.None)						
+							shakeIterations ++;
+
+						minCursor =  Input.mousePosition;
+						dirCursor = tempDirCursor;
+					}
+					
+					if(shakeIterations == 2)
+					{
+						shakeIterations = 0;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		#endregion
+		#region IEnumerators
+		private IEnumerator FadeInPainting()
+		{
+			SoundController.instance.StopClip();
+			image_Fill.fillAmount = 1;
+
+			canPlayerPaint = false;
+			Panel_DrawTexture.SetActive(false);
+			Cursor.visible = true;
+
+			float alpha = 0.0f;
+
+			while(alpha != 1)
+			{			
+				alpha += Time.deltaTime * 0.5f;
+				alpha = Mathf.Clamp(alpha,0,1);
+				painting_Renderer.material.SetFloat("_Alpha", alpha);
+				yield return null;
+			}
+			GameController.instance.FinishDrawOeuvre();
+		}
+
+		private IEnumerator RecharcheSpray()
+		{
+			isRechargingSpray = true;
+			SoundController.instance.PlayClip("rechargeSprayClip");
+
+			float startingTime = Time.time;
+			float capacityLeft = image_Fill.fillAmount;
+			float capacityTofill = 1 - capacityLeft;
+			float rechargeTime = 1.70f * capacityTofill;
+			float soundTimer = startingTime + rechargeTime;
+			
+			while((Time.time <= soundTimer || image_Fill.fillAmount != 1) && !Input.GetMouseButton(0))
+			{
+				image_Fill.fillAmount =  capacityLeft + (capacityTofill * ((Time.time - startingTime) / rechargeTime));
+				yield return null;
+			}
+//			isPlayingSound = false;
+			isRechargingSpray = false;
+		}
+        #endregion	
+		#endregion
+
+		#region Public
+		public void StartPainting()
+		{
+			canPlayerPaint = true;
+
+			Cursor.visible = false;
+			cursorTexture.position = Input.mousePosition;
+			cursorTexture.localScale = Vector3.one * cursorTextureSize * brushSize;
+			Panel_DrawTexture.SetActive(true);
+		}
+
+		public void Reset()
+		{		
+			canPlayerPaint = false;
+
+			GL.Clear(true, true, new Color(1.0f, 1.0f, 1.0f, 1.0f));
+			rt.Release();
+			GenerateRects();
+			
+			list_mousePos.Clear();
+			mouseLastPosition = null;
+			
+			painting_Renderer.material.SetFloat("_Alpha", 0);
+			image_Fill.fillAmount = 1.0f;
+		}	
+		#endregion
 	}
 }
-
-
-//public class CameraMasking : MonoBehaviour
-//{
-//	#region Properties
-//	public GameObject Dust;
-//	private Rect ScreenRect;
-//	private float dustDepth = 0.0f;
-//	
-//	private RenderTexture rt;
-//	
-//	public Material EraserMaterial;
-//	
-//	private bool firstFrame;
-//	private Vector2? newHolePosition;
-//	
-//	[Range(-5, 5)]
-//	public int brushSize = 1;
-//	
-//	public Transform cursorTexture;
-//	
-//	public int percentage = 15; 
-//	
-//	private Rect brushRect;
-//	private int maxQuads = 0; 
-//	
-//	private List<Rect> paintingQuads = new List<Rect>();
-//	private List<Rect> paintingQuadsToRemove = new List<Rect>();
-//	
-//	private bool isFadeInPainting = false;
-//	private bool isPlayingSound = false;
-//	
-//	private AudioSource audioSource;
-//	[Tooltip("Audio Clip SprayingSound")]
-//	public AudioClip ac_Spraying;
-//	
-//	[Tooltip("Audio Clip SprayRechargeSound")]
-//	public AudioClip ac_SprayRecharge;
-//	
-//	private enum CursorDirection
-//	{
-//		None,
-//		RightUp,
-//		LeftUp,
-//		RightDown,
-//		LeftDown
-//	}
-//	private CursorDirection dirCursor;
-//	private Vector2 minCursor = Vector2.zero;
-//	private Vector2 maxCursor = Vector2.zero;
-//	
-//	private bool isRechargingSpray = false;
-//	
-//	private float shakeDistance;
-//	
-//	private bool isStartFinished = false;
-//	
-//	private int shakeIterations = 0;
-//	
-//	public Image image_SprayCapacity;
-//	
-//	private Vector2 mouseLastPosition;
-//	private float mouseLastDrawClick;
-//	private bool playerClicked = false;
-//	private List<Rect> list_mousePos = new List<Rect>();
-//	
-//	#endregion
-//	
-//	#region Unity
-//	void OnDrawGizmos()
-//	{
-//		Gizmos.color = Color.red;
-//		foreach(Rect cb in paintingQuads)
-//		{
-//			Gizmos.DrawCube(cb.center, cb.size);
-//		}
-//	}
-//	void OnGUI()
-//	{
-//		GUI.Label(new Rect(0, 0, 160, 20),"PaintPercentage: " + ((maxQuads - paintingQuads.Count) * 100 /maxQuads)+"%");
-//		GUI.Label(new Rect(0, 40, 120, 20),"ShakeIterations: " + shakeIterations + "/4");
-//		if(isFadeInPainting)
-//		{
-//			if(GUI.Button(new Rect(0, 80, 120, 20), "Restart"))
-//			{
-//				StopAllCoroutines();
-//				StartCoroutine("ResetPainting");
-//			}
-//		}
-//		if(Application.isPlaying && Input.GetMouseButton(0) && image_SprayCapacity.fillAmount > 0)
-//		{			
-//			Event e = Event.current;
-//			//			print ("GUI");
-//			//			print(e.delta + "/" + new Vector2(e.delta.x, - e.delta.y).magnitude + "/" + brushRect.width + "/" + 2 * brushRect.size.magnitude);
-//			//			if(new Vector2(e.delta.x, - e.delta.y).magnitude < 2 * brushRect.size.magnitude)
-//			//				print ("true" );
-//			GenerateListMousePosition(e.mousePosition);
-//		}
-//	}
-//	
-//	public IEnumerator Start()
-//	{
-//		Cursor.visible = false;
-//		firstFrame = true;
-//		
-//		//Get Erase effect boundary area
-//		ScreenRect.x = Dust.GetComponent<Renderer>().bounds.min.x;
-//		ScreenRect.y = Dust.GetComponent<Renderer>().bounds.min.y;
-//		ScreenRect.width = Dust.GetComponent<Renderer>().bounds.size.x;
-//		ScreenRect.height = Dust.GetComponent<Renderer>().bounds.size.y;
-//		
-//		dustDepth = Dust.transform.position.z - transform.position.z;
-//		
-//		brushRect.width = EraserMaterial.mainTexture.width / 100.0f;
-//		brushRect.height = EraserMaterial.mainTexture.height / 100.0f;
-//		
-//		if(brushSize >= 0)
-//		{
-//			brushRect.width *= Mathf.Abs(brushSize);
-//			brushRect.height *= Mathf.Abs(brushSize);
-//		}
-//		else
-//		{
-//			brushRect.width /= Mathf.Abs(brushSize);
-//			brushRect.height /= Mathf.Abs(brushSize);
-//		}
-//		
-//		rt = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.Default);
-//		yield return rt.Create();
-//		
-//		GetComponent<Camera>().targetTexture = rt;
-//		
-//		Dust.GetComponent<Renderer>().material.SetTexture("_MaskTex", rt);
-//		
-//		GenerateRects ();
-//		
-//		audioSource = GetComponent<AudioSource>();
-//		
-//		dirCursor = CursorDirection.None;
-//		
-//		shakeDistance = Mathf.Sqrt((Screen.width * Screen.width) + (Screen.height * Screen.height)) * 10 / 100;
-//		
-//		isStartFinished = true;
-//	}
-//	
-//	public void Update()
-//	{
-//		if(isStartFinished)
-//		{
-//			if(!isFadeInPainting && !isRechargingSpray)
-//			{
-//				newHolePosition = null;
-//				
-//				if (Input.GetMouseButton(0) && image_SprayCapacity.fillAmount > 0)
-//				{							
-//					shakeIterations = 0;
-//					
-//					if(!isPlayingSound)
-//						PlaySound(ac_Spraying, true);
-//					
-//					image_SprayCapacity.fillAmount -= Time.deltaTime / 3;
-//					
-//					Vector2 v = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, dustDepth));
-//					brushRect.center = v;
-//					
-//					if (ScreenRect.Contains(v))
-//					{						
-//						//Get MousePosition for eraser
-//						newHolePosition = new Vector2(100 * (v.x - ScreenRect.xMin),
-//						                              100 * (v.y - ScreenRect.yMin));
-//						
-//						//Check Rectangle close to mouse position
-//						foreach(Rect rt in paintingQuads)
-//							if(brushRect.Contains(rt.center))
-//								paintingQuadsToRemove.Add(rt);
-//						
-//						//Remove rectangles from the list
-//						foreach(Rect tc in paintingQuadsToRemove)
-//							paintingQuads.Remove(tc);
-//						
-//						paintingQuadsToRemove.Clear();
-//						
-//						if(paintingQuads.Count * 100 / maxQuads < percentage)
-//						{
-//							StopSound();
-//							image_SprayCapacity.fillAmount = 1;
-//							StartCoroutine("FadeInPainting");
-//						}
-//					}
-//					else
-//						if(playerClicked)
-//					{
-//						CancelInvoke();
-//						playerClicked = false;
-//					}
-//				}
-//				else
-//				{
-//					if(playerClicked)
-//					{
-//						CancelInvoke();
-//						playerClicked = false;
-//					}
-//					StopSound();
-//					if(!Input.GetMouseButton(0))
-//						if((image_SprayCapacity.fillAmount < 1 && CheckShake()) || image_SprayCapacity.fillAmount == 0 )
-//							StartCoroutine("RecharcheSpray");
-//				}
-//			}
-//			//		Cursor Texture
-//			cursorTexture.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, dustDepth- 0.5f));
-//			cursorTexture.localScale = brushSize >= 0 ? Vector3.one * brushSize : Vector3.one / brushSize;
-//		}
-//	}
-//	public void OnPostRender()
-//	{
-//		//Start It will clear Graphics buffer
-//		if (firstFrame)
-//		{
-//			firstFrame = false;
-//			GL.Clear(false, true, new Color(0.0f, 0.0f, 0.0f, 0.0f));
-//		}
-//		//Generate GL quad according to eraser material texture
-//		if (newHolePosition != null)
-//			EraseBrush(new Vector2(1024, 614));
-//	}
-//	#endregion
-//	
-//	#region Private
-//	private void EraseBrush(Vector2 imageSize)
-//	{
-//		//		print ("DrawCalls: ");
-//		Rect textureRect = new Rect(0.0f, 0.0f, 1.0f, 1.0f); //this will get erase material texture	part
-//		Rect positionRect  = new Rect();
-//		if(newHolePosition != null)
-//		{
-//			float brushWidth = 0.0f;
-//			float brushHeight = 0.0f;
-//			if(brushSize >= 0)
-//			{
-//				brushWidth = EraserMaterial.mainTexture.width * brushSize;
-//				brushHeight = EraserMaterial.mainTexture.height * brushSize;
-//			}
-//			else
-//			{
-//				brushWidth = EraserMaterial.mainTexture.width / brushSize;
-//				brushHeight = EraserMaterial.mainTexture.height / brushSize;
-//			}
-//			positionRect = new Rect(
-//				(newHolePosition.Value.x - 0.5f * brushWidth) /  imageSize.x,
-//				(newHolePosition.Value.y - 0.5f * brushHeight) / imageSize.y,
-//				brushWidth / imageSize.x,
-//				brushHeight / imageSize.y
-//				); 
-//		}
-//		//This will Generate position of eraser according to mouse position and size of eraser texture
-//		//Draw Graphics Quad using GL library to render in target render texture of camera to generate effect
-//		if(list_mousePos.Count == 0)
-//		{
-//			GL.PushMatrix();
-//			GL.LoadOrtho();
-//			EraserMaterial.SetPass(0);
-//			GL.Begin(GL.QUADS);
-//			GL.Color(Color.white);
-//			GL.TexCoord2(textureRect.xMin, textureRect.yMax);
-//			GL.Vertex3(positionRect.xMin, positionRect.yMax, 0.0f);
-//			GL.TexCoord2(textureRect.xMax, textureRect.yMax);
-//			GL.Vertex3(positionRect.xMax, positionRect.yMax, 0.0f);
-//			GL.TexCoord2(textureRect.xMax, textureRect.yMin);
-//			GL.Vertex3(positionRect.xMax, positionRect.yMin, 0.0f);
-//			GL.TexCoord2(textureRect.xMin, textureRect.yMin);
-//			GL.Vertex3(positionRect.xMin, positionRect.yMin, 0.0f);
-//			GL.End();
-//			GL.PopMatrix();
-//			print ("1");
-//		}
-//		else
-//		{
-//			GL.PushMatrix();
-//			GL.LoadOrtho();
-//			for (int i = 0; i < list_mousePos.Count; i++)
-//			{
-//				EraserMaterial.SetPass(0);
-//				GL.Begin(GL.QUADS);
-//				GL.Color(Color.white);
-//				GL.TexCoord2(textureRect.xMin, textureRect.yMax);
-//				GL.Vertex3(list_mousePos[i].xMin, list_mousePos[i].yMax, 0.0f);
-//				GL.TexCoord2(textureRect.xMax, textureRect.yMax);
-//				GL.Vertex3(list_mousePos[i].xMax, list_mousePos[i].yMax, 0.0f);
-//				GL.TexCoord2(textureRect.xMax, textureRect.yMin);
-//				GL.Vertex3(list_mousePos[i].xMax, list_mousePos[i].yMin, 0.0f);
-//				GL.TexCoord2(textureRect.xMin, textureRect.yMin);
-//				GL.Vertex3(list_mousePos[i].xMin, list_mousePos[i].yMin, 0.0f);
-//				GL.End();
-//			}
-//			GL.PopMatrix();
-//		}
-//		//		
-//		
-//		list_mousePos.Clear();
-//		
-//		//		if(!playerClicked)
-//		//		{
-//		//			playerClicked = true;
-//		////			mouseLastPosition = Input.mousePosition;	
-//		//			InvokeRepeating ("GenerateListMousePosition", 0f, 0.01f);
-//		//		}
-//	}
-//	
-//	private void GenerateListMousePosition(Vector2 mousePos)
-//	{
-//		Vector2 v = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, Screen.height - mousePos.y - 1.0f, dustDepth));
-//		if (ScreenRect.Contains(v))
-//		{			
-//			Vector2 imageLocalPosition = new Vector2(100 * (v.x - ScreenRect.xMin),
-//			                                         100 * (v.y - ScreenRect.yMin));
-//			
-//			float brushWidth = 0.0f;
-//			float brushHeight = 0.0f;
-//			if(brushSize >= 0)
-//			{
-//				brushWidth = EraserMaterial.mainTexture.width * brushSize;
-//				brushHeight = EraserMaterial.mainTexture.height * brushSize;
-//			}
-//			else
-//			{
-//				brushWidth = EraserMaterial.mainTexture.width / brushSize;
-//				brushHeight = EraserMaterial.mainTexture.height / brushSize;
-//			}
-//			
-//			Rect positionRect = new Rect(
-//				(imageLocalPosition.x - 0.5f * brushWidth) / 1024,
-//				(imageLocalPosition.y - 0.5f * brushHeight) / 614,
-//				brushWidth / 1024,
-//				brushHeight / 614
-//				); 
-//			//		if(Vector2.Distance(list_mousePos[list_mousePos.Count - 1].center
-//			if(!list_mousePos.Contains(positionRect))
-//			{
-//				list_mousePos.Add(positionRect);
-//				//				print("MousePointGenerated");
-//				//			print("Point:" + positionRect + "/" + mousePos);
-//				return;
-//			}
-//		}
-//		//		print ("false");
-//	}
-//	
-//	private void GenerateRects()
-//	{		
-//		paintingQuads.Clear();
-//		
-//		int widthQuadsCount = 10;
-//		int heightQuadsCount = 10;
-//		
-//		
-//		float paintingQuadsWidth = ScreenRect.width / widthQuadsCount;
-//		float paintingQuadsHeight = -ScreenRect.height / heightQuadsCount;
-//		
-//		for(int i = 0; i < widthQuadsCount; i++)
-//		{
-//			for(int y = 0; y < heightQuadsCount; y++)
-//			{
-//				paintingQuads.Add(new Rect((i * paintingQuadsWidth) + ScreenRect.x,
-//				                           (y * paintingQuadsHeight) - ScreenRect.y,
-//				                           paintingQuadsWidth,
-//				                           paintingQuadsHeight));
-//			}
-//		}
-//		maxQuads = paintingQuads.Count;
-//	}
-//	
-//	private int HowManyIntegerInInteger(int segment, int maxSegment)
-//	{
-//		int value = 0;
-//		value = maxSegment / segment;
-//		
-//		float rest = maxSegment % segment;		
-//		if(rest != 0)
-//		{
-//			if(rest > 0)
-//				value++;
-//			else
-//				value--;
-//		}
-//		return value;
-//	}
-//	
-//	private IEnumerator FadeInPainting()
-//	{
-//		isFadeInPainting = true;
-//		float alpha = 0.0f;
-//		Material mat = Dust.GetComponent<Renderer>().material;
-//		
-//		GL.Clear(true, true, new Color(0.0f, 0.0f, 0.0f, 0.0f));
-//		while(alpha != 1)
-//		{			
-//			alpha += Time.deltaTime * 0.5f;
-//			alpha = Mathf.Clamp(alpha,0,1);
-//			mat.SetFloat("_Alpha", alpha);
-//			yield return null;
-//		}
-//	}
-//	
-//	private IEnumerator ResetPainting()
-//	{		
-//		isFadeInPainting = false;
-//		
-//		rt.Release();
-//		GenerateRects();
-//		
-//		Dust.GetComponent<Renderer>().material.SetFloat("_Alpha", 0);
-//		yield return null;
-//	}
-//	
-//	private void PlaySound(AudioClip clip, bool loop)
-//	{
-//		audioSource.loop = loop;
-//		audioSource.clip = clip;
-//		audioSource.Play();
-//		
-//		isPlayingSound = true;
-//	}
-//	
-//	private void StopSound()
-//	{
-//		audioSource.Stop();
-//		isPlayingSound = false;
-//	}
-//	
-//	private IEnumerator RecharcheSpray()
-//	{
-//		isRechargingSpray = true;
-//		PlaySound(ac_SprayRecharge, false);
-//		float startingTime = Time.time;
-//		float capacityLeft = image_SprayCapacity.fillAmount;
-//		float capacityTofill = 1 - capacityLeft;
-//		float rechargeTime = 1.70f * capacityTofill;
-//		float soundTimer = startingTime + rechargeTime;
-//		//		float soundTimer = startingTime + audioSource.clip.length;
-//		
-//		while((Time.time <= soundTimer || image_SprayCapacity.fillAmount != 1) && !Input.GetMouseButton(0))
-//		{
-//			image_SprayCapacity.fillAmount =  capacityLeft + (capacityTofill * ((Time.time - startingTime) / rechargeTime));
-//			//			image_SprayCapacity.fillAmount =  capacityLeft + ((1 - capacityLeft) * ((Time.time - startingTime) / audioSource.clip.length));
-//			yield return null;
-//		}
-//		isPlayingSound = false;
-//		isRechargingSpray = false;
-//	}
-//	
-//	private bool CheckShake()
-//	{
-//		if(Input.mousePosition.x >= 0 && Input.mousePosition.x <= Screen.width 
-//		   && Input.mousePosition.y >= 0 && Input.mousePosition.y <= Screen.height)
-//		{	
-//			if(minCursor == Vector2.zero)
-//			{
-//				minCursor =  Input.mousePosition;
-//				return false;
-//			}
-//			
-//			maxCursor = Input.mousePosition;
-//			Vector2 mouseDir = maxCursor - minCursor;
-//			
-//			if(Vector2.Distance(minCursor,maxCursor) > shakeDistance)
-//			{
-//				CursorDirection tempDirCursor;
-//				if(mouseDir.x >= 0)
-//					tempDirCursor = mouseDir.y >= 0 ? CursorDirection.RightUp : CursorDirection.LeftUp;
-//				else
-//					tempDirCursor = mouseDir.y >= 0 ? CursorDirection.RightDown : CursorDirection.LeftDown;
-//				
-//				if(dirCursor != tempDirCursor)
-//				{
-//					if(dirCursor != CursorDirection.None)
-//					{
-//						shakeIterations ++;
-//						//					print ("Shake Iteration From " + dirCursor + " To " + tempDirCursor + " / " + shakeIterations);
-//					}
-//					minCursor =  Input.mousePosition;
-//					dirCursor = tempDirCursor;
-//				}
-//				
-//				if(shakeIterations == 2)
-//				{
-//					shakeIterations = 0;
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-//	#endregion
-//	
-//}

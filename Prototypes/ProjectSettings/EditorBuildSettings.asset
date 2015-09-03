@@ -7,7 +7,9 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: Assets/1_Scenes/Proto6_DemoIA.unity
-  - enabled: 1
+  - enabled: 0
     path: Assets/mXRayShaderMouse/scene_xrayshadermouse1.unity
   - enabled: 0
     path: Assets/1_Scenes/Proto8_CreationOeuvre.unity
+  - enabled: 1
+    path: Assets/1_Scenes/Proto7_Level_Design.unity

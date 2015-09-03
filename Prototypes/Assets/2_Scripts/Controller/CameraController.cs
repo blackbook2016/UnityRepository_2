@@ -94,16 +94,6 @@
 					UpdateCamera();
 			}
 		}
-		
-		public void Message1()
-		{
-			Debug.Log ("Message 1 received");
-		}
-		
-		public void Message2()
-		{
-			Debug.Log ("Message 2 received");
-		}
 		#endregion
 
 		#region API
@@ -121,6 +111,9 @@
 			if(target.tag == "Player")
 				pos.y += 2.0f;
 			goToPosition = pos + target.forward * 2;
+
+			if(target.tag == "Painting")
+				goToPosition = pos - target.forward * 3;
 
 			isplayingCinematique = true;
 

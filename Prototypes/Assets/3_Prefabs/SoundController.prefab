@@ -120,6 +120,8 @@ MonoBehaviour:
   shoutClip: {fileID: 8300000, guid: e237d8e8388b6a3478db225d89462a8c, type: 3}
   runClip: {fileID: 0}
   takePicClip: {fileID: 8300000, guid: d330cf2e2df66c34ab7e02c5197ac0ed, type: 3}
+  sprayClip: {fileID: 8300000, guid: 969d7683df524a047b11d37f2126ea3f, type: 3}
+  rechargeSprayClip: {fileID: 8300000, guid: 82dd81c6e61fc9749b7d46fe487e2758, type: 3}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

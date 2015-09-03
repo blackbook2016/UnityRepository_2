@@ -193,7 +193,7 @@
 
 			if(other.tag == "PaintingCreationZone")
 			{
-				GameController.instance.CreateOeuvre();
+				GameController.instance.StartDrawOeuvre();
 				ChangeState(PlayerState.CreateOeuvre, State.Dead, "Wave");
 			}
 			if(other.tag == "EndZone")

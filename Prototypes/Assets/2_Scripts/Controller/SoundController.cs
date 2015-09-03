@@ -24,6 +24,10 @@
 		private AudioClip runClip;
 		[SerializeField]
 		private AudioClip takePicClip;
+		[SerializeField]
+		private AudioClip sprayClip;
+		[SerializeField]
+		private AudioClip rechargeSprayClip;
 
 		private AudioSource audioSource;
 //		private AudioListener audioListener;
@@ -38,10 +42,26 @@
 		#endregion
 
 		#region API
-		public void PlayClip(string clipName)
+		public void PlayClip(string clipName, bool loop)
 		{
+			audioSource.loop = loop;
 			SetClip(clipName);
 			audioSource.Play();
+		}
+		public void PlayClip(string clipName)
+		{
+			audioSource.loop = false;
+			SetClip(clipName);
+			audioSource.Play();
+		}
+		public void StopClip()
+		{
+			audioSource.Stop();
+		}
+
+		public bool IsPlaying()
+		{
+			return audioSource.isPlaying;
 		}
 		#endregion
 
@@ -63,6 +83,16 @@
 			case "takePicClip":
 			{
 				audioSource.clip = takePicClip;
+				break;
+			}
+			case "sprayClip":
+			{
+				audioSource.clip = sprayClip;
+				break;
+			}
+			case "rechargeSprayClip":
+			{
+				audioSource.clip = rechargeSprayClip;
 				break;
 			}
 			default:

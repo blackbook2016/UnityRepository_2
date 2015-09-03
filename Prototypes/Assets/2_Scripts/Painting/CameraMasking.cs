@@ -394,7 +394,6 @@ public class CameraMasking : MonoBehaviour
 				mouseLastPosition = mousePos;
 				return;
 			}
-
 		}
 	}
 	

@@ -34,7 +34,7 @@
 			Enable();
 			transform.localScale = Vector3.one * FovMax;
 			timeout = AnimTimeout;
-			transform.position = pos + Vector3.up*Distance;
+			transform.position = pos + Vector3.up * Distance;
 		}
 		
 		void Update()

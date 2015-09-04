@@ -113,8 +113,11 @@
 						lastClickTimeR = Time.time;
 					
 					if(Input.GetKeyUp(KeyCode.Mouse1) && Time.time < lastClickTimeR + delay)
-						StopPlayer();	
-										
+						StopPlayer();
+
+					if(Input.GetKeyDown(KeyCode.A))
+						ShowThrowTrajectory();
+
 					if (agent.hasPath)
 					{		
 						if(state == State.Idle)
@@ -299,6 +302,11 @@
 				return "Locomotion_JumpAnimation";
 			}
 		}
+
+		private void ShowThrowTrajectory()
+		{
+
+		}
 		#endregion
 		
 		#region API
@@ -411,13 +419,14 @@
 			float startingTime = Time.time;
 			SpriteRenderer objectSprite = currentShout.GetComponent<SpriteRenderer>();
 			Color col = new Color(1,1,1,1);
+			
+			GameController.instance.PlayerShouted();
 			while(shoutTimer <= 1)
 			{
 				shoutTimer = (Time.time - startingTime) * 1  ;
 				shoutTimer /= 0.6f * (Time.time - startingTime + 0.5f);
 				col.a = (1-shoutTimer);
 				currentShout.transform.localScale = Vector3.one * shoutTimer * radius * 2;
-				GameController.instance.PlayerShouted();
 				yield return null;
 				objectSprite.color = col;
 			}

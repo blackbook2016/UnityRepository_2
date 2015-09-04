@@ -72,7 +72,7 @@
 		void Start()
 		{
 			td.position = transform.position;
-			transform.rotation = Quaternion.LookRotation(cameraTarget.position - transform.position, Vector3.up);
+			transform.rotation = Quaternion.LookRotation((!cameraTarget ? Vector3.zero : cameraTarget.position) - transform.position, Vector3.up);
 			td.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 //			td.eulerAngles = transform.eulerAngles;
 			td.eulerAngles.x = Mathf.Clamp(transform.eulerAngles.x, PanAngleMin, PanAngleMax);
@@ -275,15 +275,15 @@
 
 				GameObject dummy = new GameObject();
 				
-				transform.rotation = Quaternion.LookRotation(cameraTarget.position - transform.position, Vector3.up);
+				transform.rotation = Quaternion.LookRotation((!cameraTarget ? Vector3.zero : cameraTarget.position) - transform.position, Vector3.up);
 				td.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 				transform.rotation = Quaternion.Lerp (Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(td.eulerAngles), Time.deltaTime * smooth);
 
 				dummy.transform.position = transform.position;
 				dummy.transform.rotation = transform.rotation;
 				
-				dummy.transform.RotateAround(cameraTarget.position,-transform.right, trRot.y * RotSpeed * Time.deltaTime);
-				dummy.transform.RotateAround(cameraTarget.position,Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
+				dummy.transform.RotateAround((!cameraTarget ? Vector3.zero : cameraTarget.position),-transform.right, trRot.y * RotSpeed * Time.deltaTime);
+				dummy.transform.RotateAround((!cameraTarget ? Vector3.zero : cameraTarget.position),Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
 
 
 				if(dummy.transform.eulerAngles.z > 100 && dummy.transform.eulerAngles.z < 200) {}
@@ -294,7 +294,7 @@
 					//transform.RotateAround(rotationTarget,-transform.right, Input.GetAxis("Mouse Y") * RotSpeed * Time.deltaTime);
 				}
 				else
-					transform.RotateAround(cameraTarget.position,Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
+					transform.RotateAround((!cameraTarget ? Vector3.zero : cameraTarget.position),Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
 
 				if(transform.eulerAngles.z > 10)
 					print (dummy.transform.eulerAngles + "/" + transform.eulerAngles);
@@ -309,7 +309,7 @@
 			{
 				transform.position = Vector3.Lerp (transform.position, td.position, Time.deltaTime * smooth);
 
-				transform.rotation = Quaternion.LookRotation(cameraTarget.position - transform.position, Vector3.up);
+				transform.rotation = Quaternion.LookRotation((!cameraTarget ? Vector3.zero : cameraTarget.position) - transform.position, Vector3.up);
 				td.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 				transform.rotation = Quaternion.Lerp (Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(td.eulerAngles), Time.deltaTime * smooth);
 			}

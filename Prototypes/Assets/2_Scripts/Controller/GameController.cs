@@ -70,7 +70,7 @@
 		public void PlayerShouted()
 		{
 			foreach(IAController tempIA in listIA)
-				tempIA.heardSound = true;
+				tempIA.CheckHeardSound();
 		}
 		
 		public void PlayerCapturedAllPaintings()

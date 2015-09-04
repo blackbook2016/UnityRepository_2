@@ -64,34 +64,34 @@
 		private int shakeIterations = 0;
 
 		#region Unity
-		void OnDrawGizmos()
-		{
-			Gizmos.color = Color.red;
-			foreach(Rect cb in paintingQuads)
-			{
-				Gizmos.DrawCube(cb.center, cb.size);
-			}
-			Gizmos.color = Color.black;
-			Gizmos.DrawLine(brush_Rect.min, new Vector2(brush_Rect.xMin,brush_Rect.yMax));
-			Gizmos.DrawLine(brush_Rect.min, new Vector2(brush_Rect.xMax,brush_Rect.yMin));
-			Gizmos.DrawLine(brush_Rect.max, new Vector2(brush_Rect.xMin,brush_Rect.yMax));
-			Gizmos.DrawLine(brush_Rect.max, new Vector2(brush_Rect.xMax,brush_Rect.yMin));
-		}
-
-		void OnGUI()
-		{
-			if(GUI.Button(new Rect(0, 80, 120, 20), "Restart"))
-			{				
-				GL.Clear(true, true, new Color(1.0f, 1.0f, 1.0f, 1.0f));
-				rt.Release();
-				GenerateRects();
-				
-				list_mousePos.Clear();
-				mouseLastPosition = null;
-				
-				painting_Renderer.material.SetFloat("_Alpha", 0);
-			}
-		}
+//		void OnDrawGizmos()
+//		{
+//			Gizmos.color = Color.red;
+//			foreach(Rect cb in paintingQuads)
+//			{
+//				Gizmos.DrawCube(cb.center, cb.size);
+//			}
+//			Gizmos.color = Color.black;
+//			Gizmos.DrawLine(brush_Rect.min, new Vector2(brush_Rect.xMin,brush_Rect.yMax));
+//			Gizmos.DrawLine(brush_Rect.min, new Vector2(brush_Rect.xMax,brush_Rect.yMin));
+//			Gizmos.DrawLine(brush_Rect.max, new Vector2(brush_Rect.xMin,brush_Rect.yMax));
+//			Gizmos.DrawLine(brush_Rect.max, new Vector2(brush_Rect.xMax,brush_Rect.yMin));
+//		}
+//
+//		void OnGUI()
+//		{
+//			if(GUI.Button(new Rect(0, 80, 120, 20), "Restart"))
+//			{				
+//				GL.Clear(true, true, new Color(1.0f, 1.0f, 1.0f, 1.0f));
+//				rt.Release();
+//				GenerateRects();
+//				
+//				list_mousePos.Clear();
+//				mouseLastPosition = null;
+//				
+//				painting_Renderer.material.SetFloat("_Alpha", 0);
+//			}
+//		}
 		
 		public void Start()
 		{

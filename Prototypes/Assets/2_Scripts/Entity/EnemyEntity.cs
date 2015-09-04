@@ -25,7 +25,7 @@
 		private TargetDestination init;
 
 		private WaypointManager waypointManager;
-		private PointerProjector enemyProjector;
+		private GroundMarker enemyProjector;
 		private AreaMask layer;
 
 		private bool isDestinationReached;
@@ -165,7 +165,7 @@
 			}
 		}
 		
-		public PointerProjector EnemyProjector {
+		public GroundMarker EnemyProjector {
 			get {
 				return this.enemyProjector;
 			}
@@ -387,9 +387,10 @@
 			{
 				fov.canSearch = false;
 				fov.DrawFoV();
-				enableProjector(true);
 			}
-			
+			if(!enemyProjector.gameObject.activeSelf)
+				enableProjector(true);
+
 			moveState = State.Run;
 			enemyProjector.Project(targetPos,Color.red);
 			GoToPosition(targetPos);

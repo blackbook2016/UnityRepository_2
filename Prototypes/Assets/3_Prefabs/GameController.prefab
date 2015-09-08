@@ -52,6 +52,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   listIA: []
+  endZone: {fileID: 0}
+  paintingCreationObject: {fileID: 0}
+  paintingCreationTrigger: {fileID: 0}
+  playcinematique: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

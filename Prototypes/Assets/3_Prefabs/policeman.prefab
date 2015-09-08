@@ -4087,11 +4087,13 @@ MonoBehaviour:
   updateRate: .00999999978
   layerFOV:
     serializedVersion: 2
-    m_Bits: 4294953983
-  canSearch: 0
+    m_Bits: 4294921215
   rotationAngle: 35
   rotateSpeed: .699999988
   isfrozen: 0
+  isCentered: 1
+  canSearch: 0
+  canSearch_old: 0
 --- !u!114 &11434800
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4110,7 +4112,6 @@ MonoBehaviour:
   waypointManager: {fileID: 0}
   enemyProjector: {fileID: 0}
   isReset: 0
-  heardSound: 0
 --- !u!136 &13676596
 CapsuleCollider:
   m_ObjectHideFlags: 1

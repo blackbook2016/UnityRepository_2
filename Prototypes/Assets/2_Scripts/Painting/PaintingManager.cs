@@ -276,7 +276,7 @@
 				{
 					iconCameraViewer.CrossFadeAlpha(1f, 0.5f, false);
 
-					if(hit.distance <= 12.0f)
+					if(hit.distance <= 20.0f)
 					{
 						iconCameraViewer.color = Color.white;
 

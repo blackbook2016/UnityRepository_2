@@ -20,4 +20,25 @@
     "Sprite": "missvan_Sprite",
     "Texture": "missvan"
   }
+    {
+    "Title": "André",
+    "Artist": "Monsieur A",
+    "Info": "André, Vanessa Alice Bensimon (also known as Vanessa Castex), born in 1973 in Toulouse, France, is considered one of the best known painters of the graffiti scene. She started wall painting in the streets of Toulouse at the age of 18. Her drawings are of sloe-eyed women, covering a varied array of female forms and expressing many different emotions. Her work has provoked a negative reaction from some feminists due to the portrayal of women in her graffiti.[1] Although she receives this backlash her reasoning for her painting is more personal. \"Painting on walls was a way to show that I was boycotting the conventional art world\".\nIn France, a very original form of graffiti was born in 1993 with Miss Van and Mademoiselle Kat. Miss Van is just one facet of the thriving graffiti scene in Toulouse, but she has probably gained the most worldwide acclaim for her work. She has gone on to exhibit canvases in galleries across France, Europe and the United States.\nRecently, she has moved to Barcelona, Spain and designed prints for the new Fornarina collection. Working on her first book and future art shows in Europe.\nMiss Van was also referenced by punk rock comic artist Mitch Clem in his semi-autobiographical comic San Antonio Rock City.",
+    "Sprite": "andre_Sprite",
+    "Texture": "andre"
+  }
+    {
+    "Title": "Monsieur Chat",
+    "Artist": "Chat rieur",
+    "Info": "Monsieur Chat, Vanessa Alice Bensimon (also known as Vanessa Castex), born in 1973 in Toulouse, France, is considered one of the best known painters of the graffiti scene. She started wall painting in the streets of Toulouse at the age of 18. Her drawings are of sloe-eyed women, covering a varied array of female forms and expressing many different emotions. Her work has provoked a negative reaction from some feminists due to the portrayal of women in her graffiti.[1] Although she receives this backlash her reasoning for her painting is more personal. \"Painting on walls was a way to show that I was boycotting the conventional art world\".\nIn France, a very original form of graffiti was born in 1993 with Miss Van and Mademoiselle Kat. Miss Van is just one facet of the thriving graffiti scene in Toulouse, but she has probably gained the most worldwide acclaim for her work. She has gone on to exhibit canvases in galleries across France, Europe and the United States.\nRecently, she has moved to Barcelona, Spain and designed prints for the new Fornarina collection. Working on her first book and future art shows in Europe.\nMiss Van was also referenced by punk rock comic artist Mitch Clem in his semi-autobiographical comic San Antonio Rock City.",
+    "Sprite": "monsieur_chat_Sprite",
+    "Texture": "monsieur_chat"
+  }
+    {
+    "Title": "Ernest Pignon Ernest",
+    "Artist": "Rimbaud",
+    "Info": "Ernest Pignon Ernest, Vanessa Alice Bensimon (also known as Vanessa Castex), born in 1973 in Toulouse, France, is considered one of the best known painters of the graffiti scene. She started wall painting in the streets of Toulouse at the age of 18. Her drawings are of sloe-eyed women, covering a varied array of female forms and expressing many different emotions. Her work has provoked a negative reaction from some feminists due to the portrayal of women in her graffiti.[1] Although she receives this backlash her reasoning for her painting is more personal. \"Painting on walls was a way to show that I was boycotting the conventional art world\".\nIn France, a very original form of graffiti was born in 1993 with Miss Van and Mademoiselle Kat. Miss Van is just one facet of the thriving graffiti scene in Toulouse, but she has probably gained the most worldwide acclaim for her work. She has gone on to exhibit canvases in galleries across France, Europe and the United States.\nRecently, she has moved to Barcelona, Spain and designed prints for the new Fornarina collection. Working on her first book and future art shows in Europe.\nMiss Van was also referenced by punk rock comic artist Mitch Clem in his semi-autobiographical comic San Antonio Rock City.",
+    "Sprite": "ernest_pignon_Sprite",
+    "Texture": "ernest_pignon"
+  }
 ]

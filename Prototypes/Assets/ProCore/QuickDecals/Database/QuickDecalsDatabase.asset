@@ -178,6 +178,70 @@ MonoBehaviour:
     material: {fileID: 0}
     maxAtlasSize: 0
     padding: 0
+  - decals:
+    - name: monsieur_chat
+      id: 3efb8969ec8c94b1fb87f646fe0f975f
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 2
+      orgIndex: 0
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: 3efb8969ec8c94b1fb87f646fe0f975f, type: 3}
+    - name: ernest_pignon
+      id: 6188fd47bb622442a8dc2997a9926fbb
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 2
+      orgIndex: 1
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: 6188fd47bb622442a8dc2997a9926fbb, type: 3}
+    - name: andre
+      id: 53019dfc493c84167a692641d189016a
+      isPacked: 0
+      materialId: 
+      rotation: {x: -45, y: 45, z: 0}
+      scale: {x: .800000012, y: 1.20000005, z: 1}
+      atlasRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1
+        height: 1
+      orgGroup: 2
+      orgIndex: 2
+      atlasGroup: 0
+      atlasIndex: 0
+      rotationPlacement: 0
+      scalePlacement: 0
+      texture: {fileID: 2800000, guid: 53019dfc493c84167a692641d189016a, type: 3}
+    name: 
+    shader: {fileID: 0}
+    isPacked: 0
+    material: {fileID: 0}
+    maxAtlasSize: 0
+    padding: 0
   s_decals:
   - '{
 
@@ -385,6 +449,87 @@ MonoBehaviour:
     0
 
     3
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    monsieur_chat
+
+    3efb8969ec8c94b1fb87f646fe0f975f
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    2
+
+    0
+
+    0
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    ernest_pignon
+
+    6188fd47bb622442a8dc2997a9926fbb
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    2
+
+    0
+
+    1
+
+    0
+
+    0
+
+    0
+
+    False
+
+    }'
+  - '{
+
+    andre
+
+    53019dfc493c84167a692641d189016a
+
+    (-45.0, 45.0, 0.0)
+
+    (0.8, 1.2, 1.0)
+
+    (0, 0, 1, 1)
+
+    2
+
+    0
+
+    2
 
     0
 

@@ -13,6 +13,8 @@ TagManager:
   - EndZone
   - PaintingCreationZone
   - CreateArt
+  - Floor
+  - Distraction
   layers:
   - Default
   - TransparentFX
@@ -29,7 +31,7 @@ TagManager:
   - Player
   - Enemy
   - Mask
-  - 
+  - NoFov
   - 
   - 
   - 

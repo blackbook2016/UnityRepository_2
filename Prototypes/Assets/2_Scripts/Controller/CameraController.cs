@@ -48,8 +48,14 @@
 		Transform cinematiqueTarget;
 		[SerializeField]
 		bool NewCameraRotation = false;
+//		[SerializeField]
+		Vector3 cameraTarget;		
 		[SerializeField]
-		Transform cameraTarget;
+		Transform cameraFirstTarget;
+		[SerializeField]
+		Transform cameraSecondTarget;
+
+
 
 		private TargetDestination td = new TargetDestination(Vector3.zero,Vector3.zero);
 		private bool isplayingCinematique = false;
@@ -71,8 +77,14 @@
 		#region Unity
 		void Start()
 		{
+			if(!cameraFirstTarget)
+				cameraFirstTarget.position = Vector3.zero ;
+			if(!cameraSecondTarget)
+				cameraSecondTarget.position = Vector3.zero ;
+
+			cameraTarget = (cameraFirstTarget.position + cameraSecondTarget.position)/2;
 			td.position = transform.position;
-			transform.rotation = Quaternion.LookRotation((!cameraTarget ? Vector3.zero : cameraTarget.position) - transform.position, Vector3.up);
+			transform.rotation = Quaternion.LookRotation(cameraTarget - transform.position, Vector3.up);
 			td.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 //			td.eulerAngles = transform.eulerAngles;
 			td.eulerAngles.x = Mathf.Clamp(transform.eulerAngles.x, PanAngleMin, PanAngleMax);
@@ -83,6 +95,7 @@
 		
 		void Update()
 		{
+			cameraTarget = (cameraFirstTarget.position + cameraSecondTarget.position)/2;
 			if(!isplayingCinematique)
 			{
 				if(playCinematique && cinematiqueTarget )
@@ -275,15 +288,15 @@
 
 				GameObject dummy = new GameObject();
 				
-				transform.rotation = Quaternion.LookRotation((!cameraTarget ? Vector3.zero : cameraTarget.position) - transform.position, Vector3.up);
+				transform.rotation = Quaternion.LookRotation(cameraTarget - transform.position, Vector3.up);
 				td.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 				transform.rotation = Quaternion.Lerp (Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(td.eulerAngles), Time.deltaTime * smooth);
 
 				dummy.transform.position = transform.position;
 				dummy.transform.rotation = transform.rotation;
 				
-				dummy.transform.RotateAround((!cameraTarget ? Vector3.zero : cameraTarget.position),-transform.right, trRot.y * RotSpeed * Time.deltaTime);
-				dummy.transform.RotateAround((!cameraTarget ? Vector3.zero : cameraTarget.position),Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
+				dummy.transform.RotateAround(cameraTarget,-transform.right, trRot.y * RotSpeed * Time.deltaTime);
+				dummy.transform.RotateAround(cameraTarget,Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
 
 
 				if(dummy.transform.eulerAngles.z > 100 && dummy.transform.eulerAngles.z < 200) {}
@@ -294,7 +307,7 @@
 					//transform.RotateAround(rotationTarget,-transform.right, Input.GetAxis("Mouse Y") * RotSpeed * Time.deltaTime);
 				}
 				else
-					transform.RotateAround((!cameraTarget ? Vector3.zero : cameraTarget.position),Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
+					transform.RotateAround(cameraTarget,Vector3.up, trRot.x * RotSpeed * Time.deltaTime);
 
 				if(transform.eulerAngles.z > 10)
 					print (dummy.transform.eulerAngles + "/" + transform.eulerAngles);
@@ -309,7 +322,7 @@
 			{
 				transform.position = Vector3.Lerp (transform.position, td.position, Time.deltaTime * smooth);
 
-				transform.rotation = Quaternion.LookRotation((!cameraTarget ? Vector3.zero : cameraTarget.position) - transform.position, Vector3.up);
+				transform.rotation = Quaternion.LookRotation(cameraTarget - transform.position, Vector3.up);
 				td.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 				transform.rotation = Quaternion.Lerp (Quaternion.Euler(transform.eulerAngles), Quaternion.Euler(td.eulerAngles), Time.deltaTime * smooth);
 			}

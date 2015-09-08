@@ -67,10 +67,15 @@
 			paintingCreationTrigger.SetActive(true); 
 		}
 		
-		public void PlayerShouted()
+		public void PlayerShouted(Transform shout)
 		{
 			foreach(IAController tempIA in listIA)
-				tempIA.CheckHeardSound();
+			{
+				float distance = Vector3.Distance(shout.position, tempIA.transform.position);
+
+				if(distance <= shout.localScale.x/2)
+					tempIA.CheckHeardSound(shout.position);
+			}
 		}
 		
 		public void PlayerCapturedAllPaintings()

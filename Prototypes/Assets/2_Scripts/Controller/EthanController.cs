@@ -12,7 +12,7 @@
 		[Tooltip("Double Click Delays")]
 		float delay = 0.25F;
 		[SerializeField]
-		State state = State.Idle;
+		State animatorState = State.Idle;
 		[SerializeField]
 		PlayerState plState = PlayerState.Free;
 		[SerializeField]
@@ -55,6 +55,8 @@
 			}
 		}
 
+		public GameObject prefab_Rock;
+
 		#endregion
 		
 		#region Unity
@@ -75,7 +77,7 @@
 		{
 			if(plState == PlayerState.Free)
 			{
-				if(state != State.Climb && state != State.Dead && !CameraController.instance.getIsPlayingCinematique())
+				if(animatorState != State.Climb && animatorState != State.Dead && !CameraController.instance.getIsPlayingCinematique())
 				{
 					if(Input.GetButtonDown("Shout"))
 					{					
@@ -85,10 +87,10 @@
 					if(Input.GetAxis("Horizontal_R") != 0 || Input.GetAxis("Vertical_R") != 0)
 					{
 						if(Input.GetAxis("RunJoystick")!=0)
-							state = State.Run;
+							animatorState = State.Run;
 						else
-							if(state != State.Walk)
-								state = State.Walk;
+							if(animatorState != State.Walk)
+								animatorState = State.Walk;
 
 						float angleTranslation = Mathf.Atan2(Input.GetAxis("Horizontal_R"),Input.GetAxis("Vertical_R")) * (180 / Mathf.PI);
 
@@ -96,9 +98,9 @@
 					}
 					else
 					{
-						if(state != State.Idle && agent.remainingDistance == 0)
+						if(animatorState != State.Idle && agent.remainingDistance == 0)
 						{
-							state = State.Idle;
+							animatorState = State.Idle;
 							agent.Warp(transform.position);
 						}
 					}
@@ -115,20 +117,17 @@
 					if(Input.GetKeyUp(KeyCode.Mouse1) && Time.time < lastClickTimeR + delay)
 						StopPlayer();
 
-					if(Input.GetKeyDown(KeyCode.A))
-						ShowThrowTrajectory();
-
 					if (agent.hasPath)
 					{		
-						if(state == State.Idle)
+						if(animatorState == State.Idle)
 						{
 							if(doubleClicked)
-								state = State.Run;
+								animatorState = State.Run;
 							else
-								state = State.Walk;
+								animatorState = State.Walk;
 						}
 					}
-					if(state == State.Run)
+					if(animatorState == State.Run)
 					{
 						runningSoundTimer += Time.deltaTime;
 						if(runningSoundTimer > 0.5f)
@@ -142,19 +141,19 @@
 					if(!CameraController.instance.getIsPlayingCinematique())
 						StopPlayer();
 
-				if(agent.isOnOffMeshLink && state != State.Climb)
+				if(agent.isOnOffMeshLink && animatorState != State.Climb)
 				{
 					StopCoroutine(SelectLinkAnimation());
 					StartCoroutine(SelectLinkAnimation());
 				}
 			}
 			
-			animator.SetInteger("MoveState", (int)state);
+			animator.SetInteger("MoveState", (int)animatorState);
 		}
 		
 		void OnAnimatorMove ()
 		{
-			if (state != State.Idle && state != State.Climb && state != State.Dead && plState == PlayerState.Free)
+			if (animatorState != State.Idle && animatorState != State.Climb && animatorState != State.Dead && plState == PlayerState.Free)
 			{
 //				float walkAnimationSpeed = 1.5f;
 //				float runAnimationSpeed = 4.0f;
@@ -229,14 +228,14 @@
 
 				if(Input.GetKeyDown(KeyCode.Mouse0))
 				{							
-					if(state != State.Run && Time.time - lastClickTimeL < delay )
+					if(animatorState != State.Run && Time.time - lastClickTimeL < delay )
 					{
-						state = State.Run;
+						animatorState = State.Run;
 						doubleClicked = true;
 					}
-					else if(state != State.Walk && Time.time - lastClickTimeL >= delay && Input.GetKeyDown(KeyCode.Mouse0))
+					else if(animatorState != State.Walk && Time.time - lastClickTimeL >= delay && Input.GetKeyDown(KeyCode.Mouse0))
 					{
-						state = State.Walk;
+						animatorState = State.Walk;
 					}
 					lastClickTimeL = Time.time;
 				}
@@ -246,7 +245,7 @@
 		private  void StopPlayer()
 		{
 			agent.SetDestination(transform.position);
-			state = State.Idle;
+			animatorState = State.Idle;
 			agent.Warp(transform.position);
 		}
 
@@ -254,7 +253,7 @@
 		{
 			StopPlayer();
 			this.plState = plState;
-			this.state = state;
+			this.animatorState = state;
 			animator.Play(animName);	
 		}
 
@@ -302,11 +301,6 @@
 				return "Locomotion_JumpAnimation";
 			}
 		}
-
-		private void ShowThrowTrajectory()
-		{
-
-		}
 		#endregion
 		
 		#region API
@@ -327,6 +321,7 @@
 
 		public void PlayerIsDetected(IAController guard)
 		{
+			listShoutMarkers.Clear();
 			if(listAlertedGuards.Contains(guard))
 				return;
 			else
@@ -378,7 +373,7 @@
 
 		public void Resume()
 		{
-			state = State.Idle;
+			animatorState = State.Idle;
 			animator.Play("Idle");	
 			doubleClicked = false;
 
@@ -392,9 +387,37 @@
 
 			plState = PlayerState.Free;
 		}
+
+		public void EnableThrowRock()
+		{
+			UIController.Instance.IsThrowingRock = true;
+			StartCoroutine("ThrowRock");
+		}
 		#endregion 
 
 		#region Action
+		
+		private IEnumerator ThrowRock()
+		{			
+			ChangeState(PlayerState.ThrowingRock, State.Idle, "Idle");
+
+			while(!Input.GetKey(KeyCode.Escape) && !Input.GetKey(KeyCode.Mouse0))	{yield return null;}
+
+			if(!Input.GetKey(KeyCode.Escape))
+			{
+				Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+				RaycastHit hit;
+				
+				if (Input.GetKey(KeyCode.Mouse0) && Physics.Raycast(mouseRay, out hit,Mathf.Infinity)  && hit.collider.tag == "Floor")
+				{
+					Instantiate(prefab_Rock,new Vector3(hit.point.x, prefab_Rock.transform.localScale.y / 2, hit.point.z), Quaternion.identity);
+				}
+
+				while(!Input.GetKeyUp(KeyCode.Mouse0)) yield return null;
+			}
+			UIController.Instance.IsThrowingRock = false;
+			Resume();
+		}
 
 		private IEnumerator ShoutCoroutine(float radius)
 		{
@@ -420,17 +443,18 @@
 			SpriteRenderer objectSprite = currentShout.GetComponent<SpriteRenderer>();
 			Color col = new Color(1,1,1,1);
 			
-			GameController.instance.PlayerShouted();
+
 			while(shoutTimer <= 1)
 			{
 				shoutTimer = (Time.time - startingTime) * 1  ;
 				shoutTimer /= 0.6f * (Time.time - startingTime + 0.5f);
-				col.a = (1-shoutTimer);
+				col.a = 1.5f - shoutTimer;
 				currentShout.transform.localScale = Vector3.one * shoutTimer * radius * 2;
+				GameController.instance.PlayerShouted(currentShout.transform);
 				yield return null;
 				objectSprite.color = col;
 			}
-
+			GameController.instance.PlayerShouted(currentShout.transform);
 			listShoutMarkers.Remove(tempShout);			
 			Destroy(currentShout);
 		}
@@ -439,8 +463,8 @@
 		{
 			agent.Stop();
 			
-			state = State.Climb;		
-			animator.SetInteger("MoveState", (int)state);
+			animatorState = State.Climb;		
+			animator.SetInteger("MoveState", (int)animatorState);
 			
 			animator.Play("Idle_ToJumpUpHigh");	
 			
@@ -470,7 +494,7 @@
 			
 			//			agent.ActivateCurrentOffMeshLink(true);
 			
-			state = State.Idle;
+			animatorState = State.Idle;
 			animator.Play("Idle");
 			
 			agent.CompleteOffMeshLink();
@@ -480,7 +504,7 @@
 		private IEnumerator Locomotion_JumpAnimation() 
 		{
 			agent.Stop();
-			state = State.Climb;
+			animatorState = State.Climb;
 			
 			do{
 				transform.position = Vector3.Slerp(transform.position, linkEnd_,agent.speed);
@@ -490,7 +514,7 @@
 			agent.CompleteOffMeshLink();
 			agent.Resume();
 			
-			state = State.Idle;
+			animatorState = State.Idle;
 			animator.Play("Idle");
 		}
 		#endregion

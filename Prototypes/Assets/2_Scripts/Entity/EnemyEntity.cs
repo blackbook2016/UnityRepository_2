@@ -31,6 +31,7 @@
 		private bool isDestinationReached;
 
 		private Vector3 targetPos;
+		private Transform distractionObject;
 
 		#region getter/setter
 		public EnemyBeHaviour _Behaviour {
@@ -213,6 +214,15 @@
 				setState = value;
 			}
 		}
+
+		public Transform DistractionObject {
+			get {
+				return this.distractionObject;
+			}
+			set {
+				distractionObject = value;
+			}
+		}	
 		#endregion
 
 		#region Constructor
@@ -339,10 +349,15 @@
 				fov.canSearch = false;
 				fov.DrawFoV();
 			}
+			
+			fov.isCentered = false;
 //			tr.LookAt(targetPos);
 			Quaternion rotation = Quaternion.LookRotation(targetPos - tr.position);
 
 			tr.rotation = Quaternion.Slerp(tr.rotation, rotation, Time.deltaTime * 2.0f);
+
+			rotation = Quaternion.LookRotation(targetPos - fov.transform.position);
+			fov.transform.rotation = Quaternion.Slerp(fov.transform.rotation, rotation, Time.deltaTime * 2.0f);
 		}
 		
 		public void ProximityWatchPlayer(Transform tr, float elapsed)

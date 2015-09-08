@@ -286,7 +286,7 @@ namespace TheVandals
 			{
 				shoutTimer = 0.0f;			
 				audioSource.Play();
-				GameController.instance.PlayerShouted();
+//				GameController.instance.PlayerShouted();
 			}
 		}
 
@@ -312,7 +312,7 @@ namespace TheVandals
 				shoutTimer = (Time.time - startingTime) * 1  ;
 				shoutTimer /= 0.6f * (Time.time - startingTime + 0.5f);
 				shoutMarker.localScale = Vector3.one * shoutTimer * soundDistance * 2;
-				GameController.instance.PlayerShouted();
+//				GameController.instance.PlayerShouted();
 				yield return null;
 			}
 			shoutMarker.gameObject.SetActive(false);

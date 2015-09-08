@@ -102,8 +102,6 @@
 		
 		private float maxUpdateRate = float.PositiveInfinity;
 
-		public  bool canSearch = false;
-
 		public float rotationAngle = 45.0f;
 
 		public float rotateSpeed = 1.0f;
@@ -119,13 +117,28 @@
 		private float defaultAlpha = 0.0f;
 
 		public bool isfrozen = false;
+
+		public bool isCentered = true;
+
+		private Quaternion forwardRotation;
+		
+		public  bool canSearch = false;
+
+		public  bool canSearch_old = false;
 		//
 		// Methods
 		//
-		public void DrawFoV ()
+
+		void Update()
 		{
 			if(Application.isPlaying)
 			{
+				if(canSearch_old != canSearch)
+				{
+					canSearch_old = canSearch;
+					timer = 0.0f;
+				}
+				
 				UpdateFoVColor();
 				if(canSearch)
 				{
@@ -134,11 +147,19 @@
 				}
 				else
 				{
-					timer = 0.0f;
-					if(transform.rotation.y != 0)
-						transform.rotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
+					if(isCentered && transform.rotation.y != 0)
+					{
+						timer = Mathf.Clamp(timer + Time.deltaTime, 0 ,1);
+						forwardRotation = Quaternion.Euler(0.0f, transform.parent.transform.rotation.eulerAngles.y , 0.0f);
+						
+						transform.rotation = Quaternion.Slerp(transform.rotation, forwardRotation, timer);
+					}
 				}
 			}
+		}
+		public void DrawFoV ()
+		{
+
 
 			this.angle_lookat = 0f;
 			this.angle_start = this.angle_lookat - this.fovRange;
@@ -169,7 +190,7 @@
 				{
 					float distance = this.fovDepth;
 					RaycastHit raycastHit;
-					if (Physics.Raycast (new Ray (this.origin, this.tempRayVectorMiddle), out raycastHit, this.fovDepth, this.layerFOV | 1 << 12 | 1 <<13))
+					if (Physics.Raycast (new Ray (this.origin, this.tempRayVectorMiddle), out raycastHit, this.fovDepth, this.layerFOV | 1 << 12 | 1 <<13 |1 << 15))
 					{
 						distance = raycastHit.distance;
 						if (!this.isSecondFoV && !this.detectedObjects.Contains (raycastHit.collider.transform) && raycastHit.distance > this.fovVertexOffset)

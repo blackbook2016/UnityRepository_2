@@ -18,6 +18,7 @@
 		CaptureOeuvre,
 		CreateOeuvre,
 		FinishedLvl,
+		ThrowingRock
 	}
 
 	public enum EnemyState {
@@ -50,6 +51,8 @@
 		SearchM,
 		ReturnToInitialPosition,
 		runTowardPlayer,
+		Distracted,
+		Wait,
 	}
 
 	public enum AlertLevel {
